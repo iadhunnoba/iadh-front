@@ -1,24 +1,11 @@
-# demo4
+# Proyecto RCP
 
-## Project setup
+## Instalación de módulos (Node version 14.17.5)
 ```
 npm install
 ```
 
-### Compiles and hot-reloads for development
+### Compilación y ejecución del front
 ```
 npm run serve
 ```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
