@@ -5,7 +5,9 @@
     <div class="row m-4">
         <canvas ref="chart" width="600" height="300"></canvas>
     </div>
-    <button @click="activateNormalPulseHeart">Activar pulso normal del corazón</button>
+    <button @click="activateNormalPulseHeart(120)">Activar pulso normal del corazón</button>
+    <button @click="activateLowPulseHeart">Activar frecuencia cardiaca baja</button>
+    <button @click="activateFastPulseHeart">Activar frecuencia cardiaca alta</button>
     <button @click="activateVentricularFibrillation">Activar fibrilación ventricular</button>
     <button @click="activateVentricularTachycardia">Activar taquicarida ventricular</button>
     <button @click="activateAsystole">Activar asistolia</button>
@@ -138,7 +140,7 @@ export default {
 
 
     // Activo el Pulso normal del corazón
-    this.activateNormalPulseHeart()
+    this.activateNormalPulseHeart(120)
 
     /* Defino la función runIteration que se ejecuta en cada iteración del ciclo. Dentro de esta función, se actualiza this.cycleSpace cuando this.iterator es igual a 0, y luego se utiliza setTimeout para programar la próxima iteración de runIteration con el nuevo tiempo de espera this.cycleSpace. */
 
@@ -175,31 +177,75 @@ export default {
     },
 
     //Pulso normal del corazón
-    activateNormalPulseHeart(){
+    activateNormalPulseHeart(cycleSpace){
       // Pre armado del array
       // Cantidad de ceros al medio (pausa entre periodos)
       // Identificar valores extremos (4, -0.8 -1.3) que corresponden a R, Q y S respectivamente
       // Pruebas con 150 de delay en el interval, si aumenta a 200, baja el ritmo cardiaco
       // series.append(Date.now(), 10);
-      // const data = [1, 1, 1.2, 1.3, 1.2, 1, 1, 1, 1, 2.3, 0.16, 0.17, 0.55, 0.58, 0.67, 1 , 1, 1]
-
+      // const data = [1, 1, 1.2, 1.3, 1.2, 1, 1, 1, 1, 2.3, 0.16, 0.17, 0.55, 0.58, 0.67, 1 , 1, 1]  
+      /* 
+      Arreglo original:
       this.graphicData = [0, 0, 0, 0, 0.25, 0.5, 0, 0, 0, -0.8, 4, -1.3, 0, 0, 0.9, 1, 0.8, 0, 0, 0, 0, 0, 0, 0, 0.3, 0.5, 0, 0, 0, -0.8, 4, -1.3, 0, 0, 0.9, 1, 0.8, 0, 0, 0];
+      */
 
-      this.cycleSpace = 120
-      this.iterator = 0
+      this.graphicData = [0, 0, 0, 0, 0.45, 0.5, 0, 0, 0, -0.6, 4, -1.3, 0, 0, 0, 0, 0.65, 0.8, 0.65, 0, 0, 0, 0, 0,
+    ];
+
+      this.cycleSpace = cycleSpace;
+      this.iterator = 0;
+
+    },
+
+    //Pulso bajo del corazón
+    activateLowPulseHeart(){
+      this.activateNormalPulseHeart(120)
+
+      // Agrego 4 ceros al principio
+      this.graphicData.splice(0, 0, 0, 0, 0, 0);
+      
+      /* 
+        Agrego 4 ceros después de la posición 12 del arreglo orginal, pero debido a que agregue 4 ceros, la posición   
+        se desplazo hacia la derecha 4 lugares 
+      */
+      this.graphicData.splice(12+4, 0, 0, 0, 0, 0);
+
+      this.iterator = 0;
+
+    },
+
+    //Pulso bajo del corazón
+    activateFastPulseHeart(){
+      this.activateNormalPulseHeart(120);
+
+      // Elimino los primeros 3 ceros
+      this.graphicData.splice(0,3);
+
+      // Elimino 2 ceros después del pico mas alto
+      this.graphicData.splice(9,2);
+
+      // Elimino 3 ceros de los ultimos de la función
+      this.graphicData.splice(14,3);
+
+      this.iterator = 0;
 
     },
 
     // Fibrilación ventricular
     activateVentricularFibrillation(){
+      /* 
+      Arreglo original:
       this.graphicData = [-0.4, 3, -0.4, 1.3, 2.8, -1, 3.1, -0.4, 1.8, 3.5, -1, 3.3, 1.1, 2, 1.2, 1.6, -1, 3.3, -0.9, 2.9, -0.7,2.6, 1, 2.4, -0.2, 1.3, 3, -0.2]
+      */
+      this.graphicData = [-0.4, 3, -0.4, 1.3, 2.8, -1, 3.1, -0.4, 1.8, 3.5, -1, 3.3, 1.1, 2, 1.2, 1.6, -1, 3.3, -0.9, 2.9, -0.7,2.6, 1, 2.4, -0.2, 1.3, 3, -0.2,-1, 3.3, 1.1, 2, 1.2, 1.6, -1,];
 
-      this.cycleSpace = 400
-      this.iterator = 0
+      this.cycleSpace = 180;
+      this.iterator = 0;
     },
 
     // Taquicardia ventricular
     activateVentricularTachycardia(){
+      /* Arreglo original:
       this.graphicData = [0.3, 0.5, 0, 0, 0, -0.8, 4, -1.3, 0, 0, 0.9, 1, 0.8, -0.5, -0.9, 
       -1.2, -0.6, 1, 2.5, 2.6, 2.7, 0.1, -1.8,   
       -1.2, -0.6, 1, 2.4, 2.5, 2.8, 0.5, -1.9, 
@@ -209,22 +255,23 @@ export default {
       -1.2, -0.6, 1, 2.4, 2.5, 2.8, 0.4, -1.5,
       -1.2, -0.6, 1, 2.4, 2.5, 2.7, 0.5, -1.7,
       ]
+      */
+      this.graphicData = [4.2, -3.8];
 
-      this.cycleSpace = 150
-      this.iterator = 0
+      this.cycleSpace = 550;
+      this.iterator = 0;
     },
 
     // Asistolia
     activateAsystole(){
-      this.graphicData = [0]
-      this.iterator = 0
-    }
+      this.graphicData = [0];
+      this.iterator = 0;
+    },
 
     // Obtengo un valor aleatorio entre dos números seleccionados
    /*  getRandomNegativeArbitrary(min, max) {
       return Math.random() * (max - min) + min;
     }  */
-    
   },
 };
 </script>
