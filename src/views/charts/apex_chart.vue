@@ -3,7 +3,7 @@
     <apexchart ref="realtimeChart1" type="line" height="350" :options="chartOptions" :series="series1" />
     <apexchart ref="realtimeChart2" type="line" height="350" :options="chartOptions" :series="series2" />
     <div class="row m-4">
-        <canvas ref="chart" width="600" height="300"></canvas>
+        <canvas ref="chart" width="800" height="300"></canvas>
     </div>
     <button @click="activateNormalPulseHeart(120)">Activar pulso normal del corazón</button>
     <button @click="activateLowPulseHeart">Activar frecuencia cardiaca baja</button>
@@ -11,6 +11,7 @@
     <button @click="activateVentricularFibrillation">Activar fibrilación ventricular</button>
     <button @click="activateVentricularTachycardia">Activar taquicarida ventricular</button>
     <button @click="activateAsystole">Activar asistolia</button>
+    <button @click="ActivateSaturation">Activar saturación de oxígeno</button>
   </div>
 </template>
 
@@ -267,6 +268,14 @@ export default {
       this.graphicData = [0];
       this.iterator = 0;
     },
+
+
+    // Saturación de oxígeno
+    ActivateSaturation(){
+      this.graphicData = [4, 0.75, 1, -1.1];
+      this.cycleSpace = 700;
+      this.iterator = 0;
+    }
 
     // Obtengo un valor aleatorio entre dos números seleccionados
    /*  getRandomNegativeArbitrary(min, max) {
