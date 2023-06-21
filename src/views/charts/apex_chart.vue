@@ -232,12 +232,18 @@ export default {
 
     this.$watch('slider1', (sliderValue) => {
       if (sliderValue < 40) {
-        this.activateLowPulseHeart(3);
+        this.activateLowPulseHeart(4);
+        this.cycleSpaceSaturation = 1000;
       } else if (sliderValue == 60) {
-        this.activateNormalPulseHeart(120)
-      } else if (sliderValue > 70) {
-        this.activateFastPulseHeart(3);
-      }
+        this.activateNormalPulseHeart(120);
+        this.cycleSpaceSaturation = 700;
+      } else if (sliderValue > 95) {
+        this.activateFastPulseHeart(4);
+        this.cycleSpaceSaturation = 350;
+      } else if (sliderValue > 75) {
+        this.activateFastPulseHeart(2);
+        this.cycleSpaceSaturation = 500;
+      } 
     });
 
   },
