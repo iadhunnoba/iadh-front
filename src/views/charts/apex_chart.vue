@@ -4,45 +4,77 @@
     <apexchart ref="realtimeChart2" type="line" height="350" :options="chartOptions" :series="series2" />
 
     <div class="row m-4">
-      <div class="col-6">
+      <div class="col-12 col-md-6">
         <canvas ref="chart" width="600" height="300"></canvas>
       </div>
-      <div class="col-6">
-        <div class="custom-progress progress-up" style="width: 100%">
-          <div class="range-count">
-            <span class="range-count-number" style="font-size: 4em">{{ slider1 }}</span>
+      <div class="col-12 col-md-6">
+        <div class="row">
+          <div class="col-12">
+            <div class="custom-progress progress-up mb-2" style="width: 100%">
+              <div class="range-count">
+                <span class="range-count-number" v-bind:class="{ warning: isWarningPulseHeart }"
+                  v-bind:style="{ fontSize: 4 + 'em' }">HR: {{ slider1 }}</span>
+              </div>
+            </div>
           </div>
-          <b-input type="range" v-model="slider1" :min="30" :max="250" class="progress-range-counter"></b-input>
+          <div class="col-4 col-md-6">
+            <b-button variant="outline-info" class="w-100 mb-2 mr-1" @click="activateNormalPulseHeart(120)">Activar pulso normal
+              del
+              corazón</b-button>
+          </div>
+          <div class="col-4 col-md-6">
+            <b-button variant="outline-info" class="w-100 mb-2 mr-1" @click="activateLowPulseHeart">Activar frecuencia cardiaca
+              baja</b-button>
+          </div>
+          <div class="col-4 col-md-6">
+            <b-button variant="outline-info" class="w-100 mb-2 mr-1" @click="activateFastPulseHeart">Activar frecuencia cardiaca
+              alta</b-button>
+          </div>
+          <div class="col-4 col-md-6">
+            <b-button variant="outline-info" class="w-100 mb-2 mr-1" @click="activateVentricularFibrillation">Activar
+              fibrilación
+              ventricular</b-button>
+          </div>
+          <div class="col-4 col-md-6">
+            <b-button variant="outline-info" class="w-100 mb-2 mr-1" @click="activateVentricularTachycardia">Activar taquicarida
+              ventricular</b-button>
+          </div>
+          <div class="col-4 col-md-6">
+            <b-button variant="outline-info" class="w-100 mb-2 mr-1" @click="activateStElevation">Elevación de ST</b-button>
+          </div>
+          <div class="col-4 col-md-6">
+            <b-button variant="outline-info" class="w-100 mb-2 mr-1" @click="activateAsystole">Activar asistolia</b-button>
+          </div>
         </div>
-        <b-button variant="outline-info" class="mb-2 mr-1" @click="activateNormalPulseHeart(120)">Activar pulso normal del
-          corazón</b-button>
-        <b-button variant="outline-info" class="mb-2 mr-1" @click="activateLowPulseHeart">Activar frecuencia cardiaca
-          baja</b-button>
-        <b-button variant="outline-info" class="mb-2 mr-1" @click="activateFastPulseHeart">Activar frecuencia cardiaca
-          alta</b-button>
-        <b-button variant="outline-info" class="mb-2 mr-1" @click="activateVentricularFibrillation">Activar fibrilación
-          ventricular</b-button>
-        <b-button variant="outline-info" class="mb-2 mr-1" @click="activateVentricularTachycardia">Activar taquicarida
-          ventricular</b-button>
-        <b-button variant="outline-info" class="mb-2 mr-1" @click="activateAsystole">Activar asistolia</b-button>
       </div>
     </div>
     <div class="row m-4">
-      <div class="col-6">
+      <div class="col-12 col-md-6">
         <canvas ref="saturation" width="600" height="300"></canvas>
       </div>
-      <div class="col-6">
+      <div class="col-12 col-md-6">
         <div class="custom-progress progress-up" style="width: 100%">
           <div class="range-count">
-            <span class="range-count-number" style="font-size: 4em">{{ slider2 }}</span>
+            <span class="range-count-number" v-bind:class="{ warning: isWarning }"
+              v-bind:style="{ fontSize: 4 + 'em' }">SpO2: {{ slider2 }}</span>
           </div>
           <b-input type="range" v-model="slider2" :min="0" :max="100" class="progress-range-counter"></b-input>
         </div>
       </div>
-
     </div>
 
-
+    <div class="row m-4">
+      <div class="col-12 col-md-6">
+        <canvas ref="tensionArterial" width="600" height="300"></canvas>
+      </div>
+      <div class="col-12 col-md-6">
+        <div class="custom-progress progress-up" style="width: 100%">
+          <div class="range-count">
+            <span class="range-count-number" v-bind:style="{ fontSize: 4 + 'em' }">ABP: {{ bloodPressure }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -108,6 +140,9 @@ export default {
     return {
       slider1: 60,
       slider2: 100,
+      isWarning: false,
+      isWarningPulseHeart: false,
+      bloodPressure: '',
       series1: [{ data: data1.slice() }],
       series2: [{ data: data2.slice() }],
       chartOptions: {
@@ -156,8 +191,9 @@ export default {
   mounted() {
     this.intervals();
 
-    /* Declaro las variables que necesito para volver dinamico el grafico: 
-    los datos del grafico, el espacio entre cada ciclo y un iterador (Necesito un iterador dinamico porque a la hora de producir una cambio de datos, necesito que iterador vuelva a cero, para evitar problema con los índices de los arreglos, debido a que tienen diferente longitud, y me ayuda para actualizar el espacio entre cada ciclo) */
+    // Gràfico del frecuencia cardíaca
+    /* Declaro las variables que necesito para volver dinamico el gràfico: 
+    los datos del gràfico, el espacio entre cada ciclo y un iterador (Necesito un iterador dinamico porque a la hora de producir una cambio de datos, necesito que iterador vuelva a cero, para evitar problema con los índices de los arreglos, debido a que tienen diferente longitud, y me ayuda para actualizar el espacio entre cada ciclo) */
     this.graphicData = [];
     this.cycleSpace = 0;
     this.iterator = 0;
@@ -175,7 +211,7 @@ export default {
 
     chart.addTimeSeries(series, { lineWidth: 3.6, strokeStyle: '#00ff00' });
 
-
+    // Gràfico de la suturaciòn de oxìgeno
     this.graphicSaturation = []
     this.cycleSpaceSaturation = 0;
     this.iteratorSaturation = 0;
@@ -191,14 +227,29 @@ export default {
     });
     chartSaturation.streamTo(canvasSaturation, 1000);
 
-    chartSaturation.addTimeSeries(seriesSaturation, { lineWidth: 3.6, strokeStyle: '#00ff00' });
+    chartSaturation.addTimeSeries(seriesSaturation, { lineWidth: 3.6, strokeStyle: '#FFFF00' });
+
+    // Gràfico de la suturaciòn de la tensiòn arterial
+    this.graphicPressure = []
+    this.cycleSpacePressure = 0;
+    this.iteratorPressure = 0;
+
+    var seriesPressure = new smoothie.TimeSeries();
+    var canvasPressure = this.$refs.tensionArterial;
+
+    var chartPressure = new smoothie.SmoothieChart({
+      grid: {
+        strokeStyle: '#1e1801', fillStyle: '#000000',
+        lineWidth: 0, verticalSections: 6,
+      }, maxValue: 8, minValue: -8, millisPerPixel: 20
+    });
+    chartPressure.streamTo(canvasPressure, 1000);
+
+    chartPressure.addTimeSeries(seriesPressure, { lineWidth: 3.6, strokeStyle: '#FF0000' });
 
 
     // Activo el pulso normal del corazón
     this.activateNormalPulseHeart(120)
-
-    // Activo la saturación de oxígeno normal
-    this.activateSaturation()
 
     /* Defino la función runIteration que se ejecuta en cada iteración del ciclo. Dentro de esta función, se actualiza this.cycleSpace cuando this.iterator es igual a 0, y luego se utiliza setTimeout para programar la próxima iteración de runIteration con el nuevo tiempo de espera this.cycleSpace. */
 
@@ -229,8 +280,20 @@ export default {
 
     setTimeout(runIterationSaturation, this.cycleSpaceSaturation);
 
+    const runIterationPressure = () => {
+      seriesPressure.append(Date.now(), this.graphicPressure[this.iteratorPressure]);
+      this.iteratorPressure++;
 
-    this.$watch('slider1', (sliderValue) => {
+      if (this.iteratorPressure === this.graphicPressure.length) {
+        this.iteratorPressure = 0;
+      }
+
+      setTimeout(runIterationPressure, this.cycleSpacePressure);
+    };
+
+    setTimeout(runIterationPressure, this.cycleSpacePressure);
+
+    /* this.$watch('slider1', (sliderValue) => {
       if (sliderValue < 40) {
         this.activateLowPulseHeart(4);
         this.cycleSpaceSaturation = 1000;
@@ -244,6 +307,14 @@ export default {
         this.activateFastPulseHeart(2);
         this.cycleSpaceSaturation = 500;
       } 
+    }); */
+
+    this.$watch('slider2', (sliderValue) => {
+      this.isWarning = sliderValue < 90;
+    });
+
+    this.$watch('slider1', (sliderValue) => {
+      this.isWarningPulseHeart = sliderValue <= 40;
     });
 
   },
@@ -282,64 +353,86 @@ export default {
 
       this.cycleSpace = cycleSpace;
       this.iterator = 0;
+      this.slider1 = '60'
+
+      // Activo la saturación de oxígeno normal
+      this.activateSaturation()
+
+      // Activo la tensiòn arterial normal (120/80)
+      this.activatePressure()
+      this.bloodPressure = '120/80'
 
     },
 
     //Pulso bajo del corazón
-    activateLowPulseHeart(quantityZeros) {
-      this.activateNormalPulseHeart(120)
+    activateLowPulseHeart() {
+      this.activateNormalPulseHeart(120);
+      this.slider1 = '35';
 
-      for (var i = 0; i < quantityZeros; i++) {
-        this.graphicData.splice(0, 0, 0);
-        this.graphicData.splice(12 + 4, 0, 0)
-      }
+      /*    for (var i = 0; i < quantityZeros; i++) {
+           this.graphicData.splice(0, 0, 0);
+           this.graphicData.splice(12 + 4, 0, 0)
+         } */
 
-      /*       // Agrego 4 ceros al principio
-            this.graphicData.splice(0, 0, 0, 0, 0, 0);
-      
-             
-            //Agrego 4 ceros después de la posición 12 del arreglo orginal, pero debido a que agregue 4 ceros, la posición   
-            //  se desplazo hacia la derecha 4 lugares 
-            
-            this.graphicData.splice(12 + 4, 0, 0, 0, 0, 0); */
+      // Agrego 4 ceros al principio
+      this.graphicData.splice(0, 0, 0, 0, 0, 0);
+
+
+      //Agrego 4 ceros después de la posición 12 del arreglo orginal, pero debido a que agregue 4 ceros, la posición   
+      //  se desplazo hacia la derecha 4 lugares 
+
+      this.graphicData.splice(12 + 4, 0, 0, 0, 0, 0);
 
       this.iterator = 0;
 
+      this.cycleSpaceSaturation = 1000;
+
+      // Tensiòn Arterial baja (90/60)
+      this.cycleSpacePressure = 1000;
+      this.bloodPressure = '90/60'
     },
 
     //Pulso bajo del corazón
-    activateFastPulseHeart(quantityZeros) {
+    activateFastPulseHeart() {
       this.activateNormalPulseHeart(120);
+      this.slider1 = '85';
 
-      // Eliminar ceros al principio del arreglo
-      this.graphicData.splice(0, quantityZeros);
 
-      // Encontrar el índice del número -1.3
-      const indexNegativeOnePointThree = this.graphicData.indexOf(-1.3);
-      if (indexNegativeOnePointThree !== -1) {
-        // Eliminar ceros después del número -1.3
-        const endIndex = indexNegativeOnePointThree + quantityZeros;
-        this.graphicData.splice(indexNegativeOnePointThree + 1, endIndex);
-      }
-
-      // Encontrar el último índice del número 0.65
-      const lastIndexZeroPointSixFive = this.graphicData.lastIndexOf(0.65);
-      if (lastIndexZeroPointSixFive !== -1) {
-        // Eliminar 3 ceros después del último número 0.65
-        const startIndex = lastIndexZeroPointSixFive + 1;
-        this.graphicData.splice(startIndex, 3);
-      }
-
-      /* // Elimino los primeros 3 ceros
+      /*   // Eliminar ceros al principio del arreglo
+        this.graphicData.splice(0, quantityZeros);
+  
+        // Encontrar el índice del número -1.3
+        const indexNegativeOnePointThree = this.graphicData.indexOf(-1.3);
+        if (indexNegativeOnePointThree !== -1) {
+          // Eliminar ceros después del número -1.3
+          const endIndex = indexNegativeOnePointThree + quantityZeros;
+          this.graphicData.splice(indexNegativeOnePointThree + 1, endIndex);
+        }
+  
+        // Encontrar el último índice del número 0.65
+        const lastIndexZeroPointSixFive = this.graphicData.lastIndexOf(0.65);
+        if (lastIndexZeroPointSixFive !== -1) {
+          // Eliminar 3 ceros después del último número 0.65
+          const startIndex = lastIndexZeroPointSixFive + 1;
+          this.graphicData.splice(startIndex, 3);
+        }
+   */
+      // Elimino los primeros 3 ceros
       this.graphicData.splice(0, 3);
 
       // Elimino 2 ceros después del pico mas alto
       this.graphicData.splice(9, 2);
 
       // Elimino 3 ceros de los ultimos de la función
-      this.graphicData.splice(14, 3); */
+      this.graphicData.splice(14, 3);
 
       this.iterator = 0;
+
+      this.cycleSpaceSaturation = 350;
+
+      // Tensiòn Arterial alta (150/90)
+      this.cycleSpacePressure = 350;
+      this.bloodPressure = '150/90'
 
     },
 
@@ -378,6 +471,15 @@ export default {
     activateAsystole() {
       this.graphicData = [0];
       this.iterator = 0;
+      this.slider1 = '--'
+
+      this.graphicSaturation = [0];
+      this.iteratorSaturation = 0;
+      this.slider2 = '--'
+
+      this.graphicPressure = [0];
+      this.iteratorPressure = 0;
+      this.bloodPressure = '--/--'
     },
 
     // Saturación de oxígeno
@@ -385,7 +487,22 @@ export default {
       this.graphicSaturation = [4, 0.75, 1, -1.1];
       this.cycleSpaceSaturation = 700;
       this.iteratorSaturation = 0;
-    }
+    },
+
+    // Tensiòn Arterial normal (120/80)
+    activatePressure() {
+      this.graphicPressure = [1.2, 0.2, 0.4, -0.3];
+      this.cycleSpacePressure = 700;
+      this.iteratorPressure = 0;
+    },
+
+    // Elevación de ST
+    activateStElevation() {
+      this.graphicData = [0, 0, 0, 0.45, 0, -0.4, 4, 0.7, 1.8];
+      this.cycleSpace = 350;
+      this.iterator = 0;
+      this.slider1 = '40';
+    },
 
     // Obtengo un valor aleatorio entre dos números seleccionados
     /*  getRandomNegativeArbitrary(min, max) {
@@ -394,3 +511,23 @@ export default {
   },
 };
 </script>
+
+<style scoped> /* código CSS */
+ .warning {
+   animation: blink 1s infinite;
+ }
+
+ @keyframes blink {
+   0% {
+     background-color: transparent;
+   }
+
+   50% {
+     background-color: red;
+   }
+
+   100% {
+     background-color: transparent;
+   }
+ }
+</style> 
