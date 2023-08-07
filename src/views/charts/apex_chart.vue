@@ -65,6 +65,8 @@ function resetData() {
   data2 = data2.slice(data2.length - 10, data2.length);
 }
 
+import mqtt from 'mqtt'
+
 export default {
   name: 'home',
   components: {
@@ -117,6 +119,37 @@ export default {
       }
     };
   },
+  created(){
+    const client = mqtt.connect('mqtt://test.mosquitto.org:8883'); 
+
+    // Suscripción al tópico
+    client.on('connect', () => {
+      console.log('Conectado al broker MQTT');
+      client.subscribe('iadh/medical'); // Tópico al que te quieres suscribir
+    });
+
+    // Recepción de mensajes
+    client.on('message', (topic, message) => {
+      console.log('Mensaje recibido:');
+      console.log('Tópico:', topic);
+      console.log('Mensaje:', message.toString());
+    });
+
+    // Manejo de reconexiones
+    client.on('reconnect', () => {
+      console.log('Intentando reconectar al broker MQTT...');
+    });
+
+    client.on('close', () => {
+      console.log('Conexión MQTT cerrada');
+    });
+
+    client.on('offline', () => {
+      console.log('Desconectado del broker MQTT');
+    });
+
+  },
+
   mounted() {
 
     this.intervals();
