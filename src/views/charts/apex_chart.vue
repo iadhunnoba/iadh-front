@@ -18,32 +18,38 @@
             </div>
           </div>
           <div class="col-4 col-md-6">
-            <b-button variant="outline-info" class="w-100 mb-2 mr-1" @click="activateNormalPulseHeart(120)">Activar pulso normal
+            <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateNormalPulseHeart(120)">Activar pulso
+              normal
               del
               corazón</b-button>
           </div>
           <div class="col-4 col-md-6">
-            <b-button variant="outline-info" class="w-100 mb-2 mr-1" @click="activateLowPulseHeart">Activar frecuencia cardiaca
+            <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateLowPulseHeart">Activar frecuencia
+              cardiaca
               baja</b-button>
           </div>
           <div class="col-4 col-md-6">
-            <b-button variant="outline-info" class="w-100 mb-2 mr-1" @click="activateFastPulseHeart">Activar frecuencia cardiaca
+            <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateFastPulseHeart">Activar frecuencia
+              cardiaca
               alta</b-button>
           </div>
           <div class="col-4 col-md-6">
-            <b-button variant="outline-info" class="w-100 mb-2 mr-1" @click="activateVentricularFibrillation">Activar
+            <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateVentricularFibrillation">Activar
               fibrilación
               ventricular</b-button>
           </div>
           <div class="col-4 col-md-6">
-            <b-button variant="outline-info" class="w-100 mb-2 mr-1" @click="activateVentricularTachycardia">Activar taquicarida
+            <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateVentricularTachycardia">Activar
+              taquicarida
               ventricular</b-button>
           </div>
           <div class="col-4 col-md-6">
-            <b-button variant="outline-info" class="w-100 mb-2 mr-1" @click="activateStElevation">Elevación de ST</b-button>
+            <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateStElevation">Elevación de
+              ST</b-button>
           </div>
           <div class="col-4 col-md-6">
-            <b-button variant="outline-info" class="w-100 mb-2 mr-1" @click="activateAsystole">Activar asistolia</b-button>
+            <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateAsystole">Activar
+              asistolia</b-button>
           </div>
         </div>
       </div>
@@ -62,7 +68,6 @@
         </div>
       </div>
     </div>
-
     <div class="row m-4">
       <div class="col-12 col-md-6">
         <canvas ref="tensionArterial" width="600" height="300"></canvas>
@@ -348,7 +353,7 @@ export default {
       this.graphicData = [0, 0, 0, 0, 0.25, 0.5, 0, 0, 0, -0.8, 4, -1.3, 0, 0, 0.9, 1, 0.8, 0, 0, 0, 0, 0, 0, 0, 0.3, 0.5, 0, 0, 0, -0.8, 4, -1.3, 0, 0, 0.9, 1, 0.8, 0, 0, 0];
       */
 
-      this.graphicData = [0, 0, 0, 0, 0.45, 0.5, 0, 0, 0, -0.6, 4, -1.3, 0, 0, 0, 0, 0.65, 0.8, 0.65, 0, 0, 0, 0, 0,
+      this.graphicData = [0, 0, 0, 0, 0.45, 0.5, 0, 0, 0, -0.6, 4, -1.3, 0, 0, 0, 0, 0.65, 0.75, 0.65, 0, 0, 0
       ];
 
       this.cycleSpace = cycleSpace;
@@ -424,7 +429,7 @@ export default {
       this.graphicData.splice(9, 2);
 
       // Elimino 3 ceros de los ultimos de la función
-      this.graphicData.splice(14, 3);
+      this.graphicData.splice(14, 2);
 
       this.iterator = 0;
 
@@ -529,5 +534,4 @@ export default {
    100% {
      background-color: transparent;
    }
- }
-</style> 
+ }</style> 
