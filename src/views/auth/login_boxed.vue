@@ -92,7 +92,6 @@ export default {
     metaInfo: { title: 'Login Boxed' },
     data() {
         return {
-            data: {},
             usuario: "",
             password: "",
             error: false,
@@ -113,8 +112,7 @@ export default {
             }
             axios.post("http://localhost:3000/auth/login", json)
                 .then(data => {
-                    this.data = data.data;
-                    console.log(data);
+                    this.$store.commit('setUser', data.data.token);
                     this.$router.push("/charts/apex-chart");
                 }).catch((err) => {
                     this.errorMessage = err.response.data.message;

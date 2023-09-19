@@ -12,9 +12,9 @@
                                     account</router-link></p>
                             <b-card class="component-card_2" title="CLI Based">
                                 <qrcode-vue :value="QRValue" :size="size" level="H"></qrcode-vue>
-                                <form>
+                             <!--    <form>
                                     <input type="text" v-model="QRValue">
-                                </form>
+                                </form> -->
                                 <b-card-text>Etiam sed augue ac justo tincidunt posuere. Vivamus euismod eros, nec risus
                                     malesuada.</b-card-text>
                                 <b-link href="#" class="btn btn-primary">Explore More</b-link>
@@ -90,7 +90,7 @@ export default {
         return {
             value: 'https://example.com',
             size: 300,
-            QRValue: null
+            QRValue: "/charts/apex-chart"
         }
     },
     components: {

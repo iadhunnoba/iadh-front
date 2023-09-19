@@ -6,6 +6,7 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
     state: {
+        user: null,
         layout: 'app',
         is_show_sidebar: true,
         is_show_search: false,
@@ -33,6 +34,9 @@ export default new Vuex.Store({
         ]
     },
     mutations: {
+        setUser(state, user) {
+            state.user = user;
+        },
         setLayout(state, payload) {
             state.layout = payload;
         },

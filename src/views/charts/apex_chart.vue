@@ -17,40 +17,43 @@
               </div>
             </div>
           </div>
-          <div class="col-4 col-md-6">
-            <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateNormalPulseHeart(120)">Activar pulso
-              normal
-              del
-              corazón</b-button>
+          <div v-if="$store.state.user" class="row"> 
+            <div class="col-4 col-md-6">
+              <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateNormalPulseHeart(120)">Activar pulso
+                normal
+                del
+                corazón</b-button>
+            </div>
+            <div class="col-4 col-md-6">
+              <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateLowPulseHeart">Activar frecuencia
+                cardiaca
+                baja</b-button>
+            </div>
+            <div class="col-4 col-md-6">
+              <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateFastPulseHeart">Activar frecuencia
+                cardiaca
+                alta</b-button>
+            </div>
+            <div class="col-4 col-md-6">
+              <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateVentricularFibrillation">Activar
+                fibrilación
+                ventricular</b-button>
+            </div>
+            <div class="col-4 col-md-6">
+              <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateVentricularTachycardia">Activar
+                taquicarida
+                ventricular</b-button>
+            </div>
+            <div class="col-4 col-md-6">
+              <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateStElevation">Elevación de
+                ST</b-button>
+            </div>
+            <div class="col-4 col-md-6">
+              <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateAsystole">Activar
+                asistolia</b-button>
+            </div>
           </div>
-          <div class="col-4 col-md-6">
-            <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateLowPulseHeart">Activar frecuencia
-              cardiaca
-              baja</b-button>
-          </div>
-          <div class="col-4 col-md-6">
-            <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateFastPulseHeart">Activar frecuencia
-              cardiaca
-              alta</b-button>
-          </div>
-          <div class="col-4 col-md-6">
-            <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateVentricularFibrillation">Activar
-              fibrilación
-              ventricular</b-button>
-          </div>
-          <div class="col-4 col-md-6">
-            <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateVentricularTachycardia">Activar
-              taquicarida
-              ventricular</b-button>
-          </div>
-          <div class="col-4 col-md-6">
-            <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateStElevation">Elevación de
-              ST</b-button>
-          </div>
-          <div class="col-4 col-md-6">
-            <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateAsystole">Activar
-              asistolia</b-button>
-          </div>
+
         </div>
       </div>
     </div>
@@ -64,7 +67,8 @@
             <span class="range-count-number" v-bind:class="{ warning: isWarning }"
               v-bind:style="{ fontSize: 4 + 'em' }">SpO2: {{ slider2 }}</span>
           </div>
-          <b-input type="range" v-model="slider2" :min="0" :max="100" class="progress-range-counter"></b-input>
+          <b-input v-if="$store.state.user" type="range" v-model="slider2" :min="0" :max="100"
+            class="progress-range-counter"></b-input>
         </div>
       </div>
     </div>
