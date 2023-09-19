@@ -24,6 +24,7 @@ Vue.use(VueMeta, {
     refreshOnceOnNavigation: true
 });
 
+
 //Sweetalert
 import VueSweetalert2 from 'vue-sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
