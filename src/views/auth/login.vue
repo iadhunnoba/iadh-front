@@ -90,7 +90,7 @@ export default {
         return {
             value: 'https://example.com',
             size: 300,
-            QRValue: "/charts/apex-chart"
+            QRValue: "http://172.19.223.69:8080/charts/apex-chart"
         }
     },
     components: {

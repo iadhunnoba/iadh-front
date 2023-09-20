@@ -35,7 +35,8 @@ export default new Vuex.Store({
     },
     mutations: {
         setUser(state, user) {
-            state.user = user;
+            localStorage.setItem('token', user);
+            state.user = user; 
         },
         setLayout(state, payload) {
             state.layout = payload;

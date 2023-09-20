@@ -17,7 +17,7 @@
               </div>
             </div>
           </div>
-          <div v-if="$store.state.user" class="row"> 
+          <div v-if="permisos" class="row"> 
             <div class="col-4 col-md-6">
               <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateNormalPulseHeart(120)">Activar pulso
                 normal
@@ -67,7 +67,7 @@
             <span class="range-count-number" v-bind:class="{ warning: isWarning }"
               v-bind:style="{ fontSize: 4 + 'em' }">SpO2: {{ slider2 }}</span>
           </div>
-          <b-input v-if="$store.state.user" type="range" v-model="slider2" :min="0" :max="100"
+          <b-input v-if="permisos" type="range" v-model="slider2" :min="0" :max="100"
             class="progress-range-counter"></b-input>
         </div>
       </div>
@@ -147,6 +147,7 @@ export default {
   },
   data() {
     return {
+      permisos: false,
       slider1: 60,
       slider2: 100,
       isWarning: false,
@@ -196,6 +197,9 @@ export default {
         },
       }
     };
+  },
+  created() {
+    this.permisos = !!localStorage.getItem('token');
   },
   mounted() {
     this.intervals();
