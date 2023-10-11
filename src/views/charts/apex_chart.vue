@@ -11,13 +11,7 @@
           <div class="widget-content">
             <div class="browser-list">
               <div class="w-icon icon-fill-primary">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chrome">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <circle cx="12" cy="12" r="4"></circle>
-                  <line x1="21.17" y1="8" x2="12" y2="8"></line>
-                  <line x1="3.95" y1="6.06" x2="8.54" y2="14"></line>
-                  <line x1="10.88" y1="21.94" x2="15.46" y2="14"></line>
-                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-radio"><circle cx="12" cy="12" r="2"></circle><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path></svg>
               </div>
               <div class="w-browser-details">
                 <div class="w-browser-info">
@@ -31,10 +25,7 @@
             </div>
             <div class="browser-list">
               <div class="w-icon icon-fill-danger">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-compass">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
-                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-radio"><circle cx="12" cy="12" r="2"></circle><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path></svg>
               </div>
               <div class="w-browser-details">
                 <div class="w-browser-info">
@@ -49,11 +40,7 @@
             </div>
             <div class="browser-list">
               <div class="w-icon icon-fill-warning">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-globe">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <line x1="2" y1="12" x2="22" y2="12"></line>
-                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-radio"><circle cx="12" cy="12" r="2"></circle><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path></svg>
               </div>
               <div class="w-browser-details">
                 <div class="w-browser-info">
@@ -75,22 +62,37 @@
               <div class="widget-heading">
                 <div class="w-title">
                   <div class="w-icon icon-fill-primary">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users">
-                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                      <circle cx="9" cy="7" r="4"></circle>
-                      <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                      <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-activity"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
                   </div>
                   <div>
-                    <p class="w-value">23</p>
-                    <h5>Comp. / MIN</h5>
+                    <p class="w-value">65%</p>
+                    <h5>Presión pulmonar - Promedio</h5>
                   </div>
                 </div>
               </div>
               <div class="widget-content">
                 <div class="w-chart">
                   <apexchart v-if="followers_options" height="160" type="area" :options="followers_options" :series="followers_series"></apexchart>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-12 col-lg-12 col-md-8 col-sm-4 col-12 layout-spacing">
+            <div class="widget">
+              <div class="widget-heading">
+                <div class="w-title">
+                  <div class="w-icon icon-fill-primary2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-activity"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                  </div>
+                  <div>
+                    <p class="w-value">65%</p>
+                    <h5>Presión pulmonar - Promedio</h5>
+                  </div>
+                </div>
+              </div>
+              <div class="widget-content">
+                <div class="w-chart">
+                  <apexchart v-if="followers_options2" height="160" type="area" :options="followers_options2" :series="followers_series2"></apexchart>
                 </div>
               </div>
             </div>
@@ -299,7 +301,8 @@ export default {
 
       // REALTIME DATA FROM RCP
       //Followers
-      followers_series: [{ name: 'Intensidad', data: [18, 50, 28, 52, 10, 40, 15, 52, 18, 60, 23] }],
+      followers_series: [{ name: 'Intensidad', data: [80, 30, 85, 35, 79, 40, 80, 40, 34, 80, 38] }],
+      followers_series2: [{ name: 'Valor', data: [50, 34, 29, 52, 57, 53, 51, 55, 59, 60, 51] }],
     };
   },
   created() {},
@@ -483,7 +486,23 @@ export default {
       let option = {
         chart: { sparkline: { enabled: true } },
         stroke: { curve: 'smooth', width: 2 },
-        colors: ['#4361ee'],
+        colors: ['#4361ee'], //F3A695
+        //labels: ['1', '2', '3', '4', '5', '6', '7'],
+        yaxis: { min: 0 },
+        tooltip: { theme: is_dark ? 'dark' : 'light', x: { show: false } },
+      };
+      if (is_dark) {
+        option['fill'] = { type: 'gradient', gradient: { type: 'vertical', shadeIntensity: 1, inverseColors: !1, opacityFrom: 0.3, opacityTo: 0.05, stops: [100, 100] } };
+      }
+      return option;
+    },
+
+    followers_options2() {
+      const is_dark = this.$store.state.is_dark_mode;
+      let option = {
+        chart: { sparkline: { enabled: true } },
+        stroke: { curve: 'smooth', width: 2 },
+        colors: ['#F3A695'], 
         //labels: ['1', '2', '3', '4', '5', '6', '7'],
         yaxis: { min: 0 },
         tooltip: { theme: is_dark ? 'dark' : 'light', x: { show: false } },
