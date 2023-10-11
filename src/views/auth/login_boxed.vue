@@ -6,8 +6,8 @@
                     <div class="form-container">
                         <div class="form-content">
 
-                            <h1 class="">Sign In</h1>
-                            <p class="">Log in to your account to continue.</p>
+                            <h1 class="">Login docente</h1>
+                            <p class="">Inicie sesión para continuar.</p>
                             <p>
                                 {{ errorMessage }}
                             </p>

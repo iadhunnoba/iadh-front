@@ -6,18 +6,18 @@
                     <div class="form-container">
                         <div class="form-content">
                             <h1 class="">
-                                Log In to <router-link to="/"><span class="brand-name">CORK</span></router-link>
+                                Login de estudiantes <router-link to="/"><!-- <span class="brand-name">CORK</span> --></router-link>
                             </h1>
-                            <p class="signup-link">New Here? <router-link to="/auth/register">Create an
-                                    account</router-link></p>
-                            <b-card class="component-card_2" title="CLI Based">
+                            <!-- <p class="signup-link">New Here? <router-link to="/auth/register">Create an
+                                    account</router-link></p> -->
+                            <b-card class="component-card_2" title="">
                                 <qrcode-vue :value="QRValue" :size="size" level="H"></qrcode-vue>
                              <!--    <form>
                                     <input type="text" v-model="QRValue">
                                 </form> -->
-                                <b-card-text>Etiam sed augue ac justo tincidunt posuere. Vivamus euismod eros, nec risus
-                                    malesuada.</b-card-text>
-                                <b-link href="#" class="btn btn-primary">Explore More</b-link>
+                                <!--  <b-card-text>Etiam sed augue ac justo tincidunt posuere. Vivamus euismod eros, nec risus
+                                        malesuada.</b-card-text>
+                                    <b-link href="#" class="btn btn-primary">Explore More</b-link> -->
                             </b-card>
                             <!--      <b-form class="text-left">
                                 <div class="form">

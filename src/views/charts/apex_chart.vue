@@ -1,11 +1,11 @@
 <template>
   <div class="home">
-    <apexchart ref="realtimeChart1" type="line" height="350" :options="chartOptions" :series="series1" />
-    <apexchart ref="realtimeChart2" type="line" height="350" :options="chartOptions" :series="series2" />
+    <!--     <apexchart ref="realtimeChart1" type="line" height="350" :options="chartOptions" :series="series1" />
+    <apexchart ref="realtimeChart2" type="line" height="350" :options="chartOptions" :series="series2" /> -->
 
     <div class="row m-4">
-      <div class="col-12 col-md-6">
-        <canvas ref="chart" width="600" height="300"></canvas>
+      <div class="col-12 col-md-6 mt-3">
+        <canvas ref="chart" class="w-100" width="600" height="300"></canvas>
       </div>
       <div class="col-12 col-md-6">
         <div class="row">
@@ -17,7 +17,7 @@
               </div>
             </div>
           </div>
-          <div v-if="permisos" class="row"> 
+          <div v-if="permisos" class="row">
             <div class="col-4 col-md-6">
               <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateNormalPulseHeart(120)">Activar pulso
                 normal
@@ -53,13 +53,77 @@
                 asistolia</b-button>
             </div>
           </div>
+          <b-button variant="info" class="mb-2 mr-2" v-b-modal.tabsModal>Reporte</b-button>
+          <!-- Tabs Modal -->
+          <b-modal id="tabsModal" title="Reporte" modal-class="text-center" size="lg">
+            <b-tabs nav-class="mb-3">
+              <b-tab title="Presión pulmonar - Promedio" active>
+                <div class="layout-spacing">
+                  <div class="widget ">
+                    <div class="widget-heading">
+                      <div class="w-title">
+                        <div class="w-icon icon-fill-success">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="feather feather-message-circle">
+                            <path
+                              d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
+                            </path>
+                          </svg>
+                        </div>
+                        <div>
+                          <p class="w-value">18.2%</p>
+                          <h5>Engagement</h5>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="widget-content">
+                      <div class="w-chart">
+                        <apexchart v-if="engagement_options" height="160" type="area" :options="engagement_options"
+                          :series="engagement_series"></apexchart>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- <apexchart type="area" height="350" :options="chartOptions" :series="series"></apexchart> -->
+                <!--      <p class="modal-text">
+                    Vivamus vitae hendrerit neque. Orci varius natoque penatibus et magnis dis parturient montes, nascetur
+                    ridiculus mus. Morbi consequat auctor turpis, vitae
+                    dictum augue efficitur vitae. Vestibulum a risus ipsum. Quisque nec lacus dolor. Quisque ornare tempor
+                    orci id rutrum.
+                  </p> -->
+              </b-tab>
+              <b-tab title="Presión arterial - Promedio">
 
+                <!--     <p class="modal-text">
+                    Fusce ac fringilla ex. Sed ligula ipsum, fringilla ut orci nec, suscipit commodo felis. Sed imperdiet
+                    eros dignissim, vehicula erat vel, rutrum lorem. In
+                    porttitor id ante nec laoreet. Etiam quis sapien ac nunc ullamcorper elementum. Fusce ullamcorper ante
+                    convallis nisl eleifend, sit amet dapibus urna
+                    eleifend.
+                  </p> -->
+              </b-tab>
+              <b-tab title="Presión .... - Promedio">
+                <!--       <p class="modal-text">
+                    Pellentesque semper tortor id ligula ultrices suscipit. Donec viverra vulputate lectus non
+                    consectetur. Donec ac interdum lacus. Donec euismod nisi at justo
+                    molestie elementum. Vivamus vitae hendrerit neque. Orci varius natoque penatibus et magnis dis
+                    parturient montes, nascetur ridiculus mus.
+                  </p> -->
+              </b-tab>
+            </b-tabs>
+            <template #modal-footer>
+              <b-button variant="default" data-dismiss="modal" @click="$bvModal.hide('tabsModal')"><i
+                  class="flaticon-cancel-12"></i> Discard</b-button>
+              <b-button variant="primary">Save</b-button>
+            </template>
+          </b-modal>
         </div>
       </div>
     </div>
     <div class="row m-4">
-      <div class="col-12 col-md-6">
-        <canvas ref="saturation" width="600" height="300"></canvas>
+      <div class="col-12 col-md-6 mt-3">
+        <canvas ref="saturation" class="w-100" width="600" height="300"></canvas>
       </div>
       <div class="col-12 col-md-6">
         <div class="custom-progress progress-up" style="width: 100%">
@@ -73,8 +137,8 @@
       </div>
     </div>
     <div class="row m-4">
-      <div class="col-12 col-md-6">
-        <canvas ref="tensionArterial" width="600" height="300"></canvas>
+      <div class="col-12 col-md-6 mt-3">
+        <canvas ref="tensionArterial" class="w-100" width="600" height="300"></canvas>
       </div>
       <div class="col-12 col-md-6">
         <div class="custom-progress progress-up" style="width: 100%">
@@ -99,46 +163,6 @@ Vue.component('apexchart', VueApexCharts);
 import '@/assets/sass/scrollspyNav.scss';
 //import highlight from '@/components/plugins/highlight.vue';
 
-var lastDate = 0,
-  data1 = [],
-  data2 = [];
-
-function getDayWiseTimeSeries(baseval, count, yrange) {
-  var i = 0;
-  while (i < count) {
-    let x = baseval,
-      y = Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min;
-
-    data1.push({ x, y });
-    data2.push({ x, y });
-    lastDate = baseval;
-    baseval += 86400000;
-    i++;
-  }
-}
-
-getDayWiseTimeSeries(new Date('11 Feb 2017 GMT').getTime(), 10, {
-  min: 10,
-  max: 90,
-});
-
-function getNewSeries(baseval, yrange) {
-  var newDate = baseval + 86400000;
-  lastDate = newDate;
-  data1.push({
-    x: newDate,
-    y: Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min,
-  });
-  data2.push({
-    x: newDate,
-    y: Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min,
-  });
-}
-
-function resetData() {
-  data1 = data1.slice(data1.length - 10, data1.length);
-  data2 = data2.slice(data2.length - 10, data2.length);
-}
 
 export default {
   name: 'home',
@@ -153,53 +177,81 @@ export default {
       isWarning: false,
       isWarningPulseHeart: false,
       bloodPressure: '',
-      series1: [{ data: data1.slice() }],
-      series2: [{ data: data2.slice() }],
+      series: [
+        {
+          name: "STOCK ABC",
+          data: [
+            [new Date("2023-10-01").getTime(), 100],
+            [new Date("2023-10-02").getTime(), 120],
+            [new Date("2023-10-03").getTime(), 130],
+            [new Date("2023-10-04").getTime(), 110],
+            [new Date("2023-10-05").getTime(), 105],
+            // Agrega más puntos de datos según sea necesario
+          ],
+        },
+      ],
       chartOptions: {
         chart: {
-          animations: {
-            enabled: true,
-            easing: 'linear',
-            dynamicAnimation: {
-              speed: 2000,
-            },
-          },
-          toolbar: {
-            show: false,
-          },
+          type: 'area',
+          height: 350,
           zoom: {
-            enabled: false,
-          },
+            enabled: false
+          }
         },
         dataLabels: {
-          enabled: false,
+          enabled: false
         },
         stroke: {
-          curve: 'smooth',
+          curve: 'straight'
         },
 
         title: {
-          text: 'Dynamic Updating Chart',
-          align: 'left',
+          text: 'Fundamental Analysis of Stocks',
+          align: 'left'
         },
-        markers: {
-          size: 0,
+        subtitle: {
+          text: 'Price Movements',
+          align: 'left'
         },
+        //labels: series.monthDataSeries1.dates,
         xaxis: {
-          type: 'datetime',
-          range: 777600000,
+          type: "datetime", // Indica que los valores en el eje x son fechas/tiempos
+          labels: {
+            format: "dd MMM yyyy HH:mm:ss", // Formato de etiqueta de tiempo (personalizable)
+          },
         },
         yaxis: {
-          max: 100,
+          opposite: true
         },
         legend: {
-          show: false,
-        },
-      }
+          horizontalAlign: 'left'
+        }
+      },
+      //Engagement
+      engagement_series: [{ name: 'Sales', data: [28, 50, 36, 60, 38, 52, 38] }],
+
     };
   },
   created() {
     this.permisos = !!localStorage.getItem('token');
+  },
+  computed: {
+    //Engagement
+    engagement_options() {
+      const is_dark = this.$store.state.is_dark_mode;
+      let option = {
+        chart: { sparkline: { enabled: true } },
+        stroke: { curve: 'smooth', width: 2 },
+        colors: ['#1abc9c'],
+        //labels: ['1', '2', '3', '4', '5', '6', '7'],
+        yaxis: { min: 0 },
+        tooltip: { theme: is_dark ? 'dark' : 'light', x: { show: false } }
+      };
+      if (is_dark) {
+        option['fill'] = { type: 'gradient', gradient: { type: 'vertical', shadeIntensity: 1, inverseColors: !1, opacityFrom: 0.3, opacityTo: 0.05, stops: [100, 100] } };
+      }
+      return option;
+    }
   },
   mounted() {
     this.intervals();
@@ -333,18 +385,14 @@ export default {
   },
   methods: {
     intervals: function () {
-      var me = this;
+      //var me = this;
       window.setInterval(function () {
-        getNewSeries(lastDate, { min: 10, max: 90 });
-        me.$refs.realtimeChart1.updateSeries([{ data: data1 }]);
-        me.$refs.realtimeChart2.updateSeries([{ data: data2 }]);
+
       }, 2000);
 
       // every 60 seconds, we reset the data to prevent memory leaks
       window.setInterval(function () {
-        resetData();
-        me.$refs.realtimeChart1.updateSeries([{ data: [] }], false, true);
-        me.$refs.realtimeChart2.updateSeries([{ data: [] }], false, true);
+
       }, 60000);
     },
 
@@ -521,6 +569,11 @@ export default {
     /*  getRandomNegativeArbitrary(min, max) {
        return Math.random() * (max - min) + min;
      }  */
+
+    // Actualizo los datos del primer grafico del modal
+    updateChartSeries(newData) {
+      this.series[0].data = newData;
+    },
   },
 };
 </script>
@@ -542,4 +595,5 @@ export default {
    100% {
      background-color: transparent;
    }
- }</style> 
+ }
+</style> 
