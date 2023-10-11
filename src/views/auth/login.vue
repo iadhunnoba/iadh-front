@@ -6,24 +6,25 @@
                     <div class="form-container">
                         <div class="form-content">
                             <h1 class="">
-                                Log In to <router-link to="/"><span class="brand-name">CORK</span></router-link>
+                                Login de estudiantes <router-link to="/"><!-- <span class="brand-name">CORK</span> --></router-link>
                             </h1>
-                            <p class="signup-link">New Here? <router-link to="/auth/register">Create an account</router-link></p>
-                            <b-form class="text-left">
+                            <!-- <p class="signup-link">New Here? <router-link to="/auth/register">Create an
+                                    account</router-link></p> -->
+                            <b-card class="component-card_2" title="">
+                                <qrcode-vue :value="QRValue" :size="size" level="H"></qrcode-vue>
+                             <!--    <form>
+                                    <input type="text" v-model="QRValue">
+                                </form> -->
+                                <!--  <b-card-text>Etiam sed augue ac justo tincidunt posuere. Vivamus euismod eros, nec risus
+                                        malesuada.</b-card-text>
+                                    <b-link href="#" class="btn btn-primary">Explore More</b-link> -->
+                            </b-card>
+                            <!--      <b-form class="text-left">
                                 <div class="form">
                                     <div id="username-field" class="field-wrapper input">
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="24"
-                                            height="24"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            stroke-width="2"
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            class="feather feather-user"
-                                        >
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round" class="feather feather-user">
                                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                                             <circle cx="12" cy="7" r="4"></circle>
                                         </svg>
@@ -31,18 +32,9 @@
                                     </div>
 
                                     <div id="password-field" class="field-wrapper input mb-2">
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="24"
-                                            height="24"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            stroke-width="2"
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            class="feather feather-lock"
-                                        >
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round" class="feather feather-lock">
                                             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                                             <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                                         </svg>
@@ -63,14 +55,18 @@
                                     </div>
 
                                     <div class="field-wrapper">
-                                        <router-link to="/auth/pass-recovery" class="forgot-pass-link">Forgot Password?</router-link>
+                                        <router-link to="/auth/pass-recovery" class="forgot-pass-link">Forgot
+                                            Password?</router-link>
                                     </div>
                                 </div>
                             </b-form>
                             <p class="terms-conditions">
-                                © 2020 All Rights Reserved. <router-link to="/">CORK</router-link> is a product of Arrangic Solutions LLP. <a href="javascript:void(0);">Cookie Preferences</a>,
+                                © 2020 All Rights Reserved. <router-link to="/">CORK</router-link> is a product of Arrangic
+                                Solutions LLP. <a href="javascript:void(0);">Cookie Preferences</a>,
                                 <a href="javascript:void(0);">Privacy</a>, and <a href="javascript:void(0);">Terms</a>.
-                            </p>
+                            </p> -->
+
+
                         </div>
                     </div>
                 </div>
@@ -78,15 +74,31 @@
             <div class="form-image">
                 <div class="l-image"></div>
             </div>
+
         </div>
+
     </div>
 </template>
 
 <script>
-    import '@/assets/sass/authentication/auth.scss';
-    export default {
-        metaInfo: { title: 'Login Cover' },
-        mounted() {},
-        methods: {}
-    };
+import '@/assets/sass/authentication/auth.scss';
+
+import QrcodeVue from 'qrcode.vue'
+
+export default {
+    data() {
+        return {
+            value: 'https://example.com',
+            size: 300,
+            QRValue: "http://172.19.223.69:8080/charts/apex-chart"
+        }
+    },
+    components: {
+        QrcodeVue,
+    },
+    metaInfo: { title: 'Login Cover' },
+    mounted() { },
+    methods: {}
+}
+
 </script>

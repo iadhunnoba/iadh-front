@@ -24,6 +24,13 @@ Vue.use(VueMeta, {
     refreshOnceOnNavigation: true
 });
 
+// Axios
+import axios from 'axios'
+import VueAxios from 'vue-axios'
+
+Vue.use(VueAxios, axios)
+
+
 //Sweetalert
 import VueSweetalert2 from 'vue-sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';

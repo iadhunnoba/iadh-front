@@ -164,8 +164,8 @@
     </div>
 
     <div class="row m-4">
-      <div class="col-12 col-md-6">
-        <canvas ref="chart" width="600" height="300"></canvas>
+      <div class="col-12 col-md-6 mt-3">
+        <canvas ref="chart" class="w-100" width="600" height="300"></canvas>
       </div>
       <div class="col-12 col-md-6">
         <div class="row">
@@ -176,54 +176,127 @@
               </div>
             </div>
           </div>
-          <div class="col-4 col-md-6">
-            <b-button variant="outline-info" class="w-100 mb-2 mr-1" @click="activateNormalPulseHeart(120)">Activar pulso normal
-              del
-              corazón</b-button>
+          <div v-if="permisos" class="row">
+            <div class="col-4 col-md-6">
+              <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateNormalPulseHeart(120)">Activar pulso
+                normal
+                del
+                corazón</b-button>
+            </div>
+            <div class="col-4 col-md-6">
+              <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateLowPulseHeart">Activar frecuencia
+                cardiaca
+                baja</b-button>
+            </div>
+            <div class="col-4 col-md-6">
+              <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateFastPulseHeart">Activar frecuencia
+                cardiaca
+                alta</b-button>
+            </div>
+            <div class="col-4 col-md-6">
+              <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateVentricularFibrillation">Activar
+                fibrilación
+                ventricular</b-button>
+            </div>
+            <div class="col-4 col-md-6">
+              <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateVentricularTachycardia">Activar
+                taquicarida
+                ventricular</b-button>
+            </div>
+            <div class="col-4 col-md-6">
+              <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateStElevation">Elevación de
+                ST</b-button>
+            </div>
+            <div class="col-4 col-md-6">
+              <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateAsystole">Activar
+                asistolia</b-button>
+            </div>
           </div>
-          <div class="col-4 col-md-6">
-            <b-button variant="outline-info" class="w-100 mb-2 mr-1" @click="activateLowPulseHeart">Activar frecuencia cardiaca
-              baja</b-button>
-          </div>
-          <div class="col-4 col-md-6">
-            <b-button variant="outline-info" class="w-100 mb-2 mr-1" @click="activateFastPulseHeart">Activar frecuencia cardiaca
-              alta</b-button>
-          </div>
-          <div class="col-4 col-md-6">
-            <b-button variant="outline-info" class="w-100 mb-2 mr-1" @click="activateVentricularFibrillation">Activar
-              fibrilación
-              ventricular</b-button>
-          </div>
-          <div class="col-4 col-md-6">
-            <b-button variant="outline-info" class="w-100 mb-2 mr-1" @click="activateVentricularTachycardia">Activar taquicarida
-              ventricular</b-button>
-          </div>
-          <div class="col-4 col-md-6">
-            <b-button variant="outline-info" class="w-100 mb-2 mr-1" @click="activateStElevation">Elevación de ST</b-button>
-          </div>
-          <div class="col-4 col-md-6">
-            <b-button variant="outline-info" class="w-100 mb-2 mr-1" @click="activateAsystole">Activar asistolia</b-button>
-          </div>
+          <b-button variant="info" class="mb-2 mr-2" v-b-modal.tabsModal>Reporte</b-button>
+          <!-- Tabs Modal -->
+          <b-modal id="tabsModal" title="Reporte" modal-class="text-center" size="lg">
+            <b-tabs nav-class="mb-3">
+              <b-tab title="Presión pulmonar - Promedio" active>
+                <div class="layout-spacing">
+                  <div class="widget ">
+                    <div class="widget-heading">
+                      <div class="w-title">
+                        <div class="w-icon icon-fill-success">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="feather feather-message-circle">
+                            <path
+                              d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
+                            </path>
+                          </svg>
+                        </div>
+                        <div>
+                          <p class="w-value">18.2%</p>
+                          <h5>Engagement</h5>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="widget-content">
+                      <div class="w-chart">
+                        <apexchart v-if="engagement_options" height="160" type="area" :options="engagement_options"
+                          :series="engagement_series"></apexchart>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- <apexchart type="area" height="350" :options="chartOptions" :series="series"></apexchart> -->
+                <!--      <p class="modal-text">
+                    Vivamus vitae hendrerit neque. Orci varius natoque penatibus et magnis dis parturient montes, nascetur
+                    ridiculus mus. Morbi consequat auctor turpis, vitae
+                    dictum augue efficitur vitae. Vestibulum a risus ipsum. Quisque nec lacus dolor. Quisque ornare tempor
+                    orci id rutrum.
+                  </p> -->
+              </b-tab>
+              <b-tab title="Presión arterial - Promedio">
+
+                <!--     <p class="modal-text">
+                    Fusce ac fringilla ex. Sed ligula ipsum, fringilla ut orci nec, suscipit commodo felis. Sed imperdiet
+                    eros dignissim, vehicula erat vel, rutrum lorem. In
+                    porttitor id ante nec laoreet. Etiam quis sapien ac nunc ullamcorper elementum. Fusce ullamcorper ante
+                    convallis nisl eleifend, sit amet dapibus urna
+                    eleifend.
+                  </p> -->
+              </b-tab>
+              <b-tab title="Presión .... - Promedio">
+                <!--       <p class="modal-text">
+                    Pellentesque semper tortor id ligula ultrices suscipit. Donec viverra vulputate lectus non
+                    consectetur. Donec ac interdum lacus. Donec euismod nisi at justo
+                    molestie elementum. Vivamus vitae hendrerit neque. Orci varius natoque penatibus et magnis dis
+                    parturient montes, nascetur ridiculus mus.
+                  </p> -->
+              </b-tab>
+            </b-tabs>
+            <template #modal-footer>
+              <b-button variant="default" data-dismiss="modal" @click="$bvModal.hide('tabsModal')"><i
+                  class="flaticon-cancel-12"></i> Discard</b-button>
+              <b-button variant="primary">Save</b-button>
+            </template>
+          </b-modal>
         </div>
       </div>
     </div>
     <div class="row m-4">
-      <div class="col-12 col-md-6">
-        <canvas ref="saturation" width="600" height="300"></canvas>
+      <div class="col-12 col-md-6 mt-3">
+        <canvas ref="saturation" class="w-100" width="600" height="300"></canvas>
       </div>
       <div class="col-12 col-md-6">
         <div class="custom-progress progress-up" style="width: 100%">
           <div class="range-count">
             <span class="range-count-number" v-bind:class="{ warning: isWarning }" v-bind:style="{ fontSize: 4 + 'em' }">SpO2: {{ slider2 }}</span>
           </div>
-          <b-input type="range" v-model="slider2" :min="0" :max="100" class="progress-range-counter"></b-input>
+          <b-input v-if="permisos" type="range" v-model="slider2" :min="0" :max="100"
+            class="progress-range-counter"></b-input>
         </div>
       </div>
     </div>
-
     <div class="row m-4">
-      <div class="col-12 col-md-6">
-        <canvas ref="tensionArterial" width="600" height="300"></canvas>
+      <div class="col-12 col-md-6 mt-3">
+        <canvas ref="tensionArterial" class="w-100" width="600" height="300"></canvas>
       </div>
       <div class="col-12 col-md-6">
         <div class="custom-progress progress-up" style="width: 100%">
@@ -248,7 +321,46 @@ import '@/assets/sass/widgets/widgets.scss';
 import '@/assets/sass/scrollspyNav.scss';
 //import highlight from '@/components/plugins/highlight.vue';
 
-import mqtt from 'mqtt';
+var lastDate = 0,
+  data1 = [],
+  data2 = [];
+
+function getDayWiseTimeSeries(baseval, count, yrange) {
+  var i = 0;
+  while (i < count) {
+    let x = baseval,
+      y = Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min;
+
+    data1.push({ x, y });
+    data2.push({ x, y });
+    lastDate = baseval;
+    baseval += 86400000;
+    i++;
+  }
+}
+
+getDayWiseTimeSeries(new Date('11 Feb 2017 GMT').getTime(), 10, {
+  min: 10,
+  max: 90,
+});
+
+function getNewSeries(baseval, yrange) {
+  var newDate = baseval + 86400000;
+  lastDate = newDate;
+  data1.push({
+    x: newDate,
+    y: Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min,
+  });
+  data2.push({
+    x: newDate,
+    y: Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min,
+  });
+}
+
+function resetData() {
+  data1 = data1.slice(data1.length - 10, data1.length);
+  data2 = data2.slice(data2.length - 10, data2.length);
+}
 
 export default {
   name: 'home',
@@ -257,59 +369,56 @@ export default {
   },
   data() {
     return {
+      permisos: false,
       slider1: 60,
       slider2: 100,
       isWarning: false,
       isWarningPulseHeart: false,
       bloodPressure: '',
+      series1: [{ data: data1.slice() }],
+      series2: [{ data: data2.slice() }],
+      chartOptions: {
+        chart: {
+          animations: {
+            enabled: true,
+            easing: 'linear',
+            dynamicAnimation: {
+              speed: 2000,
+            },
+          },
+          toolbar: {
+            show: false,
+          },
+          zoom: {
+            enabled: false,
+          },
+        },
+        dataLabels: {
+          enabled: false,
+        },
+        stroke: {
+          curve: 'smooth',
+        },
 
-      randomValue: 0,
-
-      // EMQX CONNECTION
-
-      connection: {
-        host: '192.168.0.223',
-        port: 1880,
-        endpoint: '',
-        clean: true, // Reserved session
-        connectTimeout: 4000, // Time out
-        reconnectPeriod: 4000, // Reconnection interval
-        // Certification Information
-        clientId: 'mqttjs_3be2c321',
-        username: 'admin',
-        password: 'admin',
-      },
-      subscription: {
-        topic: '/iadh/medical',
-        qos: 0,
-      },
-      publish: {
-        topic: '/iadh/medical',
-        qos: 0,
-        payload: '{ "msg": "Hello, I am browser." }',
-      },
-      receiveNews: '',
-      qosList: [
-        { label: 0, value: 0 },
-        { label: 1, value: 1 },
-        { label: 2, value: 2 },
-      ],
-      client: {
-        connected: false,
-      },
-      subscribeSuccess: false,
-
-      // REALTIME DATA FROM RCP
-      //Followers
-      followers_series: [{ name: 'Intensidad', data: [80, 30, 85, 35, 79, 40, 80, 40, 34, 80, 38] }],
-      followers_series2: [{ name: 'Valor', data: [50, 34, 29, 52, 57, 53, 51, 55, 59, 60, 51] }],
+        title: {
+          text: 'Dynamic Updating Chart',
+          align: 'left',
+        },
+        markers: {
+          size: 0,
+        },
+        xaxis: {
+          type: 'datetime',
+          range: 777600000,
+        },
+        yaxis: {
+          max: 100,
+        },
+        legend: {
+          show: false,
+        },
+      }
     };
-  },
-  created() {},
-
-  beforeDestroy() {
-    // Limpiar el intervalo cuando el componente se destruye
-    clearInterval(this.interval);
   },
 
   mounted() {
@@ -351,14 +460,9 @@ export default {
 
     var chart = new smoothie.SmoothieChart({
       grid: {
-        strokeStyle: '#1e1801',
-        fillStyle: '#000000',
-        lineWidth: 0,
-        verticalSections: 6,
-      },
-      maxValue: 8,
-      minValue: -8,
-      millisPerPixel: 20,
+        strokeStyle: '#1e1801', fillStyle: '#000000',
+        lineWidth: 0, verticalSections: 6,
+      }, maxValue: 8, minValue: -8, millisPerPixel: 20
     });
     chart.streamTo(canvas, 1000);
 
@@ -374,14 +478,9 @@ export default {
 
     var chartSaturation = new smoothie.SmoothieChart({
       grid: {
-        strokeStyle: '#1e1801',
-        fillStyle: '#000000',
-        lineWidth: 0,
-        verticalSections: 6,
-      },
-      maxValue: 8,
-      minValue: -8,
-      millisPerPixel: 20,
+        strokeStyle: '#1e1801', fillStyle: '#000000',
+        lineWidth: 0, verticalSections: 6,
+      }, maxValue: 8, minValue: -8, millisPerPixel: 20
     });
     chartSaturation.streamTo(canvasSaturation, 1000);
 
@@ -397,14 +496,9 @@ export default {
 
     var chartPressure = new smoothie.SmoothieChart({
       grid: {
-        strokeStyle: '#1e1801',
-        fillStyle: '#000000',
-        lineWidth: 0,
-        verticalSections: 6,
-      },
-      maxValue: 8,
-      minValue: -8,
-      millisPerPixel: 20,
+        strokeStyle: '#1e1801', fillStyle: '#000000',
+        lineWidth: 0, verticalSections: 6,
+      }, maxValue: 8, minValue: -8, millisPerPixel: 20
     });
     chartPressure.streamTo(canvasPressure, 1000);
 
@@ -515,91 +609,21 @@ export default {
   },
 
   methods: {
-    generateRandomValue() {
-      this.randomValue = Math.floor(Math.random() * 101); // Generar valor aleatorio entre 0 y 100
+    intervals: function () {
+      var me = this;
+      window.setInterval(function () {
+        getNewSeries(lastDate, { min: 10, max: 90 });
+        me.$refs.realtimeChart1.updateSeries([{ data: data1 }]);
+        me.$refs.realtimeChart2.updateSeries([{ data: data2 }]);
+      }, 2000);
+
+      // every 60 seconds, we reset the data to prevent memory leaks
+      window.setInterval(function () {
+        resetData();
+        me.$refs.realtimeChart1.updateSeries([{ data: [] }], false, true);
+        me.$refs.realtimeChart2.updateSeries([{ data: [] }], false, true);
+      }, 60000);
     },
-
-    createConnection() {
-      // Connect string, and specify the connection method used through protocol
-      // ws unencrypted WebSocket connection
-      // wss encrypted WebSocket connection
-      // mqtt unencrypted TCP connection
-      // mqtts encrypted TCP connection
-      // wxs WeChat mini app connection
-      // alis Alipay mini app connection
-      const { host, port, endpoint, ...options } = this.connection;
-      const connectUrl = `ws://${host}:${port}${endpoint}/mqtt`;
-      try {
-        this.client = mqtt.connect(connectUrl, options);
-      } catch (error) {
-        console.log('mqtt.connect error', error);
-      }
-      this.client.on('connect', () => {
-        console.log('Connection succeeded!');
-      });
-      this.client.on('error', (error) => {
-        console.log('Connection failed', error);
-      });
-      this.client.on('message', (topic, message) => {
-        this.receiveNews = this.receiveNews.concat(message);
-        console.log(`Received message ${message} from topic ${topic}`);
-      });
-    },
-
-    doSubscribe() {
-      const { topic, qos } = this.subscription;
-      this.client.subscribe(topic, { qos }, (error, res) => {
-        if (error) {
-          console.log('Subscribe to topics error', error);
-          return;
-        }
-        this.subscribeSuccess = true;
-        console.log('Subscribe to topics res', res);
-      });
-    },
-
-    doUnSubscribe() {
-      const { topic } = this.subscription;
-      this.client.unsubscribe(topic, (error) => {
-        if (error) {
-          console.log('Unsubscribe error', error);
-        }
-      });
-    },
-
-    doPublish() {
-      const { topic, qos, payload } = this.publish;
-      this.client.publish(topic, payload, qos, (error) => {
-        if (error) {
-          console.log('Publish error', error);
-        }
-      });
-    },
-
-    destroyConnection() {
-      if (this.client.connected) {
-        try {
-          this.client.end();
-          this.client = {
-            connected: false,
-          };
-          console.log('Successfully disconnected!');
-        } catch (error) {
-          console.log('Disconnect failed', error.toString());
-        }
-      }
-    },
-
-    // intervals: function () {
-    //   //var me = this;
-    //   window.setInterval(function () {
-    //     let x = Math.random() * 100;
-    //     this.valuesChrome = Math.round(x);
-    //   }, 2000);
-
-    //   // every 60 seconds, we reset the data to prevent memory leaks
-    //   window.setInterval(function () {}, 60000);
-    // },
 
     //Pulso normal del corazón
     activateNormalPulseHeart(cycleSpace) {
@@ -614,7 +638,8 @@ export default {
       this.graphicData = [0, 0, 0, 0, 0.25, 0.5, 0, 0, 0, -0.8, 4, -1.3, 0, 0, 0.9, 1, 0.8, 0, 0, 0, 0, 0, 0, 0, 0.3, 0.5, 0, 0, 0, -0.8, 4, -1.3, 0, 0, 0.9, 1, 0.8, 0, 0, 0];
       */
 
-      this.graphicData = [0, 0, 0, 0, 0.45, 0.5, 0, 0, 0, -0.6, 4, -1.3, 0, 0, 0, 0, 0.65, 0.8, 0.65, 0, 0, 0, 0, 0];
+      this.graphicData = [0, 0, 0, 0, 0.45, 0.5, 0, 0, 0, -0.6, 4, -1.3, 0, 0, 0, 0, 0.65, 0.8, 0.65, 0, 0, 0, 0, 0,
+      ];
 
       this.cycleSpace = cycleSpace;
       this.iterator = 0;
@@ -686,7 +711,7 @@ export default {
       this.graphicData.splice(9, 2);
 
       // Elimino 3 ceros de los ultimos de la función
-      this.graphicData.splice(14, 3);
+      this.graphicData.splice(14, 2);
 
       this.iterator = 0;
 
@@ -769,6 +794,11 @@ export default {
     /*  getRandomNegativeArbitrary(min, max) {
        return Math.random() * (max - min) + min;
      }  */
+
+    // Actualizo los datos del primer grafico del modal
+    updateChartSeries(newData) {
+      this.series[0].data = newData;
+    },
   },
 };
 </script>

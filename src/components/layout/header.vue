@@ -410,7 +410,8 @@
                             Lock Screen
                         </b-dropdown-item>
                         <b-dropdown-divider></b-dropdown-divider>
-                        <b-dropdown-item to="/auth/login">
+                        <!-- No me toma bien el método de esta forma <b-dropdown-item @click="signOut" to="/auth/login-boxed" > -->
+                        <b-dropdown-item @click="signOut">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="24"
@@ -1071,7 +1072,13 @@
             changeLanguage(item) {
                 this.selectedLang = item;
                 this.$appSetting.toggleLanguage(item);
-            }
+            },
+
+            signOut() {
+                // Esto eliminará 'token' del localStorage
+                localStorage.removeItem('token');
+                this.$router.push('/auth/login-boxed');
+            },
         }
     };
 </script>
