@@ -3,15 +3,22 @@
     <!-- <apexchart ref="realtimeChart1" type="line" height="350" :options="chartOptions" :series="series1" /> -->
 
     <div class="row m-4">
-      <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12 layout-spacing">
-        <div class="widget widget-visitor-by-browser">
+      <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 col-12 layout-spacing">
+        <div class="widget widget-visitor-by-browser text-center">
           <div class="widget-heading">
             <h5>Parámetros maniobra RCP</h5>
           </div>
           <div class="widget-content">
             <div class="browser-list">
               <div class="w-icon icon-fill-primary">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-radio"><circle cx="12" cy="12" r="2"></circle><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="feather feather-radio">
+                  <circle cx="12" cy="12" r="2"></circle>
+                  <path
+                    d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14">
+                  </path>
+                </svg>
               </div>
               <div class="w-browser-details">
                 <div class="w-browser-info">
@@ -25,7 +32,14 @@
             </div>
             <div class="browser-list">
               <div class="w-icon icon-fill-danger">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-radio"><circle cx="12" cy="12" r="2"></circle><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="feather feather-radio">
+                  <circle cx="12" cy="12" r="2"></circle>
+                  <path
+                    d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14">
+                  </path>
+                </svg>
               </div>
               <div class="w-browser-details">
                 <div class="w-browser-info">
@@ -40,7 +54,14 @@
             </div>
             <div class="browser-list">
               <div class="w-icon icon-fill-warning">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-radio"><circle cx="12" cy="12" r="2"></circle><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="feather feather-radio">
+                  <circle cx="12" cy="12" r="2"></circle>
+                  <path
+                    d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14">
+                  </path>
+                </svg>
               </div>
               <div class="w-browser-details">
                 <div class="w-browser-info">
@@ -52,17 +73,244 @@
                 </div>
               </div>
             </div>
+            <b-button @click="toggleTimer" variant="info" class="w-75">
+              {{ timerActive ? (timerPaused ? 'Reanudar' : 'Pausar') : 'Iniciar Cronómetro' }}
+            </b-button>
+            <p class="h5 mt-3">
+              Tiempo restante: {{ formattedTime }}
+            </p>
+
+            <!-- <p v-if="timerActive" class="mt-3">Tiempo restante: {{ ramainingTime }} segundos</p> -->
+            <!-- Botón para restablecer el cronómetro (solo visible cuando el cronómetro ha iniciado) -->
+            <b-button @click="resetTimer" variant="secondary" class="w-75 mt-2" v-if="timerActive">
+              Restablecer Cronómetro
+            </b-button>
+
+            <b-button variant="info" class="w-75 mt-4 " v-b-modal.modalxl>Reporte</b-button>
+            <!-- Extra large Modal -->
+            <b-modal id="modalxl" title="Reporte" size="xl">
+              <div class="row widget-statistic justify-content-center">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 layout-spacing">
+                  <div class="widget">
+                    <div class="widget-heading">
+                      <div class="w-title">
+                        <div class="w-icon icon-fill-primary">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="feather feather-activity">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                          </svg>
+                        </div>
+                        <div>
+                          <p class="w-value">65%</p>
+                          <h5>Presión pulmonar - Promedio</h5>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="widget-content">
+                      <div class="w-chart">
+                        <apexchart v-if="followers_options" height="160" type="area" :options="followers_options"
+                          :series="series1"></apexchart>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 layout-spacing">
+                  <div class="widget">
+                    <div class="widget-heading">
+                      <div class="w-title">
+                        <div class="w-icon icon-fill-primary2">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="feather feather-activity">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                          </svg>
+                        </div>
+                        <div>
+                          <p class="w-value">65%</p>
+                          <h5>Ventilación - Promedio</h5>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="widget-content">
+                      <div class="w-chart">
+                        <apexchart v-if="followers_options2" height="160" type="area" :options="followers_options2"
+                          :series="series2"></apexchart>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 layout-spacing">
+                  <div class="widget">
+                    <div class="widget-heading">
+                      <div class="w-title">
+                        <div class="w-icon icon-fill-success">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="feather feather-activity">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                          </svg>
+                        </div>
+                        <div>
+                          <p class="w-value">65%</p>
+                          <h5>Posición correcta de la maniobra - Promedio</h5>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="widget-content">
+                      <div class="w-chart">
+                        <apexchart v-if="followers_options3" height="160" type="area" :options="followers_options3"
+                          :series="series3"></apexchart>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+              <template #modal-footer>
+                <b-button variant="default" data-dismiss="modal" @click="$bvModal.hide('modalxl')"><i
+                    class="flaticon-cancel-12"></i> Discard</b-button>
+                <b-button variant="primary">Save</b-button>
+              </template>
+            </b-modal>
+            <b-button v-if="permisos" variant="info" class="w-75 mt-4 " v-b-modal.functionModal>Activar
+              funciones</b-button>
+            <b-modal id="functionModal" title="Funciones" :hide-footer="true">
+              <div v-if="permisos" class="row">
+                <div class="col-4 col-md-6">
+                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateNormalPulseHeart(120)">Activar pulso
+                    normal
+                    del
+                    corazón</b-button>
+                </div>
+                <div class="col-4 col-md-6">
+                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateLowPulseHeart">Activar frecuencia
+                    cardiaca
+                    baja</b-button>
+                </div>
+                <div class="col-4 col-md-6">
+                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateFastPulseHeart">Activar frecuencia
+                    cardiaca
+                    alta</b-button>
+                </div>
+                <div class="col-4 col-md-6">
+                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateVentricularFibrillation">Activar
+                    fibrilación
+                    ventricular</b-button>
+                </div>
+                <div class="col-4 col-md-6">
+                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateVentricularTachycardia">Activar
+                    taquicarida
+                    ventricular</b-button>
+                </div>
+                <div class="col-4 col-md-6">
+                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateStElevation">Elevación de
+                    ST</b-button>
+                </div>
+                <div class="col-4 col-md-6">
+                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateAsystole">Activar
+                    asistolia</b-button>
+                </div>
+              </div>
+            </b-modal>
+          </div>
+        </div>
+
+      </div>
+      <div class="col-xl-9 col-lg-8 col-md-6 col-sm-12 col-12 layout-spacing">
+        <div class="row m-4">
+          <div class="col-xl-7 col-lg-12 col-md-12 col-sm-12 col-12">
+            <canvas ref="chart" class="w-100" width="600" height="300"></canvas>
+          </div>
+          <div class="col-xl-5 col-lg-12 col-md-12 col-sm-12 col-12">
+            <div class="row">
+              <div class="col-12">
+                <div class="custom-progress progress-up mb-2" style="width: 100%">
+                  <div class="range-count">
+                    <span class="range-count-number" v-bind:class="{ warning: isWarningPulseHeart }"
+                      v-bind:style="{ fontSize: 4 + 'em' }">HR: {{ slider1 }}</span>
+                  </div>
+                </div>
+              </div>
+              <!--    <div v-if="permisos" class="row">
+                <div class="col-4 col-md-6">
+                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateNormalPulseHeart(120)">Activar pulso
+                    normal
+                    del
+                    corazón</b-button>
+                </div>
+                <div class="col-4 col-md-6">
+                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateLowPulseHeart">Activar frecuencia
+                    cardiaca
+                    baja</b-button>
+                </div>
+                <div class="col-4 col-md-6">
+                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateFastPulseHeart">Activar frecuencia
+                    cardiaca
+                    alta</b-button>
+                </div>
+                <div class="col-4 col-md-6">
+                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateVentricularFibrillation">Activar
+                    fibrilación
+                    ventricular</b-button>
+                </div>
+                <div class="col-4 col-md-6">
+                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateVentricularTachycardia">Activar
+                    taquicarida
+                    ventricular</b-button>
+                </div>
+                <div class="col-4 col-md-6">
+                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateStElevation">Elevación de
+                    ST</b-button>
+                </div>
+                <div class="col-4 col-md-6">
+                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateAsystole">Activar
+                    asistolia</b-button>
+                </div>
+              </div> -->
+            </div>
+          </div>
+        </div>
+        <div class="row m-4">
+          <div class="col-xl-7 col-lg-12 col-md-12 col-sm-12 col-12 mt-3">
+            <canvas ref="saturation" class="w-100" width="600" height="300"></canvas>
+          </div>
+          <div class="col-xl-5 col-lg-12 col-md-12 col-sm-12 col-12 col-12">
+            <div class="custom-progress progress-up" style="width: 100%">
+              <div class="range-count">
+                <span class="range-count-number" v-bind:class="{ warning: isWarning }"
+                  v-bind:style="{ fontSize: 4 + 'em' }">SpO2: {{ slider2 }}</span>
+              </div>
+              <b-input v-if="permisos" type="range" v-model="slider2" :min="0" :max="100"
+                class="progress-range-counter"></b-input>
+            </div>
+          </div>
+        </div>
+        <div class="row m-4">
+          <div class="col-xl-7 col-lg-12 col-md-12 col-sm-12 col-12 mt-3">
+            <canvas ref="tensionArterial" class="w-100" width="600" height="300"></canvas>
+          </div>
+          <div class="col-xl-5 col-lg-12 col-md-12 col-sm-12 col-12">
+            <div class="custom-progress progress-up" style="width: 100%">
+              <div class="range-count">
+                <span class="range-count-number" v-bind:style="{ fontSize: 4 + 'em' }">ABP: {{ bloodPressure }}</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12 layout-spacing">
+      <!-- <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12 layout-spacing">
         <div class="row widget-statistic">
           <div class="col-xl-12 col-lg-12 col-md-8 col-sm-4 col-12 layout-spacing">
             <div class="widget">
               <div class="widget-heading">
                 <div class="w-title">
                   <div class="w-icon icon-fill-primary">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-activity"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="feather feather-activity">
+                      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                    </svg>
                   </div>
                   <div>
                     <p class="w-value">65%</p>
@@ -72,7 +320,8 @@
               </div>
               <div class="widget-content">
                 <div class="w-chart">
-                  <apexchart v-if="followers_options" height="160" type="area" :options="followers_options" :series="followers_series"></apexchart>
+                  <apexchart v-if="followers_options" height="160" type="area" :options="followers_options"
+                    :series="series1"></apexchart>
                 </div>
               </div>
             </div>
@@ -82,7 +331,11 @@
               <div class="widget-heading">
                 <div class="w-title">
                   <div class="w-icon icon-fill-primary2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-activity"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="feather feather-activity">
+                      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                    </svg>
                   </div>
                   <div>
                     <p class="w-value">65%</p>
@@ -92,16 +345,17 @@
               </div>
               <div class="widget-content">
                 <div class="w-chart">
-                  <apexchart v-if="followers_options2" height="160" type="area" :options="followers_options2" :series="followers_series2"></apexchart>
+                  <apexchart v-if="followers_options2" height="160" type="area" :options="followers_options2"
+                    :series="series2"></apexchart>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
 
-    <div class="row m-4">
+    <!-- <div class="row m-4">
         <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12 layout-spacing">
              <div class="widget widget-expenses">
                     <div class="widget-heading">
@@ -161,9 +415,9 @@
                     </div>
                 </div>
         </div>
-    </div>
+    </div> -->
 
-    <div class="row m-4">
+    <!--  <div class="row m-4">
       <div class="col-12 col-md-6 mt-3">
         <canvas ref="chart" class="w-100" width="600" height="300"></canvas>
       </div>
@@ -172,7 +426,8 @@
           <div class="col-12">
             <div class="custom-progress progress-up mb-2" style="width: 100%">
               <div class="range-count">
-                <span class="range-count-number" v-bind:class="{ warning: isWarningPulseHeart }" v-bind:style="{ fontSize: 4 + 'em' }">HR: {{ slider1 }}</span>
+                <span class="range-count-number" v-bind:class="{ warning: isWarningPulseHeart }"
+                  v-bind:style="{ fontSize: 4 + 'em' }">HR: {{ slider1 }}</span>
               </div>
             </div>
           </div>
@@ -212,71 +467,6 @@
                 asistolia</b-button>
             </div>
           </div>
-          <b-button variant="info" class="mb-2 mr-2" v-b-modal.tabsModal>Reporte</b-button>
-          <!-- Tabs Modal -->
-          <b-modal id="tabsModal" title="Reporte" modal-class="text-center" size="lg">
-            <b-tabs nav-class="mb-3">
-              <b-tab title="Presión pulmonar - Promedio" active>
-                <div class="layout-spacing">
-                  <div class="widget ">
-                    <div class="widget-heading">
-                      <div class="w-title">
-                        <div class="w-icon icon-fill-success">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="feather feather-message-circle">
-                            <path
-                              d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
-                            </path>
-                          </svg>
-                        </div>
-                        <div>
-                          <p class="w-value">18.2%</p>
-                          <h5>Engagement</h5>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="widget-content">
-                      <div class="w-chart">
-                        <apexchart v-if="engagement_options" height="160" type="area" :options="engagement_options"
-                          :series="engagement_series"></apexchart>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <!-- <apexchart type="area" height="350" :options="chartOptions" :series="series"></apexchart> -->
-                <!--      <p class="modal-text">
-                    Vivamus vitae hendrerit neque. Orci varius natoque penatibus et magnis dis parturient montes, nascetur
-                    ridiculus mus. Morbi consequat auctor turpis, vitae
-                    dictum augue efficitur vitae. Vestibulum a risus ipsum. Quisque nec lacus dolor. Quisque ornare tempor
-                    orci id rutrum.
-                  </p> -->
-              </b-tab>
-              <b-tab title="Presión arterial - Promedio">
-
-                <!--     <p class="modal-text">
-                    Fusce ac fringilla ex. Sed ligula ipsum, fringilla ut orci nec, suscipit commodo felis. Sed imperdiet
-                    eros dignissim, vehicula erat vel, rutrum lorem. In
-                    porttitor id ante nec laoreet. Etiam quis sapien ac nunc ullamcorper elementum. Fusce ullamcorper ante
-                    convallis nisl eleifend, sit amet dapibus urna
-                    eleifend.
-                  </p> -->
-              </b-tab>
-              <b-tab title="Presión .... - Promedio">
-                <!--       <p class="modal-text">
-                    Pellentesque semper tortor id ligula ultrices suscipit. Donec viverra vulputate lectus non
-                    consectetur. Donec ac interdum lacus. Donec euismod nisi at justo
-                    molestie elementum. Vivamus vitae hendrerit neque. Orci varius natoque penatibus et magnis dis
-                    parturient montes, nascetur ridiculus mus.
-                  </p> -->
-              </b-tab>
-            </b-tabs>
-            <template #modal-footer>
-              <b-button variant="default" data-dismiss="modal" @click="$bvModal.hide('tabsModal')"><i
-                  class="flaticon-cancel-12"></i> Discard</b-button>
-              <b-button variant="primary">Save</b-button>
-            </template>
-          </b-modal>
         </div>
       </div>
     </div>
@@ -287,7 +477,8 @@
       <div class="col-12 col-md-6">
         <div class="custom-progress progress-up" style="width: 100%">
           <div class="range-count">
-            <span class="range-count-number" v-bind:class="{ warning: isWarning }" v-bind:style="{ fontSize: 4 + 'em' }">SpO2: {{ slider2 }}</span>
+            <span class="range-count-number" v-bind:class="{ warning: isWarning }"
+              v-bind:style="{ fontSize: 4 + 'em' }">SpO2: {{ slider2 }}</span>
           </div>
           <b-input v-if="permisos" type="range" v-model="slider2" :min="0" :max="100"
             class="progress-range-counter"></b-input>
@@ -305,7 +496,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -325,7 +516,8 @@ var lastDate = 0,
   data1 = [],
   data2 = [];
 
-function getDayWiseTimeSeries(baseval, count, yrange) {
+// Provocaba que data1 sea igual a data2
+/* function getDayWiseTimeSeries(baseval, count, yrange) {
   var i = 0;
   while (i < count) {
     let x = baseval,
@@ -333,6 +525,21 @@ function getDayWiseTimeSeries(baseval, count, yrange) {
 
     data1.push({ x, y });
     data2.push({ x, y });
+    lastDate = baseval;
+    baseval += 86400000;
+    i++;
+  }
+} */
+
+function getDayWiseTimeSeries(baseval, count, yrange) {
+  var i = 0;
+  while (i < count) {
+    let x = baseval;
+    let y1 = Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min;
+    let y2 = Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min;
+
+    data1.push({ x, y: y1 });
+    data2.push({ x, y: y2 });
     lastDate = baseval;
     baseval += 86400000;
     i++;
@@ -356,7 +563,6 @@ function getNewSeries(baseval, yrange) {
     y: Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min,
   });
 }
-
 function resetData() {
   data1 = data1.slice(data1.length - 10, data1.length);
   data2 = data2.slice(data2.length - 10, data2.length);
@@ -369,7 +575,7 @@ export default {
   },
   data() {
     return {
-      permisos: false,
+      permisos: true,
       slider1: 60,
       slider2: 100,
       isWarning: false,
@@ -377,6 +583,7 @@ export default {
       bloodPressure: '',
       series1: [{ data: data1.slice() }],
       series2: [{ data: data2.slice() }],
+      series3: [{ data: data2.slice() }],
       chartOptions: {
         chart: {
           animations: {
@@ -417,7 +624,12 @@ export default {
         legend: {
           show: false,
         },
-      }
+      },
+      // Variables necesarias para el cronómetro de la maniobra
+      timerActive: false,      // Variable para controlar el estado del cronómetro
+      timerPaused: false,     // Variable para controlar el estado de pausa del cronómetro
+      ramainingTime: 180,          // Tiempo restante en segundos (3 minutos = 180 segundos)
+      timerInterval: null,     // Referencia al interval del cronómetro
     };
   },
 
@@ -460,13 +672,13 @@ export default {
 
     var chart = new smoothie.SmoothieChart({
       grid: {
-        strokeStyle: '#1e1801', fillStyle: '#000000',
+        strokeStyle: '#bbbbbb', fillStyle: 'rgba(0,0,0,0.65)',
         lineWidth: 0, verticalSections: 6,
-      }, maxValue: 8, minValue: -8, millisPerPixel: 20
+      }, maxValue: 7, minValue: -4, millisPerPixel: 20
     });
     chart.streamTo(canvas, 1000);
 
-    chart.addTimeSeries(series, { lineWidth: 3.6, strokeStyle: '#00ff00' });
+    chart.addTimeSeries(series, { lineWidth: 5, strokeStyle: '#00ff00' });
 
     // Gràfico de la suturaciòn de oxìgeno
     this.graphicSaturation = [];
@@ -478,13 +690,13 @@ export default {
 
     var chartSaturation = new smoothie.SmoothieChart({
       grid: {
-        strokeStyle: '#1e1801', fillStyle: '#000000',
+        strokeStyle: '#bbbbbb', fillStyle: 'rgba(0,0,0,0.65)',
         lineWidth: 0, verticalSections: 6,
-      }, maxValue: 8, minValue: -8, millisPerPixel: 20
+      }, maxValue: 7, minValue: -4, millisPerPixel: 20
     });
     chartSaturation.streamTo(canvasSaturation, 1000);
 
-    chartSaturation.addTimeSeries(seriesSaturation, { lineWidth: 3.6, strokeStyle: '#FFFF00' });
+    chartSaturation.addTimeSeries(seriesSaturation, { lineWidth: 5, strokeStyle: '#FFFF00' });
 
     // Gràfico de la suturaciòn de la tensiòn arterial
     this.graphicPressure = [];
@@ -496,13 +708,13 @@ export default {
 
     var chartPressure = new smoothie.SmoothieChart({
       grid: {
-        strokeStyle: '#1e1801', fillStyle: '#000000',
+        strokeStyle: '#bbbbbb', fillStyle: 'rgba(0,0,0,0.65)',
         lineWidth: 0, verticalSections: 6,
-      }, maxValue: 8, minValue: -8, millisPerPixel: 20
+      }, maxValue: 7, minValue: -4, millisPerPixel: 20
     });
     chartPressure.streamTo(canvasPressure, 1000);
 
-    chartPressure.addTimeSeries(seriesPressure, { lineWidth: 3.6, strokeStyle: '#FF0000' });
+    chartPressure.addTimeSeries(seriesPressure, { lineWidth: 5, strokeStyle: '#FF0000' });
 
     // Activo el pulso normal del corazón
     this.activateNormalPulseHeart(120);
@@ -575,6 +787,13 @@ export default {
   },
 
   computed: {
+    formattedTime() {
+      
+      // Format time in minutes and seconds
+      const minutes = Math.floor(this.ramainingTime / 60);
+      const seconds = this.ramainingTime % 60;
+      return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    },
     followers_options() {
       const is_dark = this.$store.state.is_dark_mode;
       let option = {
@@ -596,7 +815,22 @@ export default {
       let option = {
         chart: { sparkline: { enabled: true } },
         stroke: { curve: 'smooth', width: 2 },
-        colors: ['#F3A695'], 
+        colors: ['#F3A695'],
+        //labels: ['1', '2', '3', '4', '5', '6', '7'],
+        yaxis: { min: 0 },
+        tooltip: { theme: is_dark ? 'dark' : 'light', x: { show: false } },
+      };
+      if (is_dark) {
+        option['fill'] = { type: 'gradient', gradient: { type: 'vertical', shadeIntensity: 1, inverseColors: !1, opacityFrom: 0.3, opacityTo: 0.05, stops: [100, 100] } };
+      }
+      return option;
+    },
+    followers_options3() {
+      const is_dark = this.$store.state.is_dark_mode;
+      let option = {
+        chart: { sparkline: { enabled: true } },
+        stroke: { curve: 'smooth', width: 2 },
+        colors: ['#52C1B7'],
         //labels: ['1', '2', '3', '4', '5', '6', '7'],
         yaxis: { min: 0 },
         tooltip: { theme: is_dark ? 'dark' : 'light', x: { show: false } },
@@ -796,8 +1030,41 @@ export default {
      }  */
 
     // Actualizo los datos del primer grafico del modal
-    updateChartSeries(newData) {
-      this.series[0].data = newData;
+    /*  updateChartSeries(newData) {
+       this.series[0].data = newData;
+     }, */
+
+    startTimer() {
+      this.timerInterval = setInterval(() => {
+        if (this.ramainingTime > 0) {
+          this.ramainingTime -= 1;
+        } else {
+          this.stopTimer();
+        }
+      }, 1000);
+    },
+    stopTimer() {
+      clearInterval(this.timerInterval);
+      this.timerActive = false;
+      this.timerPaused = false;
+    },
+    toggleTimer() {
+      if (!this.timerActive) {
+        this.timerActive = true;
+        this.startTimer();
+      } else {
+        if (!this.timerPaused) {
+          this.timerPaused = true;
+          clearInterval(this.timerInterval);
+        } else {
+          this.timerPaused = false;
+          this.startTimer();
+        }
+      }
+    },
+    resetTimer() {
+      this.stopTimer();
+      this.ramainingTime = 180; // Restablecer el tiempo restante a 180 segundos
     },
   },
 };
