@@ -2,8 +2,8 @@
   <div class="home">
     <!-- <apexchart ref="realtimeChart1" type="line" height="350" :options="chartOptions" :series="series1" /> -->
 
-    <div class="row m-4">
-      <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 col-12 layout-spacing">
+    <div class="row mt-4 mx-4">
+      <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 col-12">
         <div class="widget widget-visitor-by-browser text-center">
           <div class="widget-heading">
             <h5>Parámetros maniobra RCP</h5>
@@ -217,10 +217,10 @@
         </div>
 
       </div>
-      <div class="col-xl-9 col-lg-8 col-md-6 col-sm-12 col-12 layout-spacing">
+      <div class="col-xl-9 col-lg-8 col-md-6 col-sm-12 col-12">
         <div class="row m-4">
           <div class="col-xl-7 col-lg-12 col-md-12 col-sm-12 col-12">
-            <canvas ref="chart" class="w-100" width="600" height="300"></canvas>
+            <canvas ref="chart" class="w-100" width="600" height="170"></canvas>
           </div>
           <div class="col-xl-5 col-lg-12 col-md-12 col-sm-12 col-12">
             <div class="row">
@@ -273,7 +273,7 @@
         </div>
         <div class="row m-4">
           <div class="col-xl-7 col-lg-12 col-md-12 col-sm-12 col-12 mt-3">
-            <canvas ref="saturation" class="w-100" width="600" height="300"></canvas>
+            <canvas ref="saturation" class="w-100" width="600" height="170"></canvas>
           </div>
           <div class="col-xl-5 col-lg-12 col-md-12 col-sm-12 col-12 col-12">
             <div class="custom-progress progress-up" style="width: 100%">
@@ -288,7 +288,7 @@
         </div>
         <div class="row m-4">
           <div class="col-xl-7 col-lg-12 col-md-12 col-sm-12 col-12 mt-3">
-            <canvas ref="tensionArterial" class="w-100" width="600" height="300"></canvas>
+            <canvas ref="tensionArterial" class="w-100" width="600" height="170"></canvas>
           </div>
           <div class="col-xl-5 col-lg-12 col-md-12 col-sm-12 col-12">
             <div class="custom-progress progress-up" style="width: 100%">
@@ -501,6 +501,10 @@
 </template>
 
 <script>
+// Importo influxDB
+//import {InfluxDBClient, Point} from '@influxdata/influxdb3-client'
+
+import mqtt from 'mqtt';
 //import Vue from 'vue';
 //import VueApexCharts from 'vue-apexcharts';
 import smoothie from 'smoothie';
@@ -575,6 +579,7 @@ export default {
   },
   data() {
     return {
+      tokenInflux: process.env.INFLUXDB_TOKEN,
       permisos: true,
       slider1: 60,
       slider2: 100,
@@ -634,31 +639,20 @@ export default {
   },
 
   mounted() {
-    // Iniciar la generación de valores aleatorios cada 2 segundos
-    //this.interval = setInterval(this.generateRandomValue, 2000);
+    // Código MQTT para conectarte al broker, suscribirte a topicos, etc.
+    // Me conecto al broker MQTT a través de WebSockets
+    let client = mqtt.connect('ws://192.168.74.181:8083');
 
-    const socket = new WebSocket('ws://192.168.0.223:1880/ws-endpoint');
+    client.subscribe('/iadh');
 
-    socket.onopen = () => {
-      console.log('WebSocket connection opened');
-    };
+    // Me mantengo escuchando al broker
+    client.on('message', function (topic, message) {
+      console.log(message.toString());
+    });
 
-    socket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      console.log('Received WebSocket data:', data);
-      this.randomValue = Math.round(data * 100);
+    client.publish('/iadh', '¡Buenas!');
 
-      // Actualiza la interfaz de usuario con los datos recibidos
-      // ...
-    };
 
-    socket.onclose = (event) => {
-      console.log('WebSocket connection closed:', event);
-    };
-
-    socket.onerror = (error) => {
-      console.error('WebSocket error:', error);
-    };
 
     // Gràfico del frecuencia cardíaca
     /* Declaro las variables que necesito para volver dinamico el gràfico: 

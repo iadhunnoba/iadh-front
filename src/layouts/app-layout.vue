@@ -34,7 +34,7 @@
                 </router-view>
 
                 <!-- BEGIN FOOTER -->
-                <Footer></Footer>
+                <!-- <Footer></Footer> -->
                 <!-- END FOOTER -->
             </div>
             <!--  END CONTENT AREA  -->
@@ -48,13 +48,13 @@
 <script>
     import Header from '@/components/layout/header.vue';
     import Sidebar from '@/components/layout/sidebar.vue';
-    import Footer from '@/components/layout/footer.vue';
+    //import Footer from '@/components/layout/footer.vue';
     import appSettings from '@/components/app-settings.vue';
     export default {
         components: {
             Header,
             Sidebar,
-            Footer,
+            //Footer,
             appSettings
         },
         data() {
