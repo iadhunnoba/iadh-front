@@ -640,7 +640,7 @@ export default {
       // EMQX CONNECTION VARS
       connection: {
         protocol: "ws",
-        host: "broker.emqx.io",
+        host: "localhost",
         // ws: 8083; wss: 8084
         port: 8083,
         endpoint: "/mqtt",
@@ -650,8 +650,8 @@ export default {
         reconnectPeriod: 4000, // ms
         clientId: "emqx_vue_" + Math.random().toString(16).substring(2, 8),
         // auth
-        username: "emqx_test",
-        password: "emqx_test",
+        username: "vuesocket",
+        password: "test1234",
       },
       subscription: {
         topic: "topic/mqttx",
