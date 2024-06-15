@@ -75,6 +75,34 @@
               <div class="widget-heading">
                 <div class="w-title">
                   <div class="w-icon icon-fill-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-activity"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                  </div>
+                  <div>
+                    <p class="w-value">82</p>
+                    <h5>Comp. / MIN</h5>
+                  </div>
+                </div>
+              </div>
+              <div class="widget-content">
+                <div class="w-chart">
+                  <apexchart v-if="followers_options" height="160" type="area" :options="followers_options" :series="followers_series"></apexchart>
+                </div>
+              </div>
+
+              <div class="p-3">
+                    <h6>RESULTADO: <span style="font-weight: 700;">Regular</span></h6>
+                  </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12 layout-spacing">
+        <div class="row widget-statistic">
+          <div class="col-xl-12 col-lg-12 col-md-8 col-sm-4 col-12 layout-spacing">
+            <div class="widget">
+              <div class="widget-heading">
+                <div class="w-title">
+                  <div class="w-icon icon-fill-primary">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users">
                       <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
                       <circle cx="9" cy="7" r="4"></circle>
@@ -83,7 +111,36 @@
                     </svg>
                   </div>
                   <div>
-                    <p class="w-value">23</p>
+                    <p class="w-value">82</p>
+                    <h5>Comp. / MIN</h5>
+                  </div>
+                </div>
+              </div>
+              <div class="widget-content">
+                <div class="w-chart">
+                  <apexchart v-if="followers_options" height="160" type="area" :options="followers_options" :series="followers_series"></apexchart>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12 layout-spacing">
+        <div class="row widget-statistic">
+          <div class="col-xl-12 col-lg-12 col-md-8 col-sm-4 col-12 layout-spacing">
+            <div class="widget">
+              <div class="widget-heading">
+                <div class="w-title">
+                  <div class="w-icon icon-fill-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users">
+                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                      <circle cx="9" cy="7" r="4"></circle>
+                      <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                      <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="w-value">82</p>
                     <h5>Comp. / MIN</h5>
                   </div>
                 </div>
@@ -99,67 +156,7 @@
       </div>
     </div>
 
-    <div class="row m-4">
-        <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12 layout-spacing">
-             <div class="widget widget-expenses">
-                    <div class="widget-heading">
-                        <h5>Expenses</h5>
-                        <div class="task-action">
-                            <b-dropdown variant="icon-only" toggle-tag="a" :right="true">
-                                <template #button-content>
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="24"
-                                        height="24"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        stroke-width="2"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        class="feather feather-more-horizontal"
-                                    >
-                                        <circle cx="12" cy="12" r="1"></circle>
-                                        <circle cx="19" cy="12" r="1"></circle>
-                                        <circle cx="5" cy="12" r="1"></circle>
-                                    </svg>
-                                </template>
-
-                                <b-dropdown-item>This Week</b-dropdown-item>
-                                <b-dropdown-item>Last Week</b-dropdown-item>
-                                <b-dropdown-item>Last Month</b-dropdown-item>
-                            </b-dropdown>
-                        </div>
-                    </div>
-
-                    <div class="widget-content">
-                        <p class="value">
-                            $ 45,141
-                            <span>this week </span>
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                class="feather feather-trending-up"
-                            >
-                                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
-                                <polyline points="17 6 23 6 23 12"></polyline>
-                            </svg>
-                        </p>
-                        <div class="w-progress-stats">
-                            <b-progress variant="gradient-secondary" :value="57" :min="0" :max="100"></b-progress>
-                            <div class="w-icon">57%</div>
-                        </div>
-                    </div>
-                </div>
-        </div>
-    </div>
+    
 
     <div class="row m-4">
       <div class="col-12 col-md-6">
@@ -266,40 +263,41 @@ export default {
       // EMQX CONNECTION
 
       connection: {
-        host: '192.168.0.223',
-        port: 1880,
-        endpoint: '',
-        clean: true, // Reserved session
-        connectTimeout: 4000, // Time out
-        reconnectPeriod: 4000, // Reconnection interval
-        // Certification Information
-        clientId: 'mqttjs_3be2c321',
-        username: 'admin',
-        password: 'admin',
+        protocol: "ws",
+        host: "192.168.0.223",
+        // ws: 8083; wss: 8084
+        port: 8083,
+        endpoint: "/mqtt",
+        // for more options, please refer to https://github.com/mqttjs/MQTT.js#mqttclientstreambuilder-options
+        clean: true,
+        connectTimeout: 30 * 1000, // ms
+        reconnectPeriod: 4000, // ms
+        clientId: "emqx_vue_" + Math.random().toString(16).substring(2, 8),
+        // auth
+        username: "esp32",
+        password: "iadh2024",
       },
       subscription: {
-        topic: '/iadh/medical',
+        topic: "topic/mqttx",
         qos: 0,
       },
       publish: {
-        topic: '/iadh/medical',
+        topic: "topic/browser",
         qos: 0,
         payload: '{ "msg": "Hello, I am browser." }',
       },
-      receiveNews: '',
-      qosList: [
-        { label: 0, value: 0 },
-        { label: 1, value: 1 },
-        { label: 2, value: 2 },
-      ],
+      receiveNews: "",
+      qosList: [0, 1, 2],
       client: {
         connected: false,
       },
       subscribeSuccess: false,
+      connecting: false,
+      retryTimes: 0,
 
       // REALTIME DATA FROM RCP
       //Followers
-      followers_series: [{ name: 'Intensidad', data: [18, 50, 28, 52, 10, 40, 15, 52, 18, 60, 23] }],
+      followers_series: [{ name: 'Profundidad', data: [65, 15, 85, 15, 84, 15, 80, 15, 88, 15, 75, 15] }],
     };
   },
   created() {},
@@ -313,28 +311,8 @@ export default {
     // Iniciar la generación de valores aleatorios cada 2 segundos
     //this.interval = setInterval(this.generateRandomValue, 2000);
 
-    const socket = new WebSocket('ws://192.168.0.223:1880/ws-endpoint');
-
-    socket.onopen = () => {
-      console.log('WebSocket connection opened');
-    };
-
-    socket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      console.log('Received WebSocket data:', data);
-      this.randomValue = Math.round(data * 100);
-
-      // Actualiza la interfaz de usuario con los datos recibidos
-      // ...
-    };
-
-    socket.onclose = (event) => {
-      console.log('WebSocket connection closed:', event);
-    };
-
-    socket.onerror = (error) => {
-      console.error('WebSocket error:', error);
-    };
+    this.initData();
+    this.createConnection();
 
     // Gràfico del frecuencia cardíaca
     /* Declaro las variables que necesito para volver dinamico el gràfico: 
@@ -500,76 +478,65 @@ export default {
       this.randomValue = Math.floor(Math.random() * 101); // Generar valor aleatorio entre 0 y 100
     },
 
-    createConnection() {
-      // Connect string, and specify the connection method used through protocol
-      // ws unencrypted WebSocket connection
-      // wss encrypted WebSocket connection
-      // mqtt unencrypted TCP connection
-      // mqtts encrypted TCP connection
-      // wxs WeChat mini app connection
-      // alis Alipay mini app connection
-      const { host, port, endpoint, ...options } = this.connection;
-      const connectUrl = `ws://${host}:${port}${endpoint}/mqtt`;
-      try {
-        this.client = mqtt.connect(connectUrl, options);
-      } catch (error) {
-        console.log('mqtt.connect error', error);
+    initData() {
+      this.client = {
+        connected: false,
+      };
+      this.retryTimes = 0;
+      this.connecting = false;
+      this.subscribeSuccess = false;
+    },
+
+    handleOnReConnect() {
+      this.retryTimes += 1;
+      if (this.retryTimes > 5) {
+        try {
+          this.client.end();
+          this.initData();
+          this.$message.error("Connection maxReconnectTimes limit, stop retry");
+        } catch (error) {
+          this.$message.error(error.toString());
+        }
       }
-      this.client.on('connect', () => {
-        console.log('Connection succeeded!');
-      });
-      this.client.on('error', (error) => {
-        console.log('Connection failed', error);
-      });
-      this.client.on('message', (topic, message) => {
-        this.receiveNews = this.receiveNews.concat(message);
-        console.log(`Received message ${message} from topic ${topic}`);
-      });
+    },
+
+    createConnection() {
+      try {
+        this.connecting = true;
+        const { protocol, host, port, endpoint, ...options } = this.connection;
+        const connectUrl = `${protocol}://${host}:${port}${endpoint}`;
+        this.client = mqtt.connect(connectUrl, options);
+        if (this.client.on) {
+          this.client.on("connect", () => {
+            this.connecting = false;
+            console.log("Connection succeeded!");
+          });
+          this.client.on("reconnect", this.handleOnReConnect);
+          this.client.on("error", (error) => {
+            console.log("Connection failed", error);
+          });
+          this.client.on("message", (topic, message) => {
+            this.receiveNews = this.receiveNews.concat(message);
+            console.log(`Received message ${message} from topic ${topic}`);
+          });
+        }
+      } catch (error) {
+        this.connecting = false;
+        console.log("mqtt.connect error", error);
+      }
     },
 
     doSubscribe() {
-      const { topic, qos } = this.subscription;
+      const { topic, qos } = this.subscription
       this.client.subscribe(topic, { qos }, (error, res) => {
-        if (error) {
-          console.log('Subscribe to topics error', error);
-          return;
-        }
-        this.subscribeSuccess = true;
-        console.log('Subscribe to topics res', res);
-      });
-    },
-
-    doUnSubscribe() {
-      const { topic } = this.subscription;
-      this.client.unsubscribe(topic, (error) => {
-        if (error) {
-          console.log('Unsubscribe error', error);
-        }
-      });
-    },
-
-    doPublish() {
-      const { topic, qos, payload } = this.publish;
-      this.client.publish(topic, payload, qos, (error) => {
-        if (error) {
-          console.log('Publish error', error);
-        }
-      });
-    },
-
-    destroyConnection() {
-      if (this.client.connected) {
-        try {
-          this.client.end();
-          this.client = {
-            connected: false,
-          };
-          console.log('Successfully disconnected!');
-        } catch (error) {
-          console.log('Disconnect failed', error.toString());
-        }
-      }
-    },
+      if (error) {
+        console.log('Subscribe to topics error', error)
+        return
+    }
+      this.subscribeSuccess = true
+      console.log('Subscribe to topics res', res)
+    })
+  },
 
     // intervals: function () {
     //   //var me = this;
