@@ -8,6 +8,14 @@ module.exports = {
             enableInSFC: false
         }
     },
+
+    devServer:{
+
+        host:'0.0.0.0',
+        port: 8080,
+        public:'192.168.1.100:8080',
+        disableHostCheck: true
+    },
     chainWebpack: config => {
         // Remove prefetch plugin and that's it!
         config.plugins.delete('prefetch');
