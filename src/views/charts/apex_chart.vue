@@ -644,7 +644,7 @@ export default {
 
     // Esta conexión es para cuando corro el servidor en la misma compu que la app
     // let client = mqtt.connect('ws://localhost:8083/mqtt');
-    let client = mqtt.connect('ws://198.168.0.100/mqtt');
+    let client = mqtt.connect('ws://192.168.0.100/mqtt');
 
     client.subscribe('/iadh');
 
