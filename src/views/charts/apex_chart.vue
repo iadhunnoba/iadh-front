@@ -313,6 +313,7 @@ export default {
 
     this.initData();
     this.createConnection();
+    this.doSubscribe();
 
     // Gràfico del frecuencia cardíaca
     /* Declaro las variables que necesito para volver dinamico el gràfico: 
