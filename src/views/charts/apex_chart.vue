@@ -264,7 +264,7 @@ export default {
 
       connection: {
         protocol: "ws",
-        host: "192.168.0.223",
+        host: "192.168.0.100",
         // ws: 8083; wss: 8084
         port: 8083,
         endpoint: "/mqtt",
