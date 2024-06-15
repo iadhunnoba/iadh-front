@@ -641,7 +641,10 @@ export default {
   mounted() {
     // Código MQTT para conectarte al broker, suscribirte a topicos, etc.
     // Me conecto al broker MQTT a través de WebSockets
-    let client = mqtt.connect('ws://192.168.74.181:8083');
+
+    // Esta conexión es para cuando corro el servidor en la misma compu que la app
+    // let client = mqtt.connect('ws://localhost:8083/mqtt');
+    let client = mqtt.connect('ws://198.168.0.101/mqtt');
 
     client.subscribe('/iadh');
 
