@@ -23,10 +23,10 @@
               <div class="w-browser-details">
                 <div class="w-browser-info">
                   <h6>Compresiones</h6>
-                  <p class="browser-count">65%</p>
+                  <p class="browser-count">{{temperature}}%</p>
                 </div>
                 <div class="w-browser-stats">
-                  <b-progress variant="gradient-primary" :value="randomValue" :min="0" :max="100"></b-progress>
+                  <b-progress variant="gradient-primary" :value="temperature" :min="0" :max="100"></b-progress>
                 </div>
               </div>
             </div>
@@ -44,11 +44,11 @@
               <div class="w-browser-details">
                 <div class="w-browser-info">
                   <h6>Presión interna pulmones</h6>
-                  <p class="browser-count">25%</p>
+                  <p class="browser-count">{{humidity}}%</p>
                 </div>
 
                 <div class="w-browser-stats">
-                  <b-progress variant="gradient-danger" :value="35" :min="0" :max="100"></b-progress>
+                  <b-progress variant="gradient-danger" :value="humidity" :min="0" :max="100"></b-progress>
                 </div>
               </div>
             </div>
@@ -66,10 +66,10 @@
               <div class="w-browser-details">
                 <div class="w-browser-info">
                   <h6>Flujo de aire</h6>
-                  <p class="browser-count">15%</p>
+                  <p class="browser-count">{{motionDetected}}%</p>
                 </div>
                 <div class="w-browser-stats">
-                  <b-progress variant="gradient-warning" :value="15" :min="0" :max="100"></b-progress>
+                  <b-progress variant="gradient-warning" :value="motionDetected" :min="-30" :max="80"></b-progress>
                 </div>
               </div>
             </div>
@@ -637,9 +637,15 @@ export default {
       ramainingTime: 180,          // Tiempo restante en segundos (3 minutos = 180 segundos)
       timerInterval: null,     // Referencia al interval del cronómetro
 
+      // Variables para obtener valores desde esp32
+      temperature: 0,
+      humidity: 0,
+      motionDetected: 0,
+
       // EMQX CONNECTION VARS
       connection: {
         protocol: "ws",
+        //host: "192.168.0.223",
         host: "localhost",
         // ws: 8083; wss: 8084
         port: 8083,
@@ -917,7 +923,15 @@ export default {
           });
           this.client.on("message", (topic, message) => {
             this.receiveNews = this.receiveNews.concat(message);
-            console.log(`Received message ${message} from topic ${topic}`);
+            //console.log(`Received message ${message} from topic ${topic}`);
+            try {
+              const parsedMessage = JSON.parse(message.toString());
+              this.temperature = parsedMessage.temperature.toFixed(1);
+              this.humidity = parsedMessage.humidity;
+              this.motionDetected = parsedMessage.motionDetected;
+            } catch (error) {
+              console.error('Failed to parse message', error);
+            }
           });
         }
       } catch (error) {
