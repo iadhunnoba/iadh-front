@@ -712,7 +712,7 @@ export default {
 
     var chart = new smoothie.SmoothieChart({
       grid: {
-        strokeStyle: '#bbbbbb', fillStyle: 'rgba(0,0,0,0.65)',
+        strokeStyle: '#bbbbbb', fillStyle: '#ffffff',
         lineWidth: 0, verticalSections: 6,
       }, maxValue: 7, minValue: -4, millisPerPixel: 20
     });
@@ -730,7 +730,7 @@ export default {
 
     var chartSaturation = new smoothie.SmoothieChart({
       grid: {
-        strokeStyle: '#bbbbbb', fillStyle: 'rgba(0,0,0,0.65)',
+        strokeStyle: '#bbbbbb', fillStyle: '#ffffff',
         lineWidth: 0, verticalSections: 6,
       }, maxValue: 7, minValue: -4, millisPerPixel: 20
     });
@@ -748,7 +748,7 @@ export default {
 
     var chartPressure = new smoothie.SmoothieChart({
       grid: {
-        strokeStyle: '#bbbbbb', fillStyle: 'rgba(0,0,0,0.65)',
+        strokeStyle: '#bbbbbb', fillStyle: '#ffffff',
         lineWidth: 0, verticalSections: 6,
       }, maxValue: 7, minValue: -4, millisPerPixel: 20
     });
