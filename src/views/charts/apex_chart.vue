@@ -3,10 +3,10 @@
     <!-- <apexchart ref="realtimeChart1" type="line" height="350" :options="chartOptions" :series="series1" /> -->
 
     <div class="row mt-4 mx-4">
-      <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 col-12">
+      <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
         <div class="widget widget-visitor-by-browser text-center">
           <div class="widget-heading">
-            <h5>Parámetros maniobra RCP</h5>
+            <h4>Parámetros maniobra RCP</h4>
           </div>
           <div class="widget-content">
             <div class="browser-list">
@@ -22,8 +22,8 @@
               </div>
               <div class="w-browser-details">
                 <div class="w-browser-info">
-                  <h6>Compresiones</h6>
-                  <p class="browser-count">{{temperature}}%</p>
+                  <h6 v-bind:style="{ fontSize: 1.2 + 'em' }">Compresiones</h6>
+                  <p v-bind:style="{ fontSize: 1.2 + 'em' }" class="browser-count">{{temperature}}%</p>
                 </div>
                 <div class="w-browser-stats">
                   <b-progress variant="gradient-primary" :value="temperature" :min="0" :max="100"></b-progress>
@@ -43,8 +43,8 @@
               </div>
               <div class="w-browser-details">
                 <div class="w-browser-info">
-                  <h6>Presión interna pulmones</h6>
-                  <p class="browser-count">{{humidity}}%</p>
+                  <h6 v-bind:style="{ fontSize: 1.2 + 'em' }">Presión interna pulmones</h6>
+                  <p v-bind:style="{ fontSize: 1.2 + 'em' }" class="browser-count">{{humidity}}%</p>
                 </div>
 
                 <div class="w-browser-stats">
@@ -65,8 +65,8 @@
               </div>
               <div class="w-browser-details">
                 <div class="w-browser-info">
-                  <h6>Flujo de aire</h6>
-                  <p class="browser-count">{{motionDetected}}%</p>
+                  <h6 v-bind:style="{ fontSize: 1.2 + 'em' }">Flujo de aire</h6>
+                  <p v-bind:style="{ fontSize: 1.2 + 'em' }" class="browser-count">{{motionDetected}}%</p>
                 </div>
                 <div class="w-browser-stats">
                   <b-progress variant="gradient-warning" :value="motionDetected" :min="-30" :max="80"></b-progress>
@@ -86,7 +86,7 @@
               Restablecer Cronómetro
             </b-button>
 
-            <b-button variant="info" class="w-75 mt-4 " v-b-modal.modalxl>Reporte</b-button>
+            <b-button variant="info" class="w-75 mt-4" v-b-modal.modalxl>Reporte</b-button>
             <!-- Extra large Modal -->
             <b-modal id="modalxl" title="Reporte" size="xl">
               <div class="row widget-statistic justify-content-center">
@@ -169,13 +169,13 @@
               </div>
               <template #modal-footer>
                 <b-button variant="default" data-dismiss="modal" @click="$bvModal.hide('modalxl')"><i
-                    class="flaticon-cancel-12"></i> Discard</b-button>
-                <b-button variant="primary">Save</b-button>
+                    class="flaticon-cancel-12"></i>Descartar</b-button>
+                <b-button variant="primary">Guardar</b-button>
               </template>
             </b-modal>
-            <b-button v-if="permisos" variant="info" class="w-75 mt-4 " v-b-modal.functionModal>Activar
+            <b-button v-if="permisos" variant="info" class="w-75 mt-4" v-b-modal.functionModal>Activar
               funciones</b-button>
-            <b-modal id="functionModal" title="Funciones" :hide-footer="true">
+            <b-modal id="functionModal" ref="functionModal" title="Funciones" :hide-footer="true">
               <div v-if="permisos" class="row">
                 <div class="col-4 col-md-6">
                   <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateNormalPulseHeart(120)">Activar pulso
@@ -217,18 +217,18 @@
         </div>
 
       </div>
-      <div class="col-xl-9 col-lg-8 col-md-6 col-sm-12 col-12">
+      <div class="col-xl-8 col-lg-8 col-md-6 col-sm-12 col-12">
         <div class="row m-4">
-          <div class="col-xl-7 col-lg-12 col-md-12 col-sm-12 col-12">
-            <canvas ref="chart" class="w-100" width="600" height="170"></canvas>
+          <div class="col-xl-8 col-lg-12 col-md-12 col-sm-12 col-12">
+            <canvas ref="chart" class="w-100" width="600" height="140"></canvas>
           </div>
-          <div class="col-xl-5 col-lg-12 col-md-12 col-sm-12 col-12">
+          <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-12">
             <div class="row">
               <div class="col-12">
                 <div class="custom-progress progress-up mb-2" style="width: 100%">
                   <div class="range-count">
                     <span class="range-count-number" v-bind:class="{ warning: isWarningPulseHeart }"
-                      v-bind:style="{ fontSize: 4 + 'em' }">HR: {{ slider1 }}</span>
+                      v-bind:style="{ fontSize: 2.5 + 'em' }">HR: {{ slider1 }}</span>
                   </div>
                 </div>
               </div>
@@ -272,14 +272,14 @@
           </div>
         </div>
         <div class="row m-4">
-          <div class="col-xl-7 col-lg-12 col-md-12 col-sm-12 col-12 mt-3">
-            <canvas ref="saturation" class="w-100" width="600" height="170"></canvas>
+          <div class="col-xl-8 col-lg-12 col-md-12 col-sm-12 col-12">
+            <canvas ref="saturation" class="w-100" width="600" height="140"></canvas>
           </div>
-          <div class="col-xl-5 col-lg-12 col-md-12 col-sm-12 col-12 col-12">
+          <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-12 col-12">
             <div class="custom-progress progress-up" style="width: 100%">
               <div class="range-count">
                 <span class="range-count-number" v-bind:class="{ warning: isWarning }"
-                  v-bind:style="{ fontSize: 4 + 'em' }">SpO2: {{ slider2 }}</span>
+                  v-bind:style="{ fontSize: 2.5 + 'em' }">SpO2: {{ slider2 }}</span>
               </div>
               <b-input v-if="permisos" type="range" v-model="slider2" :min="0" :max="100"
                 class="progress-range-counter"></b-input>
@@ -287,13 +287,13 @@
           </div>
         </div>
         <div class="row m-4">
-          <div class="col-xl-7 col-lg-12 col-md-12 col-sm-12 col-12 mt-3">
-            <canvas ref="tensionArterial" class="w-100" width="600" height="170"></canvas>
+          <div class="col-xl-8 col-lg-12 col-md-12 col-sm-12 col-12">
+            <canvas ref="tensionArterial" class="w-100" width="600" height="140"></canvas>
           </div>
-          <div class="col-xl-5 col-lg-12 col-md-12 col-sm-12 col-12">
+          <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-12">
             <div class="custom-progress progress-up" style="width: 100%">
               <div class="range-count">
-                <span class="range-count-number" v-bind:style="{ fontSize: 4 + 'em' }">ABP: {{ bloodPressure }}</span>
+                <span class="range-count-number" v-bind:style="{ fontSize: 2.5 + 'em' }">ABP: {{ bloodPressure }}</span>
               </div>
             </div>
           </div>
@@ -994,6 +994,7 @@ export default {
       // Activo la tensiòn arterial normal (120/80)
       this.activatePressure();
       this.bloodPressure = '120/80';
+      this.$refs.functionModal.hide();
     },
 
     //Pulso bajo del corazón
@@ -1021,6 +1022,7 @@ export default {
       // Tensiòn Arterial baja (90/60)
       this.cycleSpacePressure = 1000;
       this.bloodPressure = '90/60';
+      this.$refs.functionModal.hide();
     },
 
     //Pulso bajo del corazón
@@ -1063,6 +1065,7 @@ export default {
       // Tensiòn Arterial alta (150/90)
       this.cycleSpacePressure = 350;
       this.bloodPressure = '150/90';
+      this.$refs.functionModal.hide();
     },
 
     // Fibrilación ventricular
@@ -1075,6 +1078,7 @@ export default {
 
       this.cycleSpace = 180;
       this.iterator = 0;
+      this.$refs.functionModal.hide();
     },
 
     // Taquicardia ventricular
@@ -1094,6 +1098,7 @@ export default {
 
       this.cycleSpace = 550;
       this.iterator = 0;
+      this.$refs.functionModal.hide();
     },
 
     // Asistolia
@@ -1109,6 +1114,7 @@ export default {
       this.graphicPressure = [0];
       this.iteratorPressure = 0;
       this.bloodPressure = '--/--';
+      this.$refs.functionModal.hide();
     },
 
     // Saturación de oxígeno
@@ -1116,6 +1122,7 @@ export default {
       this.graphicSaturation = [4, 0.75, 1, -1.1];
       this.cycleSpaceSaturation = 700;
       this.iteratorSaturation = 0;
+      this.$refs.functionModal.hide();
     },
 
     // Tensiòn Arterial normal (120/80)
@@ -1123,6 +1130,7 @@ export default {
       this.graphicPressure = [1.2, 0.2, 0.4, -0.3];
       this.cycleSpacePressure = 700;
       this.iteratorPressure = 0;
+      this.$refs.functionModal.hide();
     },
 
     // Elevación de ST
@@ -1131,6 +1139,7 @@ export default {
       this.cycleSpace = 350;
       this.iterator = 0;
       this.slider1 = '40';
+      this.$refs.functionModal.hide();
     },
 
     // Obtengo un valor aleatorio entre dos números seleccionados
