@@ -119,7 +119,23 @@ export default {
                     this.error = true;
 
                 });
-        }
+        },
+       /*  register() {
+            let json = {
+                "username": this.usuario,
+                "password": this.password,
+                "role": "admin"
+            }
+            axios.post("http://localhost:3000/auth/register", json)
+                .then(data => {
+                    this.$store.commit('setUser', data.data.token);
+                    this.$router.push("/charts/apex-chart");
+                }).catch((err) => {
+                    this.errorMessage = err.response.data.message;
+                    this.error = true;
+
+                });
+        } */
     }
 };
 </script>

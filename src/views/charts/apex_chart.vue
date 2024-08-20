@@ -503,7 +503,8 @@
 <script>
 // Importo influxDB
 //import {InfluxDBClient, Point} from '@influxdata/influxdb3-client'
-
+/* Importo axios */
+import axios from 'axios'
 import mqtt from 'mqtt';
 //import Vue from 'vue';
 //import VueApexCharts from 'vue-apexcharts';
@@ -586,6 +587,8 @@ export default {
       isWarning: false,
       isWarningPulseHeart: false,
       bloodPressure: '',
+      timepoInicialSesion: null,
+      timepoFinalSesion: null,
       series1: [{ data: data1.slice() }],
       series2: [{ data: data2.slice() }],
       series3: [{ data: data2.slice() }],
@@ -1153,6 +1156,9 @@ export default {
      }, */
 
     startTimer() {
+      if (!this.tiempoIncialSesion) { // Solo marca el tiempo inicial la primera vez
+        this.tiempoIncialSesion = Date.now();
+      }
       this.timerInterval = setInterval(() => {
         if (this.ramainingTime > 0) {
           this.ramainingTime -= 1;
@@ -1162,9 +1168,11 @@ export default {
       }, 1000);
     },
     stopTimer() {
+      this.tiempoFinalSesion = Date.now();
       clearInterval(this.timerInterval);
       this.timerActive = false;
       this.timerPaused = false;
+      this.createSesion(); 
     },
     toggleTimer() {
       if (!this.timerActive) {
@@ -1183,8 +1191,34 @@ export default {
     resetTimer() {
       this.stopTimer();
       this.ramainingTime = 180; // Restablecer el tiempo restante a 180 segundos
+      this.tiempoIncialSesion = null; // Reiniciar la sesión inicial
+      this.tiempoFinalSesion = null;  // Reiniciar la sesión final
+    },
+
+    createSesion() {
+      const json = {
+        fechaInicio: new Date(this.tiempoIncialSesion),
+        fechaFin: new Date(this.tiempoFinalSesion)
+      };
+
+      console.log(json);
+      axios
+        .post("http://localhost:3000/sesion", json, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      })
+        .then((data) => {
+          console.log("Sesion agregada");
+        })
+        .catch((err) => {
+          this.errorMessage = err.response.data.message;
+          this.error = true;
+        });
     },
   },
+
+
 };
 </script>
 
