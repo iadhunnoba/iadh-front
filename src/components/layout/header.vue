@@ -6,11 +6,14 @@
                 <ul class="navbar-item theme-brand flex-row text-center">
                     <li class="nav-item theme-logo">
                         <router-link to="/">
-                            <img src="@/assets/images/logo.svg" class="navbar-logo" alt="logo" />
+                            <!-- <img src="@/assets/images/logo.svg" class="navbar-logo" alt="logo" /> -->
                         </router-link>
                     </li>
                     <li class="nav-item theme-text">
-                        <router-link to="/" class="nav-link"> CORK </router-link>
+                        <router-link to="/charts/apex-chart" class="nav-link"> IADH </router-link>
+                    </li>
+                    <li class="nav-item theme-text">
+                        <div style="margin-top: 12px">Panel de control</div>
                     </li>
                 </ul>
                 <div class="d-none horizontal-menu">
@@ -33,34 +36,10 @@
                         </svg>
                     </a>
                 </div>
-                <ul class="navbar-item flex-row ml-md-0 ml-auto">
-                    <li class="nav-item align-self-center search-animated" :class="{ 'show-search': $store.state.is_show_search }">
-                        <svg
-                            @click="$store.commit('toggleSearch', !$store.state.is_show_search)"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            class="feather feather-search toggle-search"
-                        >
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                        </svg>
-                        <form class="form-inline search-full form-inline search" :class="{ 'input-focused': $store.state.is_show_search }">
-                            <div class="search-bar">
-                                <input type="text" class="form-control search-form-control ml-lg-auto" placeholder="Search..." />
-                            </div>
-                        </form>
-                    </li>
-                </ul>
+
 
                 <div class="navbar-item flex-row ml-md-auto">
-                    <div class="dark-mode d-flex align-items-center">
+                    <!-- <div class="dark-mode d-flex align-items-center">
                         <a v-if="$store.state.dark_mode == 'light'" href="javascript:;" class="d-flex align-items-center" @click="toggleMode('dark')">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -138,9 +117,9 @@
                                 <img :src="require(`@/assets/images/flags/${item.code}.png`)" class="flag-width" alt="" /> <span>{{ item.name }}</span>
                             </b-dropdown-item>
                         </perfect-scrollbar>
-                    </b-dropdown>
+                    </b-dropdown> -->
 
-                    <b-dropdown toggle-tag="a" variant="icon-only" toggle-class="nav-link" class="nav-item message-dropdown" :right="true">
+                    <!-- <b-dropdown toggle-tag="a" variant="icon-only" toggle-class="nav-link" class="nav-item message-dropdown" :right="true">
                         <template #button-content>
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -190,9 +169,9 @@
                                 <p class="msg-title">ACCOUNT UPDATE</p>
                             </b-media>
                         </b-dropdown-item>
-                    </b-dropdown>
+                    </b-dropdown> -->
 
-                    <b-dropdown toggle-tag="a" variant="icon-only" toggle-class="nav-link" menu-class="notification-scroll" class="nav-item notification-dropdown" :right="true">
+                    <!-- <b-dropdown toggle-tag="a" variant="icon-only" toggle-class="nav-link" menu-class="notification-scroll" class="nav-item notification-dropdown" :right="true">
                         <template #button-content>
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -346,7 +325,7 @@
                                 </div>
                             </b-media>
                         </b-dropdown-item>
-                    </b-dropdown>
+                    </b-dropdown> -->
 
                     <b-dropdown toggle-tag="a" variant="icon-only" toggle-class="user nav-link" class="nav-item user-profile-dropdown" :right="true">
                         <template #button-content>

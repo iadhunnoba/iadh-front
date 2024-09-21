@@ -1209,7 +1209,7 @@ export default {
         }
       })
         .then((data) => {
-          console.log("Sesion agregada");
+          console.log("Sesion agregada", data);
         })
         .catch((err) => {
           this.errorMessage = err.response.data.message;
