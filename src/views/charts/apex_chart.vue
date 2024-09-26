@@ -26,7 +26,7 @@
                   <p v-bind:style="{ fontSize: 1.2 + 'em' }" class="browser-count">{{temperature}}%</p>
                 </div>
                 <div class="w-browser-stats">
-                  <b-progress variant="gradient-primary" :value="temperature" :min="0" :max="100"></b-progress>
+                  <b-progress variant="gradient-primary" :value="temperature" :min="0" :max="3500"></b-progress>
                 </div>
               </div>
             </div>
