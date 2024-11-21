@@ -73,18 +73,31 @@
                 </div>
               </div>
             </div>
-            <b-button @click="toggleTimer" variant="info" class="w-75">
+            <!-- <b-button @click="toggleTimer" variant="info" class="w-75">
               {{ timerActive ? (timerPaused ? 'Reanudar' : 'Pausar') : 'Iniciar Cronómetro' }}
             </b-button>
             <p class="h5 mt-3">
               Tiempo restante: {{ formattedTime }}
-            </p>
+            </p> -->
 
             <!-- <p v-if="timerActive" class="mt-3">Tiempo restante: {{ ramainingTime }} segundos</p> -->
             <!-- Botón para restablecer el cronómetro (solo visible cuando el cronómetro ha iniciado) -->
-            <b-button @click="resetTimer" variant="secondary" class="w-75 mt-2" v-if="timerActive">
+            <!-- <b-button @click="resetTimer" variant="secondary" class="w-75 mt-2" v-if="timerActive">
               Restablecer Cronómetro
+            </b-button> -->
+
+            <b-button 
+              @click="toggleTimer" 
+              variant="info" 
+              class="w-75"
+            >
+              {{ timerActive ? 'Finalizar' : 'Iniciar Cronómetro' }}
             </b-button>
+
+            <p class="h5 mt-3">
+              Tiempo restante: {{ formattedTime }}
+            </p>
+
 
             <b-button variant="info" class="w-75 mt-4" v-b-modal.modalxl>Reporte</b-button>
             <!-- Extra large Modal -->
@@ -1155,11 +1168,11 @@ export default {
        this.series[0].data = newData;
      }, */
 
-    startTimer() {
-      if (!this.tiempoIncialSesion) { // Solo marca el tiempo inicial la primera vez
-        this.tiempoIncialSesion = Date.now();
-      }
-      this.timerInterval = setInterval(() => {
+     startTimer() {
+    this.tiempoIncialSesion = Date.now();
+    this.timerActive = true;
+
+    this.timerInterval = setInterval(() => {
         if (this.ramainingTime > 0) {
           this.ramainingTime -= 1;
         } else {
@@ -1168,31 +1181,18 @@ export default {
       }, 1000);
     },
     stopTimer() {
-      this.tiempoFinalSesion = Date.now();
-      clearInterval(this.timerInterval);
-      this.timerActive = false;
-      this.timerPaused = false;
-      this.createSesion(); 
+        this.tiempoFinalSesion = Date.now();
+        clearInterval(this.timerInterval);
+        this.timerActive = false;
+        this.ramainingTime = 180; // Reiniciar a 180 segundos
+        this.createSesion(); // Acción al finalizar el cronómetro
     },
     toggleTimer() {
-      if (!this.timerActive) {
-        this.timerActive = true;
-        this.startTimer();
-      } else {
-        if (!this.timerPaused) {
-          this.timerPaused = true;
-          clearInterval(this.timerInterval);
-        } else {
-          this.timerPaused = false;
+        if (!this.timerActive) {
           this.startTimer();
+        } else {
+          this.stopTimer();
         }
-      }
-    },
-    resetTimer() {
-      this.stopTimer();
-      this.ramainingTime = 180; // Restablecer el tiempo restante a 180 segundos
-      this.tiempoIncialSesion = null; // Reiniciar la sesión inicial
-      this.tiempoFinalSesion = null;  // Reiniciar la sesión final
     },
 
     createSesion() {
