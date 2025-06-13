@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <!-- <apexchart ref="realtimeChart1" type="line" height="350" :options="chartOptions" :series="series1" /> -->
-
+    <ChatBot />
     <div class="row mt-4 mx-4">
       <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
         <div class="widget widget-visitor-by-browser text-center">
@@ -525,6 +525,8 @@ import smoothie from 'smoothie';
 
 //Vue.use(VueApexCharts);
 
+import ChatBot from "./ChatBot.vue";
+
 //Vue.component('apexchart', VueApexCharts);
 import '@/assets/sass/widgets/widgets.scss';
 import '@/assets/sass/scrollspyNav.scss';
@@ -590,6 +592,7 @@ export default {
   name: 'home',
   components: {
     //apexchart: VueApexCharts,
+    ChatBot
   },
   data() {
     return {
