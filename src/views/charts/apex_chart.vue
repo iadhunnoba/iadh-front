@@ -971,6 +971,14 @@ export default {
       }, 60000);
     },
 
+    // Funcion para randomizar los valores de los arreglos de los gráficos
+    randomizeData([...arr]) {
+      for (let i = 0; i < arr.length; i++) {
+        arr[i] = arr[i] - Math.random() * 0.4 - 0.2 ; // Genera un valor aleatorio entre -0.2 y 0.2
+      }
+      return arr;
+    },
+
     //Pulso normal del corazón
     activateNormalPulseHeart(cycleSpace) {
       // Pre armado del array
@@ -984,8 +992,10 @@ export default {
       this.graphicData = [0, 0, 0, 0, 0.25, 0.5, 0, 0, 0, -0.8, 4, -1.3, 0, 0, 0.9, 1, 0.8, 0, 0, 0, 0, 0, 0, 0, 0.3, 0.5, 0, 0, 0, -0.8, 4, -1.3, 0, 0, 0.9, 1, 0.8, 0, 0, 0];
       */
 
-      this.graphicData = [0, 0, 0, 0, 0.45, 0.5, 0, 0, 0, -0.6, 4, -1.3, 0, 0, 0, 0, 0.65, 0.8, 0.65, 0, 0, 0, 0, 0,
-      ];
+      //Valores del arreglo original
+      const baseArray = [0, 0, 0, 0, 0.45, 0.5, 0, 0, 0, -0.6, 4, -1.3, 0, 0, 0, 0, 0.65, 0.8, 0.65, 0, 0, 0, 0, 0,];
+
+      this.graphicData = this.randomizeData(baseArray);
 
       this.cycleSpace = cycleSpace;
       this.iterator = 0;
