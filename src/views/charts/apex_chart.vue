@@ -214,9 +214,11 @@
               <div class="col-12">
                 <div class="custom-progress progress-up mb-2" style="width: 100%">
                   <div class="range-count">
-                    <span class="range-count-number" v-bind:class="{ warning: isWarningPulseHeart }"
+                    <span class="range-count-number" v-bind:class="{ warning: isWarningFC }"
                       v-bind:style="{ fontSize: 2.5 + 'em' }">FC: {{ slider1 }}</span>
                   </div>
+                  <b-input v-if="permisos" type="range" v-model="slider1" :min="0" :max="100"
+                class="progress-range-counter"></b-input>
                 </div>
               </div>
               <!--    <div v-if="permisos" class="row">
@@ -579,7 +581,7 @@ export default {
       slider3: 120, // valor inicial sugerido
       slider4: 80,  // valor inicial sugerido
       isWarningSpO2: false,
-      isWarningPulseHeart: false,
+      isWarningFC: false,
       isWarningTAA: false,
       isWarningTAB: false,
       bloodPressure: '',
@@ -819,7 +821,7 @@ export default {
     // Hay que ver a que valores hay que activar los warning
 
     this.$watch('slider1', (sliderValue) => {
-      this.isWarningPulseHeart = sliderValue <= 40;
+      this.isWarningFC = sliderValue <= 40;
     });
     
     this.$watch('slider2', (sliderValue) => {
