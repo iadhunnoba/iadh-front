@@ -178,38 +178,25 @@
             <b-modal id="functionModal" ref="functionModal" title="Funciones" :hide-footer="true">
               <div v-if="permisos" class="row">
                 <div class="col-4 col-md-6">
-                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateNormalPulseHeart(120)">Activar pulso
-                    normal
-                    del
-                    corazón</b-button>
+                  <b-button variant="info" class="w-100 mb-3 mr-1 equal-btn" @click="activateNormalPulseHeart(120)">Activar ritmo sinusal del corazón</b-button>
                 </div>
                 <div class="col-4 col-md-6">
-                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateLowPulseHeart">Activar frecuencia
-                    cardiaca
-                    baja</b-button>
+                  <b-button variant="info" class="w-100 mb-3 mr-1 equal-btn" @click="activateLowPulseHeart">Activar bradicardia sinusal</b-button>
                 </div>
                 <div class="col-4 col-md-6">
-                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateFastPulseHeart">Activar frecuencia
-                    cardiaca
-                    alta</b-button>
+                  <b-button variant="info" class="w-100 mb-3 mr-1 equal-btn" @click="activateFastPulseHeart">Activar taquicardia sinusal</b-button>
                 </div>
                 <div class="col-4 col-md-6">
-                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateVentricularFibrillation">Activar
-                    fibrilación
-                    ventricular</b-button>
+                  <b-button variant="info" class="w-100 mb-3 mr-1 equal-btn" @click="activateVentricularFibrillation">Activar fibrilación ventricular</b-button>
                 </div>
                 <div class="col-4 col-md-6">
-                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateVentricularTachycardia">Activar
-                    taquicarida
-                    ventricular</b-button>
+                  <b-button variant="info" class="w-100 mb-3 mr-1 equal-btn" @click="activateVentricularTachycardia">Activar taquicardia ventricular</b-button>
                 </div>
                 <div class="col-4 col-md-6">
-                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateStElevation">Elevación de
-                    ST</b-button>
+                  <b-button variant="info" class="w-100 mb-3 mr-1 equal-btn" @click="activateStElevation"> Supradesnivel del ST</b-button>
                 </div>
                 <div class="col-4 col-md-6">
-                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateAsystole">Activar
-                    asistolia</b-button>
+                  <b-button variant="info" class="w-100 mb-3 mr-1 equal-btn" @click="activateAsystole">Activar asistolia</b-button>
                 </div>
               </div>
             </b-modal>
@@ -228,7 +215,7 @@
                 <div class="custom-progress progress-up mb-2" style="width: 100%">
                   <div class="range-count">
                     <span class="range-count-number" v-bind:class="{ warning: isWarningPulseHeart }"
-                      v-bind:style="{ fontSize: 2.5 + 'em' }">HR: {{ slider1 }}</span>
+                      v-bind:style="{ fontSize: 2.5 + 'em' }">FC: {{ slider1 }}</span>
                   </div>
                 </div>
               </div>
@@ -278,7 +265,7 @@
           <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-12 col-12">
             <div class="custom-progress progress-up" style="width: 100%">
               <div class="range-count">
-                <span class="range-count-number" v-bind:class="{ warning: isWarning }"
+                <span class="range-count-number" v-bind:class="{ warning: isWarningSpO2 }"
                   v-bind:style="{ fontSize: 2.5 + 'em' }">SpO2: {{ slider2 }}</span>
               </div>
               <b-input v-if="permisos" type="range" v-model="slider2" :min="0" :max="100"
@@ -293,10 +280,15 @@
           <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-12">
             <div class="custom-progress progress-up" style="width: 100%">
               <div class="range-count">
-                <span class="range-count-number" v-bind:style="{ fontSize: 2.5 + 'em' }">ABP: {{ bloodPressure }}</span>
+                <span class="range-count-number" v-bind:class="{ warning: isWarningTAA || isWarningTAB }"
+                  v-bind:style="{ fontSize: 2.5 + 'em' }">TA: {{ slider3 }} / {{ slider4 }}</span>
               </div>
-            </div>
-          </div>
+              <b-input v-if="permisos" type="range" v-model="slider3" :min="0" :max="120"
+                class="progress-range-counter"></b-input>
+              <b-input v-if="permisos" type="range" v-model="slider4" :min="0" :max="100"
+                class="progress-range-counter"></b-input>
+            </div> 
+          </div> 
         </div>
       </div>
       <!-- <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12 layout-spacing">
@@ -584,8 +576,12 @@ export default {
       permisos: true,
       slider1: 60,
       slider2: 100,
-      isWarning: false,
+      slider3: 120, // valor inicial sugerido
+      slider4: 80,  // valor inicial sugerido
+      isWarningSpO2: false,
       isWarningPulseHeart: false,
+      isWarningTAA: false,
+      isWarningTAB: false,
       bloodPressure: '',
       timepoInicialSesion: null,
       timepoFinalSesion: null,
@@ -820,13 +816,24 @@ export default {
       } 
     }); */
 
-    this.$watch('slider2', (sliderValue) => {
-      this.isWarning = sliderValue < 90;
-    });
+    // Hay que ver a que valores hay que activar los warning
 
     this.$watch('slider1', (sliderValue) => {
       this.isWarningPulseHeart = sliderValue <= 40;
     });
+    
+    this.$watch('slider2', (sliderValue) => {
+      this.isWarningSpO2 = sliderValue < 90;
+    });
+
+    this.$watch('slider3', (sliderValue) => {
+      this.isWarningTAA = sliderValue < 90;
+    });
+
+    this.$watch('slider4', (sliderValue) => {
+      this.isWarningTAB = sliderValue < 90;
+    });
+
   },
 
   computed: {
@@ -1238,6 +1245,14 @@ export default {
   animation: blink 1s infinite;
 }
 
+.equal-btn {
+  height: 55px;      /* Ajustar el alto a gusto */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
 @keyframes blink {
   0% {
     background-color: transparent;
@@ -1251,4 +1266,4 @@ export default {
     background-color: transparent;
   }
 }
-</style> 
+</style>
