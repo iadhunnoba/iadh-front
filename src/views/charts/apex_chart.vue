@@ -178,20 +178,13 @@
             <b-modal id="functionModal" ref="functionModal" title="Funciones" :hide-footer="true">
               <div v-if="permisos" class="row">
                 <div class="col-4 col-md-6">
-                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateNormalPulseHeart(120)">Activar pulso
-                    normal
-                    del
-                    corazón</b-button>
+                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateNormalPulseHeart(120)">Activar ritmo sinusal del corazón</b-button>
                 </div>
                 <div class="col-4 col-md-6">
-                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateLowPulseHeart">Activar frecuencia
-                    cardiaca
-                    baja</b-button>
+                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateLowPulseHeart">Activar bradicardia sinusal</b-button>
                 </div>
                 <div class="col-4 col-md-6">
-                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateFastPulseHeart">Activar frecuencia
-                    cardiaca
-                    alta</b-button>
+                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateFastPulseHeart">Activar taquicardia sinusal</b-button>
                 </div>
                 <div class="col-4 col-md-6">
                   <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateVentricularFibrillation">Activar
@@ -200,12 +193,11 @@
                 </div>
                 <div class="col-4 col-md-6">
                   <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateVentricularTachycardia">Activar
-                    taquicarida
+                    taquicardia
                     ventricular</b-button>
                 </div>
                 <div class="col-4 col-md-6">
-                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateStElevation">Elevación de
-                    ST</b-button>
+                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateStElevation">Supradesnivel del ST</b-button>
                 </div>
                 <div class="col-4 col-md-6">
                   <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateAsystole">Activar
@@ -228,8 +220,10 @@
                 <div class="custom-progress progress-up mb-2" style="width: 100%">
                   <div class="range-count">
                     <span class="range-count-number" v-bind:class="{ warning: isWarningPulseHeart }"
-                      v-bind:style="{ fontSize: 2.5 + 'em' }">HR: {{ slider1 }}</span>
+                      v-bind:style="{ fontSize: 2.5 + 'em' }">FC: {{ slider1 }}</span>
                   </div>
+                  <b-input v-if="permisos" type="range" v-model="slider1" :min="0" :max="240"
+                class="progress-range-counter"></b-input>
                 </div>
               </div>
               <!--    <div v-if="permisos" class="row">
@@ -293,7 +287,13 @@
           <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-12">
             <div class="custom-progress progress-up" style="width: 100%">
               <div class="range-count">
-                <span class="range-count-number" v-bind:style="{ fontSize: 2.5 + 'em' }">ABP: {{ bloodPressure }}</span>
+                <!-- <span class="range-count-number" v-bind:style="{ fontSize: 2.5 + 'em' }">TA: {{ bloodPressure }}</span> -->
+                <span class="range-count-number" v-bind:class="{  warning: isWarningSystolicPressure || isWarningDiastolicPressure}"
+                  v-bind:style="{ fontSize: 2.5 + 'em' }">TA: {{ slider3 }}/{{slider4}}</span>
+                <b-input v-if="permisos" type="range" v-model="slider3" :min="0" :max="120"
+                class="progress-range-counter"></b-input>
+                <b-input v-if="permisos" type="range" v-model="slider4" :min="0" :max="80"
+                class="progress-range-counter"></b-input>
               </div>
             </div>
           </div>
@@ -582,11 +582,16 @@ export default {
     return {
       tokenInflux: process.env.INFLUXDB_TOKEN,
       permisos: true,
-      slider1: 60,
+      slider1: 75,
       slider2: 100,
+      slider3: 120,
+      slider4: 80,
       isWarning: false,
       isWarningPulseHeart: false,
+      isWarningSystolicPressure: false,
+      isWarningDiastolicPressure: false,
       bloodPressure: '',
+      isVentricularTachycardia: false,
       timepoInicialSesion: null,
       timepoFinalSesion: null,
       series1: [{ data: data1.slice() }],
@@ -825,8 +830,16 @@ export default {
     });
 
     this.$watch('slider1', (sliderValue) => {
-      this.isWarningPulseHeart = sliderValue <= 40;
+      this.isWarningPulseHeart = sliderValue < 60 || sliderValue > 100;
     });
+
+    this.$watch('slider3', (sliderValue) => {
+      this.isWarningSystolicPressure = sliderValue < 100;
+    })
+
+    this.$watch('slider4', (sliderValue) => {
+      this.isWarningDiastolicPressure = sliderValue < 60;
+    })
   },
 
   computed: {
@@ -884,6 +897,29 @@ export default {
       return option;
     },
   },
+
+  watch:{
+
+      slider1(sliderValue){
+
+        if(this.isVentricularTachycardia){
+
+          if (sliderValue == '0') {
+
+            this.activateAsystole();
+
+          }else{
+
+            this.setVentricularTachycardia();
+            this.$refs.functionModal.hide();
+
+          }
+
+        }
+
+      }
+
+    },
 
   methods: {
 
@@ -984,12 +1020,12 @@ export default {
       this.graphicData = [0, 0, 0, 0, 0.25, 0.5, 0, 0, 0, -0.8, 4, -1.3, 0, 0, 0.9, 1, 0.8, 0, 0, 0, 0, 0, 0, 0, 0.3, 0.5, 0, 0, 0, -0.8, 4, -1.3, 0, 0, 0.9, 1, 0.8, 0, 0, 0];
       */
 
-      this.graphicData = [0, 0, 0, 0, 0.45, 0.5, 0, 0, 0, -0.6, 4, -1.3, 0, 0, 0, 0, 0.65, 0.8, 0.65, 0, 0, 0, 0, 0,
+      this.graphicData = [0, 0, 0, 0.1, 0.45, 0.5, 0, 0, 0, -0.6, 4, -1.3, 0, 0, 0, 0, 0.65, 0.8, 0.65, 0.1, 0.1, 0.1, 0.1, 0.1,
       ];
 
       this.cycleSpace = cycleSpace;
       this.iterator = 0;
-      this.slider1 = '60';
+      this.slider1 = '75';
 
       // Activo la saturación de oxígeno normal
       this.activateSaturation();
@@ -1023,14 +1059,16 @@ export default {
       this.cycleSpaceSaturation = 1000;
 
       // Tensiòn Arterial baja (90/60)
-      this.cycleSpacePressure = 1000;
+      this.graphicPressure = [4,2,2.8,2,1.75,1.5,1.25,1]
+      this.cycleSpacePressure = 365;
       this.bloodPressure = '90/60';
       this.$refs.functionModal.hide();
     },
 
     //Pulso bajo del corazón
     activateFastPulseHeart() {
-      this.activateNormalPulseHeart(120);
+
+      this.graphicPressure = [5,2.5,0];
       this.slider1 = '85';
 
       /*   // Eliminar ceros al principio del arreglo
@@ -1077,11 +1115,36 @@ export default {
       Arreglo original:
       this.graphicData = [-0.4, 3, -0.4, 1.3, 2.8, -1, 3.1, -0.4, 1.8, 3.5, -1, 3.3, 1.1, 2, 1.2, 1.6, -1, 3.3, -0.9, 2.9, -0.7,2.6, 1, 2.4, -0.2, 1.3, 3, -0.2]
       */
+
       this.graphicData = [-0.4, 3, -0.4, 1.3, 2.8, -1, 3.1, -0.4, 1.8, 3.5, -1, 3.3, 1.1, 2, 1.2, 1.6, -1, 3.3, -0.9, 2.9, -0.7, 2.6, 1, 2.4, -0.2, 1.3, 3, -0.2, -1, 3.3, 1.1, 2, 1.2, 1.6, -1];
+
+      this.graphicPressure = [0];
+
+      this.graphicSaturation = [0];
+
+      this.iteratorPressure = 0;
+
+      this.iteratorSaturation = 0;
 
       this.cycleSpace = 180;
       this.iterator = 0;
       this.$refs.functionModal.hide();
+    },
+
+    setVentricularTachycardia(){
+
+      this.graphicData = [5, -2];
+      this.cycleSpace = 550;
+      this.iterator = 0;
+
+      this.graphicSaturation = [4.6, 1.35, 1.6, -1.7];
+      this.cycleSpaceSaturation = 700;
+      this.iteratorSaturation = 0;
+
+      this.graphicPressure = [1.9, 0.9, 1.1, -0.9];
+      this.cycleSpacePressure = 700;
+      this.iteratorPressure = 0;
+
     },
 
     // Taquicardia ventricular
@@ -1097,18 +1160,18 @@ export default {
       -1.2, -0.6, 1, 2.4, 2.5, 2.7, 0.5, -1.7,
       ]
       */
-      this.graphicData = [4.2, -3.8];
 
-      this.cycleSpace = 550;
-      this.iterator = 0;
+      this.isVentricularTachycardia = true;
+      this.setVentricularTachycardia();
       this.$refs.functionModal.hide();
+
     },
 
     // Asistolia
     activateAsystole() {
       this.graphicData = [0];
       this.iterator = 0;
-      this.slider1 = '--';
+      this.slider1 = 0;
 
       this.graphicSaturation = [0];
       this.iteratorSaturation = 0;
@@ -1130,8 +1193,8 @@ export default {
 
     // Tensiòn Arterial normal (120/80)
     activatePressure() {
-      this.graphicPressure = [1.2, 0.2, 0.4, -0.3];
-      this.cycleSpacePressure = 700;
+      this.graphicPressure = [4,2,2.8,2.25,2,1.75,1.5,1.25,1];
+      this.cycleSpacePressure = 250;
       this.iteratorPressure = 0;
       this.$refs.functionModal.hide();
     },
