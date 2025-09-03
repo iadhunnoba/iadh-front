@@ -214,14 +214,10 @@
               <div class="col-12">
                 <div class="custom-progress progress-up mb-2" style="width: 100%">
                   <div class="range-count">
-                    <span class="range-count-number" v-bind:class="{ warning: isWarningPulseHeart }"
-                      v-bind:style="{ fontSize: 2.5 + 'em' }">FC: {{ slider1 }}</span>
                     <span class="range-count-number" v-bind:class="{ warning: isWarningFC }"
                       v-bind:style="{ fontSize: 2.5 + 'em' }">FC: {{ slider1 }}</span>
                   </div>
                   <b-input v-if="permisos" type="range" v-model="slider1" :min="0" :max="240"
-                class="progress-range-counter"></b-input>
-                  <b-input v-if="permisos" type="range" v-model="slider1" :min="0" :max="100"
                 class="progress-range-counter"></b-input>
                 </div>
               </div>
