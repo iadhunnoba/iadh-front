@@ -1,20 +1,5 @@
 <template>
     <div class="layout-px-spacing">
-        <portal to="breadcrumb">
-            <ul class="navbar-nav flex-row">
-                <li>
-                    <div class="page-header">
-                        <nav class="breadcrumb-one" aria-label="breadcrumb">
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="javascript:;">DataTables</a></li>
-                                <li class="breadcrumb-item active" aria-current="page"><span>Alternative Pagination</span></li>
-                            </ol>
-                        </nav>
-                    </div>
-                </li>
-            </ul>
-        </portal>
-
         <div class="row layout-top-spacing">
             <div class="col-xl-12 col-lg-12 col-sm-12 layout-spacing">
                 <div class="panel br-6 p-0">
@@ -53,7 +38,9 @@
                             </div>
                         </div>
 
-                        <b-table
+                        <!-- Los elementos de la tabla son sacados de list.vue, hay que remplazarlos para utilizar el endpoint /users -->
+                        
+                        <b-table        
                             ref="basic_table"
                             responsive
                             :items="items"
@@ -168,6 +155,9 @@
                     { key: 'salary', label: 'Salary', sortable: true },
                     { key: 'action', label: 'Actions', class: 'actions text-center' }
                 ];
+
+                /* Mock de datos, aca podemos simular la respuesta del endpoint /users */
+
                 this.items = [
                     { id: 1, name: 'Tiger Nixon', position: 'System Architect', office: 'Edinburgh', age: 61, start_date: '2011/04/25', salary: '320,800' },
                     { id: 2, name: 'Garrett Winters', position: 'Accountant', office: 'Tokyo', age: 63, start_date: '2011/07/25', salary: '170,750' },
