@@ -76,7 +76,7 @@
                         </b-table>
 
                         <div class="table-footer">
-                            <div class="dataTables_info"> Mostrando {{ meta.total_items ? meta.start_index + 1 : 0 }} a {{ meta.end_index + 1 }} de {{ meta.total_items }}</div>
+                            <div class="dataTables_info"> Mostrando del {{ meta.total_items ? meta.start_index + 1 : 0 }} al {{ meta.end_index + 1 }} de {{ meta.total_items }}</div>
                             <div class="paginating-container pagination-solid flex-column align-items-right">
                                 <b-pagination
                                     v-model="table_option.current_page"
@@ -242,7 +242,7 @@
                     this.items = response.data;
 
                     if (this.items.length > 0) {
-                        this.generateColumns();
+                        this.generateColumns(this.items[0]);
                     }
 
                     this.table_option.total_rows = this.items.length;
