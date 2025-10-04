@@ -516,7 +516,8 @@ const routes = [
     {
         path: '/tables/alt-pagination',
         name: 'alt-pagination',
-        component: () => import(/* webpackChunkName: "tables-alt-pagination" */ '../views/tables/alt_pagination.vue')
+        component: () => import(/* webpackChunkName: "tables-alt-pagination" */ '../views/tables/alt_pagination.vue'), 
+        meta: { requiresAuth: true }
     },
     {
         path: '/tables/custom',

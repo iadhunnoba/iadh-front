@@ -8,7 +8,24 @@
 
                             <h1 class="">Login docente</h1>
                             <p class="">Inicie sesión para continuar.</p>
-                            <p v-if="errorMessage">
+
+                            <!-- Banner de credenciales MOCK -->
+                            <div v-if="showMockCredentials" class="alert alert-info" style="margin-bottom: 20px;">
+                                <h6>🧪 Modo Testing - Credenciales Mock:</h6>
+                                <p style="margin: 5px 0;">
+                                    <strong>Email:</strong> {{ mockCredentials.email }}<br>
+                                    <strong>Password:</strong> {{ mockCredentials.password }}
+                                </p>
+                                <button 
+                                    type="button" 
+                                    class="btn btn-sm btn-success"
+                                    @click="fillMockCredentials"
+                                    style="margin-top: 5px;">
+                                    Autocompletar
+                                </button>
+                            </div>
+
+                            <p v-if="error" class="alert alert-danger">
                                 {{ errorMessage }}
                             </p>
 
@@ -30,8 +47,7 @@
 
                                     <div id="password-field" class="field-wrapper input mb-2">
                                         <div class="d-flex justify-content-between">
-                                            <label for="password">PASSWORD</label>
-                                            <router-link to="/auth/pass-recovery-boxed" class="forgot-pass-link">¿Olvidó su contraseña?</router-link>
+                                            <label for="password">CONTRASEÑA</label>
                                         </div>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -41,39 +57,22 @@
                                         </svg>
                                         <b-input :type="pwd_type" placeholder="Contraseña" v-model="password" :disabled="loading"></b-input>
                                         <svg @click="set_pwd_type" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round" id="toggle-password"
-                                            class="feather feather-eye">
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" 
+                                            stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye toggle-password">
                                             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                             <circle cx="12" cy="12" r="3"></circle>
                                         </svg>
                                     </div>
+
                                     <div class="d-sm-flex justify-content-between">
                                         <div class="field-wrapper">
-                                            <b-button type="submit" variant="primary" value="" :disabled="loading">
+                                            <button type="submit" class="btn btn-primary" :disabled="loading">
                                                 <span v-if="loading">Cargando...</span>
-                                                <span v-else>Iniciar Sesión</span>
-                                            </b-button>
+                                                <span v-else>Iniciar sesión</span>
+                                            </button>
                                         </div>
                                     </div>
 
-                                    <!-- <div class="division">
-                                        <span>OR</span>
-                                    </div>
-
-                                    <div class="social">
-                                        <a href="javascript:void(0);" class="btn social-fb">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-facebook"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
-                                            <span class="brand-name">Facebook</span>
-                                        </a>
-                                        <a href="javascript:void(0);" class="btn social-github">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-github"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
-                                            <span class="brand-name">Github</span>
-                                        </a>
-                                    </div>
-
-                                    <p class="signup-link">Not registered ? <router-link to="/auth/register-boxed">Create an account</router-link></p>
- -->
                                 </div>
                             </b-form>
 
@@ -100,7 +99,9 @@ export default {
             error: false,
             errorMessage: "",
             pwd_type: 'password',
-            loading: false
+            loading: false,
+            showMockCredentials: process.env.NODE_ENV === 'development',
+            mockCredentials: authService.getMockCredentials()
         }
     },
     created() {
@@ -109,12 +110,16 @@ export default {
             this.$router.push('/');
         }
     },
-    mounted() {
-    },
     methods: {
         set_pwd_type() {
             if (this.pwd_type == 'password') { this.pwd_type = 'text'; } else { this.pwd_type = 'password'; }
         },
+        
+        fillMockCredentials() {
+            this.email = this.mockCredentials.email;
+            this.password = this.mockCredentials.password;
+        },
+        
         async login() {
             // Validación básica
             if (!this.email || !this.password) {
@@ -151,6 +156,16 @@ export default {
     }
 };
 </script>
+
+<style scoped>
+.alert-info {
+    background-color: #e7f3ff;
+    border: 1px solid #b3d9ff;
+    color: #004085;
+    padding: 15px;
+    border-radius: 5px;
+}
+</style>
 
 
 
