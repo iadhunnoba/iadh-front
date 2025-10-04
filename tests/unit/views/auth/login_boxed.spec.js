@@ -38,6 +38,9 @@ describe('LoginBoxed.vue', () => {
                 $route: {
                     query: {}
                 }
+            },
+            stubs: {
+                'router-link': true
             }
         });
     });
@@ -58,7 +61,7 @@ describe('LoginBoxed.vue', () => {
         });
 
         it('should have initial data values', () => {
-            expect(wrapper.vm.usuario).toBe('');
+            expect(wrapper.vm.email).toBe('');
             expect(wrapper.vm.password).toBe('');
             expect(wrapper.vm.loading).toBe(false);
             expect(wrapper.vm.error).toBe(false);
@@ -81,6 +84,9 @@ describe('LoginBoxed.vue', () => {
                     $route: {
                         query: {}
                     }
+                },
+                stubs: {
+                    'router-link': true
                 }
             });
 
@@ -106,40 +112,40 @@ describe('LoginBoxed.vue', () => {
     });
 
     describe('login method', () => {
-        it('should show error when username is empty', async () => {
-            wrapper.vm.usuario = '';
+        it('should show error when email is empty', async () => {
+            wrapper.vm.email = '';
             wrapper.vm.password = 'password123';
 
             await wrapper.vm.login();
 
             expect(wrapper.vm.error).toBe(true);
-            expect(wrapper.vm.errorMessage).toBe('Por favor ingrese usuario y contraseña');
+            expect(wrapper.vm.errorMessage).toBe('Por favor ingrese email y contraseña');
             expect(authService.login).not.toHaveBeenCalled();
         });
 
         it('should show error when password is empty', async () => {
-            wrapper.vm.usuario = 'testuser';
+            wrapper.vm.email = 'test@example.com';
             wrapper.vm.password = '';
 
             await wrapper.vm.login();
 
             expect(wrapper.vm.error).toBe(true);
-            expect(wrapper.vm.errorMessage).toBe('Por favor ingrese usuario y contraseña');
+            expect(wrapper.vm.errorMessage).toBe('Por favor ingrese email y contraseña');
             expect(authService.login).not.toHaveBeenCalled();
         });
 
         it('should login successfully and redirect to home', async () => {
-            wrapper.vm.usuario = 'testuser';
+            wrapper.vm.email = 'test@example.com';
             wrapper.vm.password = 'password123';
             
             authService.login.mockResolvedValue({
                 success: true,
-                user: { id: 1, username: 'testuser' }
+                user: { id: 1, email: 'test@example.com' }
             });
 
             await wrapper.vm.login();
 
-            expect(authService.login).toHaveBeenCalledWith('testuser', 'password123');
+            expect(authService.login).toHaveBeenCalledWith('test@example.com', 'password123');
             expect(wrapper.vm.loading).toBe(false);
             expect(wrapper.vm.error).toBe(false);
             expect(mockPush).toHaveBeenCalledWith('/');
@@ -157,15 +163,18 @@ describe('LoginBoxed.vue', () => {
                     $route: {
                         query: { redirect: '/students' }
                     }
+                },
+                stubs: {
+                    'router-link': true
                 }
             });
 
-            wrapper.vm.usuario = 'testuser';
+            wrapper.vm.email = 'test@example.com';
             wrapper.vm.password = 'password123';
             
             authService.login.mockResolvedValue({
                 success: true,
-                user: { id: 1, username: 'testuser' }
+                user: { id: 1, email: 'test@example.com' }
             });
 
             await wrapper.vm.login();
@@ -174,7 +183,7 @@ describe('LoginBoxed.vue', () => {
         });
 
         it('should show error message on login failure', async () => {
-            wrapper.vm.usuario = 'testuser';
+            wrapper.vm.email = 'test@example.com';
             wrapper.vm.password = 'wrongpassword';
             
             authService.login.mockResolvedValue({
@@ -190,25 +199,25 @@ describe('LoginBoxed.vue', () => {
         });
 
         it('should handle unexpected errors', async () => {
-            wrapper.vm.usuario = 'testuser';
+            wrapper.vm.email = 'test@example.com';
             wrapper.vm.password = 'password123';
             
             authService.login.mockRejectedValue(new Error('Network error'));
 
-            const consoleErrorSpy = jest.spyOn(console, 'error');
+            const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
 
             await wrapper.vm.login();
 
             expect(wrapper.vm.error).toBe(true);
             expect(wrapper.vm.errorMessage).toBe('Error inesperado al iniciar sesión');
             expect(wrapper.vm.loading).toBe(false);
-            expect(consoleErrorSpy).toHaveBeenCalledWith(expect.any(Error));
+            expect(consoleErrorSpy).toHaveBeenCalledWith('Login error:', expect.any(Error));
 
             consoleErrorSpy.mockRestore();
         });
 
         it('should set loading state correctly during login', async () => {
-            wrapper.vm.usuario = 'testuser';
+            wrapper.vm.email = 'test@example.com';
             wrapper.vm.password = 'password123';
             
             let resolveLogin;
