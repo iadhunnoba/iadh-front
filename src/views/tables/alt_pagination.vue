@@ -76,7 +76,7 @@
                         </b-table>
 
                         <div class="table-footer">
-                            <div class="dataTables_info">Showing {{ meta.total_items ? meta.start_index + 1 : 0 }} to {{ meta.end_index + 1 }} of {{ meta.total_items }}</div>
+                            <div class="dataTables_info"> Mostrando {{ meta.total_items ? meta.start_index + 1 : 0 }} a {{ meta.end_index + 1 }} de {{ meta.total_items }}</div>
                             <div class="paginating-container pagination-solid flex-column align-items-right">
                                 <b-pagination
                                     v-model="table_option.current_page"
@@ -123,14 +123,91 @@
 </template>
 
 <script>
+    import axios from 'axios';
+
     export default {
-        metaInfo: { title: 'Bootstrap Alternative Pagination' },
+        metaInfo: { title: 'Gestión de Estudiantes' },
         data() {
             return {
                 items: [],
                 columns: [],
                 table_option: { total_rows: 0, current_page: 1, page_size: 10, search_text: '' },
-                meta: {}
+                meta: {},
+                loading: false,
+                error: null,
+                // Mock data - TEMPORAL (eliminar después)
+                mockStudents: [
+                    {
+                        id: 1,
+                        username: 'jperez@comunidad.unnoba.edu.ar',
+                        name: 'Juan',
+                        surname: 'Pérez',
+                        studentIdNumber: '44123456'
+                    },
+                    {
+                        id: 2,
+                        username: 'mgarcia@comunidad.unnoba.edu.ar',
+                        name: 'María',
+                        surname: 'García',
+                        studentIdNumber: '43987654'
+                    },
+                    {
+                        id: 3,
+                        username: 'crodriguez@comunidad.unnoba.edu.ar',
+                        name: 'Carlos',
+                        surname: 'Rodríguez',
+                        studentIdNumber: '42654321'
+                    },
+                    {
+                        id: 4,
+                        username: 'amartinez@comunidad.unnoba.edu.ar',
+                        name: 'Ana',
+                        surname: 'Martínez',
+                        studentIdNumber: '45123789'
+                    },
+                    {
+                        id: 5,
+                        username: 'psanchez@comunidad.unnoba.edu.ar',
+                        name: 'Pedro',
+                        surname: 'Sánchez',
+                        studentIdNumber: '43456123'
+                    },
+                    {
+                        id: 6,
+                        username: 'lfernandez@comunidad.unnoba.edu.ar',
+                        name: 'Laura',
+                        surname: 'Fernández',
+                        studentIdNumber: '44789456'
+                    },
+                    {
+                        id: 7,
+                        username: 'dlopez@comunidad.unnoba.edu.ar',
+                        name: 'Diego',
+                        surname: 'López',
+                        studentIdNumber: '42987123'
+                    },
+                    {
+                        id: 8,
+                        username: 'sramirez@comunidad.unnoba.edu.ar',
+                        name: 'Sofia',
+                        surname: 'Ramírez',
+                        studentIdNumber: '45654987'
+                    },
+                    {
+                        id: 9,
+                        username: 'jcgomez@comunidad.unnoba.edu.ar',
+                        name: 'Juan Carlos',
+                        surname: 'Gomez',
+                        studentIdNumber: '43321654'
+                    },
+                    {
+                        id: 10,
+                        username: 'mjtorres@comunidad.unnoba.edu.ar',
+                        name: 'María José',
+                        surname: 'Torres',
+                        studentIdNumber: '44852963'
+                    }
+                ]
             };
         },
         watch: {
@@ -142,68 +219,141 @@
             }
         },
         mounted() {
-            this.bind_data();
+            this.fetchStudents();
         },
         methods: {
-            bind_data() {
-                this.columns = [
-                    { key: 'name', label: 'Name', sortable: true },
-                    { key: 'position', label: 'Position', sortable: true },
-                    { key: 'office', label: 'Office', sortable: true },
-                    { key: 'age', label: 'Age', sortable: true },
-                    { key: 'start_date', label: 'Start Date', sortable: true },
-                    { key: 'salary', label: 'Salary', sortable: true },
-                    { key: 'action', label: 'Actions', class: 'actions text-center' }
-                ];
+            async fetchStudents() {
+                this.loading = true;
+                this.error = null;
 
-                /* Mock de datos, aca podemos simular la respuesta del endpoint /users */
+                try {
+                    const token = localStorage.getItem('token');
+                    
+                    if (!token) {
+                        throw new Error('No hay token de autenticación');
+                    }
 
-                this.items = [
-                    { id: 1, name: 'Tiger Nixon', position: 'System Architect', office: 'Edinburgh', age: 61, start_date: '2011/04/25', salary: '320,800' },
-                    { id: 2, name: 'Garrett Winters', position: 'Accountant', office: 'Tokyo', age: 63, start_date: '2011/07/25', salary: '170,750' },
-                    { id: 3, name: 'Ashton Cox', position: 'Junior Technical Author', office: 'San Francisco', age: 66, start_date: '2009/01/12', salary: '86,000' },
-                    { id: 4, name: 'Cedric Kelly', position: 'Senior Javascript Developer', office: 'Edinburgh', age: 22, start_date: '2012/03/29', salary: '433,060' },
-                    { id: 5, name: 'Airi Satou', position: 'Accountant', office: 'Tokyo', age: 33, start_date: '2008/11/28', salary: '162,700' },
-                    { id: 6, name: 'Brielle Williamson', position: 'Integration Specialist', office: 'New York', age: 61, start_date: '2012/12/02', salary: '372,000' },
-                    { id: 7, name: 'Herrod Chandler', position: 'Sales Assistant', office: 'San Francisco', age: 59, start_date: '2012/08/06', salary: '137,500' },
-                    { id: 8, name: 'Rhona Davidson', position: 'Integration Specialist', office: 'Tokyo', age: 55, start_date: '2010/10/14', salary: '327,900' },
-                    { id: 9, name: 'Colleen Hurst', position: 'Javascript Developer', office: 'San Francisco', age: 39, start_date: '2009/09/15', salary: '205,500' },
-                    { id: 10, name: 'Sonya Frost', position: 'Software Engineer', office: 'Edinburgh', age: 23, start_date: '2008/12/13', salary: '103,600' },
-                    { id: 11, name: 'Jena Gaines', position: 'Office Manager', office: 'London', age: 30, start_date: '2008/12/19', salary: '90,560' },
-                    { id: 12, name: 'Quinn Flynn', position: 'Support Lead', office: 'Edinburgh', age: 22, start_date: '2013/03/03', salary: '342,000' },
-                    { id: 13, name: 'Charde Marshall', position: 'Regional Director', office: 'San Francisco', age: 36, start_date: '2008/10/16', salary: '470,600' },
-                    { id: 14, name: 'Haley Kennedy', position: 'Senior Marketing Designer', office: 'London', age: 43, start_date: '2012/12/18', salary: '313,500' },
-                    { id: 15, name: 'Tatyana Fitzpatrick', position: 'Regional Director', office: 'London', age: 19, start_date: '2010/03/17', salary: '385,750' },
-                    { id: 16, name: 'Michael Silva', position: 'Marketing Designer', office: 'London', age: 66, start_date: '2012/11/27', salary: '198,500' },
-                    { id: 17, name: 'Paul Byrd', position: 'Chief Financial Officer (CFO)', office: 'New York', age: 64, start_date: '2010/06/09', salary: '725,000' },
-                    { id: 18, name: 'Gloria Little', position: 'Systems Administrator', office: 'New York', age: 59, start_date: '2009/04/10', salary: '237,500' },
-                    { id: 19, name: 'Bradley Greer', position: 'Software Engineer', office: 'London', age: 41, start_date: '2012/10/13', salary: '132,000' },
-                    { id: 20, name: 'Dai Rios', position: 'Personnel Lead', office: 'Edinburgh', age: 35, start_date: '2012/09/26', salary: '217,500' },
-                    { id: 21, name: 'Jenette Caldwell', position: 'Development Lead', office: 'New York', age: 61, start_date: '2011/09/03', salary: '345,000' },
-                    { id: 22, name: 'Yuri Berry', position: 'Chief Marketing Officer (CMO)', office: 'New York', age: 40, start_date: '2009/06/25', salary: '675,000' },
-                    { id: 23, name: 'Caesar Vance', position: 'Pre-Sales Support', office: 'New York', age: 21, start_date: '2011/12/12', salary: '106,450' },
-                    { id: 24, name: 'Doris Wilder', position: 'Sales Assistant', office: 'Sidney', age: 23, start_date: '2010/09/20', salary: '85,600' },
-                    { id: 25, name: 'Angelica Ramos', position: 'Chief Executive Officer (CEO)', office: 'London', age: 47, start_date: '2009/10/09', salary: '1,200,000' },
-                    { id: 26, name: 'Gavin Joyce', position: 'Developer', office: 'Edinburgh', age: 42, start_date: '2010/12/22', salary: '92,575' },
-                    { id: 27, name: 'Jennifer Chang', position: 'Regional Director', office: 'Singapore', age: 28, start_date: '2010/11/14', salary: '57,650' }
-                ];
+                    const response = await axios.get('http://localhost:3000/students', {
+                        headers: {
+                            'auth': token
+                        }
+                    });
 
-                this.table_option.total_rows = this.items.length;
-                this.get_meta();
+                    this.items = response.data;
+
+                    if (this.items.length > 0) {
+                        this.generateColumns();
+                    }
+
+                    this.table_option.total_rows = this.items.length;
+                    this.get_meta();
+
+                    const newToken = response.headers['token'];
+                    if (newToken) {
+                        localStorage.setItem('token', newToken);
+                    }
+
+                } catch (error) {
+                    console.error('Error al obtener estudiantes:', error);
+                    this.error = error.response?.data?.message || error.message || 'Error al cargar estudiantes';
+                    
+                    // FALLBACK - Usar datos mock (TEMPORAL - eliminar después)
+                    console.warn('Usando datos mock de estudiantes como fallback');
+                    this.items = this.mockStudents;
+                    
+                    if (this.items.length > 0) {
+                        this.generateColumns(this.items[0]);
+                    }
+                    
+                    this.table_option.total_rows = this.items.length;
+                    this.get_meta();
+                } finally {
+                    this.loading = false;
+                }
             },
+
+            generateColumns() {
+                // Definir el orden específico de las columnas (sin ID)
+                const columnOrder = ['surname', 'name', 'username', 'studentIdNumber'];
+                
+                this.columns = columnOrder.map(key => {
+                    return {
+                        key: key,
+                        label: this.formatColumnLabel(key),
+                        sortable: true
+                    };
+                });
+
+                // Agregar columna de acciones al final
+                this.columns.push({
+                    key: 'action',
+                    label: 'Acciones',
+                    sortable: false,
+                    class: 'text-center'
+                });
+            },
+
+            formatColumnLabel(key) {
+                // Convertir camelCase a formato legible
+                const label = key
+                    .replace(/([A-Z])/g, ' $1')
+                    .replace(/^./, str => str.toUpperCase());
+                
+                // Traducciones específicas para campos de estudiantes
+                const translations = {
+                    'Id': 'ID',
+                    'Username': 'Email Institucional',
+                    'Name': 'Nombre',
+                    'Surname': 'Apellido',
+                    'Student Id Number': 'Legajo'
+                };
+
+                return translations[label] || label;
+            },
+
             on_filtered(filtered_items) {
                 this.refresh_table(filtered_items.length);
             },
+
             delete_row(item) {
-                if (confirm('Are you sure want to delete selected row ?')) {
-                    this.items = this.items.filter(d => d.id != item.id);
-                    this.refresh_table(this.items.length);
+                if (confirm(`¿Está seguro de que desea eliminar al estudiante ${item.name} ${item.surname}?`)) {
+                    // TEMPORAL - Para el mock solo removemos del array
+                    const index = this.items.findIndex(s => s.id === item.id);
+                    if (index !== -1) {
+                        this.items.splice(index, 1);
+                        this.table_option.total_rows = this.items.length;
+                        this.get_meta();
+                        alert(`Estudiante ${item.name} ${item.surname} eliminado (mock)`);
+                    }
+                    
+                    // Descomentar cuando la API esté funcionando:
+                    // this.deleteStudent(item.id);
                 }
             },
+
+            async deleteStudent(studentId) {
+                try {
+                    const token = localStorage.getItem('token');
+                    
+                    await axios.delete(`http://localhost:3000/students/${studentId}`, {
+                        headers: {
+                            'auth': token
+                        }
+                    });
+
+                    this.fetchStudents();
+                    alert('Estudiante eliminado correctamente');
+                } catch (error) {
+                    console.error('Error al eliminar estudiante:', error);
+                    alert(error.response?.data?.message || 'Error al eliminar el estudiante');
+                }
+            },
+
             refresh_table(total) {
                 this.table_option.total_rows = total;
-                this.table_option.currentPage = 1;
+                this.table_option.current_page = 1;
             },
+
             get_meta() {
                 var startPage;
                 var endPage;
@@ -224,8 +374,15 @@
                     startPage = 1;
                     endPage = totalPages;
                 }
+
                 let startIndex = (this.table_option.current_page - 1) * this.table_option.page_size;
                 let endIndex = Math.min(startIndex + this.table_option.page_size - 1, this.table_option.total_rows - 1);
+
+                // Asegurar valores válidos
+                if (this.table_option.total_rows === 0) {
+                    startIndex = -1;
+                    endIndex = -1;
+                }
 
                 var pages = Array.from(Array(endPage + 1 - startPage).keys()).map(i => startPage + i);
                 this.meta = {
