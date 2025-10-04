@@ -8,7 +8,7 @@
 
                             <h1 class="">Login docente</h1>
                             <p class="">Inicie sesión para continuar.</p>
-                            <p>
+                            <p v-if="errorMessage">
                                 {{ errorMessage }}
                             </p>
 
@@ -18,21 +18,20 @@
                                 <div class="form">
 
                                     <div id="username-field" class="field-wrapper input">
-                                        <label for="username">USERNAME</label>
+                                        <label for="email">EMAIL</label>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                             stroke-linejoin="round" class="feather feather-user">
                                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                                             <circle cx="12" cy="7" r="4"></circle>
                                         </svg>
-                                        <b-input placeholder="Usuario..." v-model="usuario"></b-input>
+                                        <b-input placeholder="Email" v-model="email" :disabled="loading"></b-input>
                                     </div>
 
                                     <div id="password-field" class="field-wrapper input mb-2">
                                         <div class="d-flex justify-content-between">
                                             <label for="password">PASSWORD</label>
-                                            <router-link to="/auth/pass-recovery-boxed" class="forgot-pass-link">Forgot
-                                                Password?</router-link>
+                                            <router-link to="/auth/pass-recovery-boxed" class="forgot-pass-link">¿Olvidó su contraseña?</router-link>
                                         </div>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -40,7 +39,7 @@
                                             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                                             <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                                         </svg>
-                                        <b-input :type="pwd_type" placeholder="Password" v-model="password"></b-input>
+                                        <b-input :type="pwd_type" placeholder="Contraseña" v-model="password" :disabled="loading"></b-input>
                                         <svg @click="set_pwd_type" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                             stroke-linecap="round" stroke-linejoin="round" id="toggle-password"
@@ -51,7 +50,10 @@
                                     </div>
                                     <div class="d-sm-flex justify-content-between">
                                         <div class="field-wrapper">
-                                            <b-button type="submit" variant="primary" value="">Log In</b-button>
+                                            <b-button type="submit" variant="primary" value="" :disabled="loading">
+                                                <span v-if="loading">Cargando...</span>
+                                                <span v-else>Iniciar Sesión</span>
+                                            </b-button>
                                         </div>
                                     </div>
 
@@ -85,18 +87,26 @@
 </template>
 
 <script>
-/* Importo axios */
-import axios from 'axios'
+/* Importo authService */
+import authService from '@/services/authService';
 import '@/assets/sass/authentication/auth-boxed.scss';
+
 export default {
     metaInfo: { title: 'Login Boxed' },
     data() {
         return {
-            usuario: "",
+            email: "",
             password: "",
             error: false,
             errorMessage: "",
-            pwd_type: 'password'
+            pwd_type: 'password',
+            loading: false
+        }
+    },
+    created() {
+        // Si ya está autenticado, redirigir al dashboard
+        if (authService.isAuthenticated()) {
+            this.$router.push('/');
         }
     },
     mounted() {
@@ -105,37 +115,39 @@ export default {
         set_pwd_type() {
             if (this.pwd_type == 'password') { this.pwd_type = 'text'; } else { this.pwd_type = 'password'; }
         },
-        login() {
-            let json = {
-                "username": this.usuario,
-                "password": this.password
+        async login() {
+            // Validación básica
+            if (!this.email || !this.password) {
+                this.errorMessage = 'Por favor ingrese email y contraseña';
+                this.error = true;
+                return;
             }
-            axios.post("http://localhost:3000/auth/login", json)
-                .then(data => {
-                    this.$store.commit('setUser', data.data.token);
-                    this.$router.push("/charts/apex-chart");
-                }).catch((err) => {
-                    this.errorMessage = err.response.data.message;
-                    this.error = true;
 
-                });
-        },
-       /*  register() {
-            let json = {
-                "username": this.usuario,
-                "password": this.password,
-                "role": "admin"
+            this.loading = true;
+            this.error = false;
+            this.errorMessage = "";
+
+            try {
+                const result = await authService.login(this.email, this.password);
+
+                if (result.success) {
+                    // Login exitoso - redirigir
+                    const redirect = this.$route.query.redirect || '/';
+                    this.$router.push(redirect);
+                } else {
+                    // Mostrar error
+                    this.errorMessage = result.error;
+                    this.error = true;
+                }
+            } catch (error) {
+                // Error inesperado
+                this.errorMessage = 'Error inesperado al iniciar sesión';
+                this.error = true;
+                console.error('Login error:', error);
+            } finally {
+                this.loading = false;
             }
-            axios.post("http://localhost:3000/auth/register", json)
-                .then(data => {
-                    this.$store.commit('setUser', data.data.token);
-                    this.$router.push("/charts/apex-chart");
-                }).catch((err) => {
-                    this.errorMessage = err.response.data.message;
-                    this.error = true;
-
-                });
-        } */
+        }
     }
 };
 </script>
