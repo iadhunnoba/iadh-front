@@ -227,42 +227,28 @@
                 this.error = null;
 
                 try {
-                    const token = localStorage.getItem('token');
-                    
-                    if (!token) {
-                        throw new Error('No hay token de autenticación');
-                    }
-
-                    const response = await axios.get('http://localhost:3000/students', {
-                        headers: {
-                            'auth': token
-                        }
-                    });
+                    // El token se agrega automáticamente por el interceptor
+                    const response = await axios.get('http://localhost:3000/students');
 
                     this.items = response.data;
 
                     if (this.items.length > 0) {
-                        this.generateColumns(this.items[0]);
+                        this.generateColumns();
                     }
 
                     this.table_option.total_rows = this.items.length;
                     this.get_meta();
 
-                    const newToken = response.headers['token'];
-                    if (newToken) {
-                        localStorage.setItem('token', newToken);
-                    }
-
                 } catch (error) {
                     console.error('Error al obtener estudiantes:', error);
                     this.error = error.response?.data?.message || error.message || 'Error al cargar estudiantes';
                     
-                    // FALLBACK - Usar datos mock (TEMPORAL - eliminar después)
+                    // FALLBACK - Usar datos mock
                     console.warn('Usando datos mock de estudiantes como fallback');
                     this.items = this.mockStudents;
                     
                     if (this.items.length > 0) {
-                        this.generateColumns(this.items[0]);
+                        this.generateColumns();
                     }
                     
                     this.table_option.total_rows = this.items.length;
