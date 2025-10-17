@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <!-- <apexchart ref="realtimeChart1" type="line" height="350" :options="chartOptions" :series="series1" /> -->
-    <ChatBot />
+
     <div class="row mt-4 mx-4">
       <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
         <div class="widget widget-visitor-by-browser text-center">
@@ -23,7 +23,7 @@
               <div class="w-browser-details">
                 <div class="w-browser-info">
                   <h6 v-bind:style="{ fontSize: 1.2 + 'em' }">Compresiones</h6>
-                  <p v-bind:style="{ fontSize: 1.2 + 'em' }" class="browser-count">{{temperature}}%</p>
+                  <p v-bind:style="{ fontSize: 1.2 + 'em' }" class="browser-count">{{ temperature }}%</p>
                 </div>
                 <div class="w-browser-stats">
                   <b-progress variant="gradient-primary" :value="temperature" :min="0" :max="3500"></b-progress>
@@ -44,7 +44,7 @@
               <div class="w-browser-details">
                 <div class="w-browser-info">
                   <h6 v-bind:style="{ fontSize: 1.2 + 'em' }">Presión interna pulmones</h6>
-                  <p v-bind:style="{ fontSize: 1.2 + 'em' }" class="browser-count">{{humidity}}%</p>
+                  <p v-bind:style="{ fontSize: 1.2 + 'em' }" class="browser-count">{{ humidity }}%</p>
                 </div>
 
                 <div class="w-browser-stats">
@@ -66,38 +66,25 @@
               <div class="w-browser-details">
                 <div class="w-browser-info">
                   <h6 v-bind:style="{ fontSize: 1.2 + 'em' }">Flujo de aire</h6>
-                  <p v-bind:style="{ fontSize: 1.2 + 'em' }" class="browser-count">{{motionDetected}}%</p>
+                  <p v-bind:style="{ fontSize: 1.2 + 'em' }" class="browser-count">{{ motionDetected }}%</p>
                 </div>
                 <div class="w-browser-stats">
                   <b-progress variant="gradient-warning" :value="motionDetected" :min="-30" :max="80"></b-progress>
                 </div>
               </div>
             </div>
-            <!-- <b-button @click="toggleTimer" variant="info" class="w-75">
+            <b-button @click="toggleTimer" variant="info" class="w-75">
               {{ timerActive ? (timerPaused ? 'Reanudar' : 'Pausar') : 'Iniciar Cronómetro' }}
             </b-button>
             <p class="h5 mt-3">
               Tiempo restante: {{ formattedTime }}
-            </p> -->
+            </p>
 
             <!-- <p v-if="timerActive" class="mt-3">Tiempo restante: {{ ramainingTime }} segundos</p> -->
             <!-- Botón para restablecer el cronómetro (solo visible cuando el cronómetro ha iniciado) -->
-            <!-- <b-button @click="resetTimer" variant="secondary" class="w-75 mt-2" v-if="timerActive">
+            <b-button @click="resetTimer" variant="secondary" class="w-75 mt-2" v-if="timerActive">
               Restablecer Cronómetro
-            </b-button> -->
-
-            <b-button 
-              @click="toggleTimer" 
-              variant="info" 
-              class="w-75"
-            >
-              {{ timerActive ? 'Finalizar' : 'Iniciar Cronómetro' }}
             </b-button>
-
-            <p class="h5 mt-3">
-              Tiempo restante: {{ formattedTime }}
-            </p>
-
 
             <b-button variant="info" class="w-75 mt-4" v-b-modal.modalxl>Reporte</b-button>
             <!-- Extra large Modal -->
@@ -191,29 +178,37 @@
             <b-modal id="functionModal" ref="functionModal" title="Funciones" :hide-footer="true">
               <div v-if="permisos" class="row">
                 <div class="col-4 col-md-6">
-                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateNormalPulseHeart(120)">Activar ritmo sinusal del corazón</b-button>
+                  <b-button variant="info" class="w-100 mb-3 mr-1 equal-btn"
+                    @click="activateNormalPulseHeart(120)">Activar ritmo
+                    sinusal del corazón</b-button>
                 </div>
                 <div class="col-4 col-md-6">
-                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateLowPulseHeart">Activar bradicardia sinusal</b-button>
+                  <b-button variant="info" class="w-100 mb-3 mr-1 equal-btn" @click="activateLowPulseHeart">Activar
+                    bradicardia
+                    sinusal</b-button>
                 </div>
                 <div class="col-4 col-md-6">
-                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateFastPulseHeart">Activar taquicardia sinusal</b-button>
-                </div>
-                <div class="col-4 col-md-6">
-                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateVentricularFibrillation">Activar
-                    fibrilación
-                    ventricular</b-button>
-                </div>
-                <div class="col-4 col-md-6">
-                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateVentricularTachycardia">Activar
+                  <b-button variant="info" class="w-100 mb-3 mr-1 equal-btn" @click="activateFastPulseHeart">Activar
                     taquicardia
-                    ventricular</b-button>
+                    sinusal</b-button>
                 </div>
                 <div class="col-4 col-md-6">
-                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateStElevation">Supradesnivel del ST</b-button>
+                  <b-button variant="info" class="w-100 mb-3 mr-1 equal-btn"
+                    @click="activateVentricularFibrillation">Activar
+                    fibrilación ventricular</b-button>
                 </div>
                 <div class="col-4 col-md-6">
-                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateAsystole">Activar
+                  <b-button variant="info" class="w-100 mb-3 mr-1 equal-btn"
+                    @click="activateVentricularTachycardia">Activar
+                    taquicardia ventricular</b-button>
+                </div>
+                <div class="col-4 col-md-6">
+                  <b-button variant="info" class="w-100 mb-3 mr-1 equal-btn" @click="activateStElevation"> Supradesnivel
+                    del
+                    ST</b-button>
+                </div>
+                <div class="col-4 col-md-6">
+                  <b-button variant="info" class="w-100 mb-3 mr-1 equal-btn" @click="activateAsystole">Activar
                     asistolia</b-button>
                 </div>
               </div>
@@ -232,11 +227,11 @@
               <div class="col-12">
                 <div class="custom-progress progress-up mb-2" style="width: 100%">
                   <div class="range-count">
-                    <span class="range-count-number" v-bind:class="{ warning: isWarningPulseHeart }"
+                    <span class="range-count-number" v-bind:class="{ warning: isWarningFC }"
                       v-bind:style="{ fontSize: 2.5 + 'em' }">FC: {{ slider1 }}</span>
                   </div>
                   <b-input v-if="permisos" type="range" v-model="slider1" :min="0" :max="240"
-                class="progress-range-counter"></b-input>
+                    class="progress-range-counter"></b-input>
                 </div>
               </div>
               <!--    <div v-if="permisos" class="row">
@@ -285,7 +280,7 @@
           <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-12 col-12">
             <div class="custom-progress progress-up" style="width: 100%">
               <div class="range-count">
-                <span class="range-count-number" v-bind:class="{ warning: isWarning }"
+                <span class="range-count-number" v-bind:class="{ warning: isWarningSpO2 }"
                   v-bind:style="{ fontSize: 2.5 + 'em' }">SpO2: {{ slider2 }}</span>
               </div>
               <b-input v-if="permisos" type="range" v-model="slider2" :min="0" :max="100"
@@ -300,14 +295,13 @@
           <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-12">
             <div class="custom-progress progress-up" style="width: 100%">
               <div class="range-count">
-                <!-- <span class="range-count-number" v-bind:style="{ fontSize: 2.5 + 'em' }">TA: {{ bloodPressure }}</span> -->
-                <span class="range-count-number" v-bind:class="{  warning: isWarningSystolicPressure || isWarningDiastolicPressure}"
-                  v-bind:style="{ fontSize: 2.5 + 'em' }">TA: {{ slider3 }}/{{slider4}}</span>
-                <b-input v-if="permisos" type="range" v-model="slider3" :min="0" :max="120"
-                class="progress-range-counter"></b-input>
-                <b-input v-if="permisos" type="range" v-model="slider4" :min="0" :max="80"
-                class="progress-range-counter"></b-input>
+                <span class="range-count-number" v-bind:class="{ warning: isWarningTAA || isWarningTAB }"
+                  v-bind:style="{ fontSize: 2.5 + 'em' }">TA: {{ slider3 }} / {{ slider4 }}</span>
               </div>
+              <b-input v-if="permisos" type="range" v-model="slider3" :min="0" :max="120"
+                class="progress-range-counter"></b-input>
+              <b-input v-if="permisos" type="range" v-model="slider4" :min="0" :max="100"
+                class="progress-range-counter"></b-input>
             </div>
           </div>
         </div>
@@ -525,8 +519,6 @@ import smoothie from 'smoothie';
 
 //Vue.use(VueApexCharts);
 
-import ChatBot from "./ChatBot.vue";
-
 //Vue.component('apexchart', VueApexCharts);
 import '@/assets/sass/widgets/widgets.scss';
 import '@/assets/sass/scrollspyNav.scss';
@@ -592,7 +584,6 @@ export default {
   name: 'home',
   components: {
     //apexchart: VueApexCharts,
-    ChatBot
   },
   data() {
     return {
@@ -600,12 +591,12 @@ export default {
       permisos: true,
       slider1: 75,
       slider2: 100,
-      slider3: 120,
-      slider4: 80,
-      isWarning: false,
-      isWarningPulseHeart: false,
-      isWarningSystolicPressure: false,
-      isWarningDiastolicPressure: false,
+      slider3: 120, // valor inicial sugerido
+      slider4: 80,  // valor inicial sugerido
+      isWarningSpO2: false,
+      isWarningFC: false,
+      isWarningTAA: false,
+      isWarningTAB: false,
       bloodPressure: '',
       isVentricularTachycardia: false,
       timepoInicialSesion: null,
@@ -666,11 +657,15 @@ export default {
       humidity: 0,
       motionDetected: 0,
 
+      pressure: null,
+      flowrate: null,
+      touch: null,
+
       // EMQX CONNECTION VARS
       connection: {
         protocol: "ws",
         //host: "192.168.0.223",
-        host: "localhost",
+        host: "172.19.185.55",
         // ws: 8083; wss: 8084
         port: 8083,
         endpoint: "/mqtt",
@@ -684,11 +679,11 @@ export default {
         password: "test1234",
       },
       subscription: {
-        topic: "topic/mqttx",
+        topic: "simulador/situacion",
         qos: 0,
       },
       publish: {
-        topic: "topic/browser",
+        topic: "simulador/situacion",
         qos: 0,
         payload: '{ "msg": "Hello, I am browser." }',
       },
@@ -841,26 +836,29 @@ export default {
       } 
     }); */
 
-    this.$watch('slider2', (sliderValue) => {
-      this.isWarning = sliderValue < 90;
-    });
+    // Hay que ver a que valores hay que activar los warning
 
     this.$watch('slider1', (sliderValue) => {
-      this.isWarningPulseHeart = sliderValue < 60 || sliderValue > 100;
+      this.isWarningFC = sliderValue < 60 || sliderValue > 100;
+    });
+
+    this.$watch('slider2', (sliderValue) => {
+      this.isWarningSpO2 = sliderValue < 90;
     });
 
     this.$watch('slider3', (sliderValue) => {
-      this.isWarningSystolicPressure = sliderValue < 100;
+      this.isWarningTAA = sliderValue < 100;
     })
 
     this.$watch('slider4', (sliderValue) => {
-      this.isWarningDiastolicPressure = sliderValue < 60;
+      this.isWarningTAB = sliderValue < 60;
     })
+
   },
 
   computed: {
     formattedTime() {
-      
+
       // Format time in minutes and seconds
       const minutes = Math.floor(this.ramainingTime / 60);
       const seconds = this.ramainingTime % 60;
@@ -914,28 +912,28 @@ export default {
     },
   },
 
-  watch:{
+  watch: {
 
-      slider1(sliderValue){
+    slider1(sliderValue) {
 
-        if(this.isVentricularTachycardia){
+      if (this.isVentricularTachycardia) {
 
-          if (sliderValue == '0') {
+        if (sliderValue == '0') {
 
-            this.activateAsystole();
+          this.activateAsystole();
 
-          }else{
+        } else {
 
-            this.setVentricularTachycardia();
-            this.$refs.functionModal.hide();
-
-          }
+          this.setVentricularTachycardia();
+          this.$refs.functionModal.hide();
 
         }
 
       }
 
-    },
+    }
+
+  },
 
   methods: {
 
@@ -961,6 +959,8 @@ export default {
       }
     },
 
+    /*
+    Codigo de Juan para los parametros de la maniobra RCP
     createConnection() {
       try {
         this.connecting = true;
@@ -986,6 +986,73 @@ export default {
               this.motionDetected = parsedMessage.motionDetected;
             } catch (error) {
               console.error('Failed to parse message', error);
+            }
+          });
+        }
+      } catch (error) {
+        this.connecting = false;
+        console.log("mqtt.connect error", error);
+      }
+    }, */
+
+    createConnection() {
+      try {
+        this.connecting = true;
+
+        const { protocol, host, port, endpoint, ...options } = this.connection;
+        const connectUrl = `${protocol}://${host}:${port}${endpoint}`;
+
+        this.client = mqtt.connect(connectUrl, options);
+
+        if (this.client.on) {
+          this.client.on("connect", () => {
+            this.connecting = false;
+            this.client.connected = true;
+            console.log("Connection succeeded! 🎉");
+
+            this.client.subscribe(
+              this.subscription.topic,
+              { qos: this.subscription.qos },
+              (error, res) => {
+                if (error) {
+                  console.error('Subscription failed:', error);
+                  return;
+                }
+                console.log('Subscribe to topics res', res);
+                this.subscribeSuccess = true;
+              }
+            );
+          });
+
+          this.client.on("reconnect", this.handleOnReConnect);
+
+          this.client.on("error", (error) => {
+            console.log("Connection failed", error);
+            this.client.connected = false;
+            this.connecting = false;
+          });
+
+          this.client.on("message", (topic, message) => {
+            const payloadString = message.toString();
+            console.log(`Mensaje recibido en el topic "${topic}":`, payloadString); // ¡Agrega este log para depurar!
+
+            try {
+              const parsedMessage = JSON.parse(payloadString);
+
+              if (parsedMessage.temperature !== undefined) {
+                this.temperature = parseFloat(parsedMessage.temperature).toFixed(1);
+              }
+              if (parsedMessage.pressure !== undefined) {
+                this.pressure = parseFloat(parsedMessage.pressure).toFixed(3);
+              }
+              if (parsedMessage.flowrate !== undefined) {
+                this.flowrate = parsedMessage.flowrate;
+              }
+              if (parsedMessage.touch !== undefined) {
+                this.touch = parsedMessage.touch;
+              }
+            } catch (error) {
+              console.warn('No se pudo parsear el mensaje como JSON:', error);
             }
           });
         }
@@ -1021,6 +1088,14 @@ export default {
         me.$refs.realtimeChart1.updateSeries([{ data: [] }], false, true);
         me.$refs.realtimeChart2.updateSeries([{ data: [] }], false, true);
       }, 60000);
+    },
+
+    // Funcion para randomizar los valores de los arreglos de los gráficos
+    randomizeData([...arr]) {
+      for (let i = 0; i < arr.length; i++) {
+        arr[i] = arr[i] - Math.random() * 0.4 - 0.2; // Genera un valor aleatorio entre -0.2 y 0.2
+      }
+      return arr;
     },
 
     //Pulso normal del corazón
@@ -1075,7 +1150,7 @@ export default {
       this.cycleSpaceSaturation = 1000;
 
       // Tensiòn Arterial baja (90/60)
-      this.graphicPressure = [4,2,2.8,2,1.75,1.5,1.25,1]
+      this.graphicPressure = [4, 2, 2.8, 2, 1.75, 1.5, 1.25, 1]
       this.cycleSpacePressure = 365;
       this.bloodPressure = '90/60';
       this.$refs.functionModal.hide();
@@ -1084,7 +1159,7 @@ export default {
     //Pulso bajo del corazón
     activateFastPulseHeart() {
 
-      this.graphicPressure = [5,2.5,0];
+      this.graphicPressure = [5, 2.5, 0];
       this.slider1 = '85';
 
       /*   // Eliminar ceros al principio del arreglo
@@ -1147,7 +1222,7 @@ export default {
       this.$refs.functionModal.hide();
     },
 
-    setVentricularTachycardia(){
+    setVentricularTachycardia() {
 
       this.graphicData = [5, -2];
       this.cycleSpace = 550;
@@ -1209,7 +1284,7 @@ export default {
 
     // Tensiòn Arterial normal (120/80)
     activatePressure() {
-      this.graphicPressure = [4,2,2.8,2.25,2,1.75,1.5,1.25,1];
+      this.graphicPressure = [4, 2, 2.8, 2.25, 2, 1.75, 1.5, 1.25, 1];
       this.cycleSpacePressure = 250;
       this.iteratorPressure = 0;
       this.$refs.functionModal.hide();
@@ -1234,11 +1309,11 @@ export default {
        this.series[0].data = newData;
      }, */
 
-     startTimer() {
-    this.tiempoIncialSesion = Date.now();
-    this.timerActive = true;
-
-    this.timerInterval = setInterval(() => {
+    startTimer() {
+      if (!this.tiempoIncialSesion) { // Solo marca el tiempo inicial la primera vez
+        this.tiempoIncialSesion = Date.now();
+      }
+      this.timerInterval = setInterval(() => {
         if (this.ramainingTime > 0) {
           this.ramainingTime -= 1;
         } else {
@@ -1247,18 +1322,31 @@ export default {
       }, 1000);
     },
     stopTimer() {
-        this.tiempoFinalSesion = Date.now();
-        clearInterval(this.timerInterval);
-        this.timerActive = false;
-        this.ramainingTime = 180; // Reiniciar a 180 segundos
-        this.createSesion(); // Acción al finalizar el cronómetro
+      this.tiempoFinalSesion = Date.now();
+      clearInterval(this.timerInterval);
+      this.timerActive = false;
+      this.timerPaused = false;
+      this.createSesion();
     },
     toggleTimer() {
-        if (!this.timerActive) {
-          this.startTimer();
+      if (!this.timerActive) {
+        this.timerActive = true;
+        this.startTimer();
+      } else {
+        if (!this.timerPaused) {
+          this.timerPaused = true;
+          clearInterval(this.timerInterval);
         } else {
-          this.stopTimer();
+          this.timerPaused = false;
+          this.startTimer();
         }
+      }
+    },
+    resetTimer() {
+      this.stopTimer();
+      this.ramainingTime = 180; // Restablecer el tiempo restante a 180 segundos
+      this.tiempoIncialSesion = null; // Reiniciar la sesión inicial
+      this.tiempoFinalSesion = null;  // Reiniciar la sesión final
     },
 
     createSesion() {
@@ -1270,10 +1358,10 @@ export default {
       console.log(json);
       axios
         .post("http://localhost:3000/sesion", json, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      })
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        })
         .then((data) => {
           console.log("Sesion agregada", data);
         })
@@ -1294,6 +1382,15 @@ export default {
   animation: blink 1s infinite;
 }
 
+.equal-btn {
+  height: 55px;
+  /* Ajustar el alto a gusto */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
 @keyframes blink {
   0% {
     background-color: transparent;
@@ -1307,4 +1404,4 @@ export default {
     background-color: transparent;
   }
 }
-</style> 
+</style>
