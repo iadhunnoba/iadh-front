@@ -298,12 +298,12 @@
                 <span class="range-count-number" v-bind:class="{ warning: isWarningTAA || isWarningTAB }"
                   v-bind:style="{ fontSize: 2.5 + 'em' }">TA: {{ slider3 }} / {{ slider4 }}</span>
               </div>
-              <b-input v-if="permisos" type="range" v-model="slider3" :min="0" :max="120"
+              <b-input v-if="permisos" type="range" v-model="slider3" :min="0" :max="240"
                 class="progress-range-counter"></b-input>
-              <b-input v-if="permisos" type="range" v-model="slider4" :min="0" :max="100"
+              <b-input v-if="permisos" type="range" v-model="slider4" :min="0" :max="120"
                 class="progress-range-counter"></b-input>
-            </div>
-          </div>
+            </div> 
+          </div> 
         </div>
       </div>
       <!-- <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12 layout-spacing">
@@ -841,17 +841,16 @@ export default {
     this.$watch('slider1', (sliderValue) => {
       this.isWarningFC = sliderValue < 60 || sliderValue > 100;
     });
-
     this.$watch('slider2', (sliderValue) => {
       this.isWarningSpO2 = sliderValue < 90;
     });
 
     this.$watch('slider3', (sliderValue) => {
-      this.isWarningTAA = sliderValue < 100;
+      this.isWarningTAA = sliderValue < 70 || sliderValue > 130;
     })
 
     this.$watch('slider4', (sliderValue) => {
-      this.isWarningTAB = sliderValue < 60;
+      this.isWarningTAB = sliderValue < 60 || sliderValue > 90;
     })
 
   },

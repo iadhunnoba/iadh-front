@@ -1,13 +1,21 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import Home from '../views/index.vue';
-import store from '../store';
+import { setupAuthGuard } from './guards';
 
 Vue.use(VueRouter);
 
 const routes = [
+
+    /* 
+        NOTA: Una vez que termines de desarrollar el proyecto, hay que asegurarse de limpiar las rutas que no se usan,
+        y cualquier componente o vista que no sea necesario para la funcionalidad final de la aplicación.
+
+        Luego de limpiar, hay que implementar la autenticación en las rutas que lo requieran, usando meta: { requiresAuth: true }.
+        Esto se puede hacer debido a que ahora tenemos un guard de autenticación configurado en router/guards.js.
+    */
+
     //dashboard
-    { path: '/', name: 'Home', component: Home },
+    { path: '/', name: 'Home', component: () => import('@/views/index.vue'), meta: { requiresAuth: true } },
 
     {
         path: '/index2',
@@ -168,7 +176,7 @@ const routes = [
         path: '/auth/login-boxed',
         name: 'login-boxed',
         component: () => import(/* webpackChunkName: "auth-login-boxed" */ '../views/auth/login_boxed.vue'),
-        meta: { layout: 'auth' }
+        meta: { layout: 'auth', requiresAuth: false }
     },
     {
         path: '/auth/register-boxed',
@@ -550,13 +558,7 @@ const router = new VueRouter({
     }
 });
 
-router.beforeEach((to, from, next) => {
-    if (to.meta && to.meta.layout && to.meta.layout == 'auth') {
-        store.commit('setLayout', 'auth');
-    } else {
-        store.commit('setLayout', 'app');
-    }
-    next(true);
-});
+// Configurar el guard de autenticación
+setupAuthGuard(router);
 
 export default router;
