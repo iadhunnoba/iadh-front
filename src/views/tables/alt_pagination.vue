@@ -15,6 +15,11 @@
                                         <b-select-option value="50">50</b-select-option>
                                     </b-select>
                                 </span>
+                                <b-button variant="primary" size="sm" class="ml-3" @click="show_user_modal()">Agregar Usuario</b-button>
+                                <b-button-group size="sm" class="ml-3">
+                                    <b-button :variant="view_mode === 'students' ? 'info' : 'outline-info'" @click="set_view_mode('students')">Estudiantes</b-button>
+                                    <b-button :variant="view_mode === 'all' ? 'info' : 'outline-info'" @click="set_view_mode('all')">Todos</b-button>
+                                </b-button-group>
                             </div>
                             <div class="header-search">
                                 <b-input v-model="table_option.search_text" size="sm" placeholder="Search..." />
@@ -54,26 +59,75 @@
                         >
                             <template #cell(salary)="row"> ${{ row.item.salary }} </template>
                             <template #cell(action)="row">
-                                <a href="javascript:;" class="cancel" @click="delete_row(row.item)">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="24"
-                                        height="24"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        stroke-width="1.5"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        class="feather feather-x-circle table-cancel"
-                                    >
-                                        <circle cx="12" cy="12" r="10"></circle>
-                                        <line x1="15" y1="9" x2="9" y2="15"></line>
-                                        <line x1="9" y1="9" x2="15" y2="15"></line>
-                                    </svg>
-                                </a>
+                                <div class="actions text-center">
+                                    <router-link :to="'/users/profile/' + row.item.id" class="mr-3" title="Ver Reportes">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye text-primary"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                    </router-link>
+                                    <a href="javascript:;" class="edit mr-3" @click="show_user_modal(row.item)">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="24"
+                                            height="24"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-width="2"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            class="feather feather-edit-2"
+                                        >
+                                            <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 21l.5-5.5L17 3z"></path>
+                                        </svg>
+                                    </a>
+                                    <a href="javascript:;" class="cancel" @click="delete_row(row.item)">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="24"
+                                            height="24"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-width="1.5"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            class="feather feather-x-circle table-cancel"
+                                        >
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <line x1="15" y1="9" x2="9" y2="15"></line>
+                                            <line x1="9" y1="9" x2="15" y2="15"></line>
+                                        </svg>
+                                    </a>
+                                </div>
                             </template>
                         </b-table>
+
+                        <!-- Modal para Agregar/Editar Usuario -->
+                        <b-modal id="userModal" :title="edit_user.id ? 'Editar Usuario' : 'Nuevo Usuario'" @ok="save_user">
+                            <b-form>
+                                <b-form-group label="Email Institutional">
+                                    <b-input v-model="edit_user.username" placeholder="email@comunidad.unnoba.edu.ar"></b-input>
+                                </b-form-group>
+                                <b-form-group v-if="!edit_user.id" label="Contraseña">
+                                    <b-input type="password" v-model="edit_user.password" placeholder="Contraseña"></b-input>
+                                </b-form-group>
+                                <b-form-group label="Nombre">
+                                    <b-input v-model="edit_user.name" placeholder="Nombre"></b-input>
+                                </b-form-group>
+                                <b-form-group label="Apellido">
+                                    <b-input v-model="edit_user.surname" placeholder="Apellido"></b-input>
+                                </b-form-group>
+                                <b-form-group label="Rol">
+                                    <b-select v-model="edit_user.role">
+                                        <b-select-option value="admin">Admin</b-select-option>
+                                        <b-select-option value="profesor">Profesor</b-select-option>
+                                        <b-select-option value="estudiante">Estudiante</b-select-option>
+                                    </b-select>
+                                </b-form-group>
+                                <b-form-group v-if="edit_user.role === 'estudiante'" label="Legajo">
+                                    <b-input v-model="edit_user.studentIdNumber" placeholder="Legajo"></b-input>
+                                </b-form-group>
+                            </b-form>
+                        </b-modal>
 
                         <div class="table-footer">
                             <div class="dataTables_info"> Mostrando del {{ meta.total_items ? meta.start_index + 1 : 0 }} al {{ meta.end_index + 1 }} de {{ meta.total_items }}</div>
@@ -123,7 +177,8 @@
 </template>
 
 <script>
-    import axios from 'axios';
+    import axios from '@/plugins/axios';
+    import API_CONFIG, { getApiUrl } from '@/config/api';
 
     export default {
         metaInfo: { title: 'Gestión de Estudiantes' },
@@ -135,124 +190,155 @@
                 meta: {},
                 loading: false,
                 error: null,
+                pagination: {},
+                view_mode: 'students', // 'all' o 'students'
+                edit_user: { id: null, username: '', password: '', name: '', surname: '', role: 'estudiante', studentIdNumber: '' },
                 // Mock data - TEMPORAL (eliminar después)
                 mockStudents: [
                     {
                         id: 1,
                         username: 'jperez@comunidad.unnoba.edu.ar',
                         name: 'Juan',
-                        surname: 'Pérez',
-                        studentIdNumber: '44123456'
+                        surname: 'Pérez'
                     },
                     {
                         id: 2,
                         username: 'mgarcia@comunidad.unnoba.edu.ar',
                         name: 'María',
-                        surname: 'García',
-                        studentIdNumber: '43987654'
+                        surname: 'García'
                     },
                     {
                         id: 3,
                         username: 'crodriguez@comunidad.unnoba.edu.ar',
                         name: 'Carlos',
-                        surname: 'Rodríguez',
-                        studentIdNumber: '42654321'
+                        surname: 'Rodríguez'
                     },
                     {
                         id: 4,
                         username: 'amartinez@comunidad.unnoba.edu.ar',
                         name: 'Ana',
-                        surname: 'Martínez',
-                        studentIdNumber: '45123789'
+                        surname: 'Martínez'
                     },
                     {
                         id: 5,
                         username: 'psanchez@comunidad.unnoba.edu.ar',
                         name: 'Pedro',
-                        surname: 'Sánchez',
-                        studentIdNumber: '43456123'
+                        surname: 'Sánchez'
                     },
                     {
                         id: 6,
                         username: 'lfernandez@comunidad.unnoba.edu.ar',
                         name: 'Laura',
-                        surname: 'Fernández',
-                        studentIdNumber: '44789456'
+                        surname: 'Fernández'
                     },
                     {
                         id: 7,
                         username: 'dlopez@comunidad.unnoba.edu.ar',
                         name: 'Diego',
-                        surname: 'López',
-                        studentIdNumber: '42987123'
+                        surname: 'López'
                     },
                     {
                         id: 8,
                         username: 'sramirez@comunidad.unnoba.edu.ar',
                         name: 'Sofia',
-                        surname: 'Ramírez',
-                        studentIdNumber: '45654987'
+                        surname: 'Ramírez'
                     },
                     {
                         id: 9,
                         username: 'jcgomez@comunidad.unnoba.edu.ar',
                         name: 'Juan Carlos',
-                        surname: 'Gomez',
-                        studentIdNumber: '43321654'
+                        surname: 'Gomez'
                     },
                     {
                         id: 10,
                         username: 'mjtorres@comunidad.unnoba.edu.ar',
                         name: 'María José',
-                        surname: 'Torres',
-                        studentIdNumber: '44852963'
+                        surname: 'Torres'
                     }
                 ]
             };
         },
         watch: {
-            table_option: {
-                handler: function() {
-                    this.get_meta();
-                },
-                deep: true
+            'table_option.current_page': function() {
+                this.fetchUsers();
+            },
+            'table_option.page_size': function() {
+                this.table_option.current_page = 1;
+                this.fetchUsers();
+            },
+            'table_option.search_text': function() {
+                this.table_option.current_page = 1;
+                this.fetchUsers();
             }
         },
         mounted() {
-            this.fetchStudents();
+            const user = authService.getUser();
+            if (user && user.role === 'estudiante') {
+                this.$router.push('/charts/apex_chart');
+                return;
+            }
+            this.fetchUsers();
         },
         methods: {
-            async fetchStudents() {
+            set_view_mode(mode) {
+                this.view_mode = mode;
+                this.table_option.current_page = 1;
+                this.fetchUsers();
+            },
+            async fetchUsers() {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    this.$router.push('/auth/login-boxed');
+                    return;
+                }
                 this.loading = true;
                 this.error = null;
 
                 try {
-                    // El token se agrega automáticamente por el interceptor
-                    const response = await axios.get('http://localhost:3000/students');
+                    const params = {
+                        page: this.table_option.current_page,
+                        limit: this.table_option.page_size,
+                        search: this.table_option.search_text
+                    };
 
-                    this.items = response.data;
+                    const endpoint = this.view_mode === 'students' 
+                        ? API_CONFIG.ENDPOINTS.STUDENTS_LIST 
+                        : API_CONFIG.ENDPOINTS.USERS;
+
+                    const response = await axios.get(getApiUrl(endpoint), { 
+                        params,
+                        headers: { 'auth': token }
+                    });
+
+                    // La estructura es { data: [...], pagination: {...} }
+                    if (response.data && response.data.data) {
+                        this.items = response.data.data;
+                        this.pagination = response.data.pagination;
+                        this.table_option.total_rows = this.pagination.total;
+                    } else {
+                        // Fallback para cuando el backend devuelve el array directamente
+                        this.items = Array.isArray(response.data) ? response.data : [];
+                        this.table_option.total_rows = this.items.length;
+                    }
 
                     if (this.items.length > 0) {
                         this.generateColumns();
                     }
 
-                    this.table_option.total_rows = this.items.length;
                     this.get_meta();
 
                 } catch (error) {
-                    console.error('Error al obtener estudiantes:', error);
-                    this.error = error.response?.data?.message || error.message || 'Error al cargar estudiantes';
+                    console.error('Error al obtener usuarios:', error);
+                    this.error = error.response?.data?.message || error.message || 'Error al cargar usuarios';
                     
-                    // FALLBACK - Usar datos mock
-                    console.warn('Usando datos mock de estudiantes como fallback');
-                    this.items = this.mockStudents;
-                    
-                    if (this.items.length > 0) {
+                    // FALLBACK - Usar datos mock solo en modo estudiantes
+                    if (this.view_mode === 'students') {
+                        console.warn('Usando datos mock de estudiantes como fallback');
+                        this.items = this.mockStudents;
+                        this.table_option.total_rows = this.items.length;
                         this.generateColumns();
+                        this.get_meta();
                     }
-                    
-                    this.table_option.total_rows = this.items.length;
-                    this.get_meta();
                 } finally {
                     this.loading = false;
                 }
@@ -290,48 +376,72 @@
                     'Id': 'ID',
                     'Username': 'Email Institucional',
                     'Name': 'Nombre',
-                    'Surname': 'Apellido',
-                    'Student Id Number': 'Legajo'
+                    'Surname': 'Apellido'
                 };
 
                 return translations[label] || label;
             },
 
             on_filtered(filtered_items) {
-                this.refresh_table(filtered_items.length);
+                // Con paginación en backend, filtered_items no es tan útil aquí 
+                // si solo tenemos una página de datos.
+                // this.refresh_table(filtered_items.length);
             },
 
             delete_row(item) {
-                if (confirm(`¿Está seguro de que desea eliminar al estudiante ${item.name} ${item.surname}?`)) {
-                    // TEMPORAL - Para el mock solo removemos del array
-                    const index = this.items.findIndex(s => s.id === item.id);
-                    if (index !== -1) {
-                        this.items.splice(index, 1);
-                        this.table_option.total_rows = this.items.length;
-                        this.get_meta();
-                        alert(`Estudiante ${item.name} ${item.surname} eliminado (mock)`);
-                    }
-                    
-                    // Descomentar cuando la API esté funcionando:
-                    // this.deleteStudent(item.id);
+                if (confirm(`¿Está seguro de que desea eliminar al usuario ${item.name} ${item.surname}?`)) {
+                    this.delete_user(item.id);
                 }
             },
 
-            async deleteStudent(studentId) {
+            async delete_user(userId) {
                 try {
                     const token = localStorage.getItem('token');
-                    
-                    await axios.delete(`http://localhost:3000/students/${studentId}`, {
-                        headers: {
-                            'auth': token
-                        }
+                    await axios.delete(getApiUrl(API_CONFIG.ENDPOINTS.USER_BY_ID(userId)), {
+                        headers: { 'auth': token }
                     });
 
-                    this.fetchStudents();
-                    alert('Estudiante eliminado correctamente');
+                    this.fetchUsers();
+                    alert('Usuario eliminado correctamente');
                 } catch (error) {
-                    console.error('Error al eliminar estudiante:', error);
-                    alert(error.response?.data?.message || 'Error al eliminar el estudiante');
+                    console.error('Error al eliminar usuario:', error);
+                    alert(error.response?.data?.message || 'Error al eliminar el usuario');
+                }
+            },
+
+            show_user_modal(user = null) {
+                if (user) {
+                    this.edit_user = { ...user, password: '' };
+                } else {
+                    this.edit_user = { id: null, username: '', password: '', name: '', surname: '', role: 'estudiante', studentIdNumber: '' };
+                }
+                this.$bvModal.show('userModal');
+            },
+
+            async save_user(bvModalEvt) {
+                bvModalEvt.preventDefault();
+                const token = localStorage.getItem('token');
+                
+                try {
+                    if (this.edit_user.id) {
+                        // Editar
+                        await axios.patch(getApiUrl(API_CONFIG.ENDPOINTS.USER_BY_ID(this.edit_user.id)), this.edit_user, {
+                            headers: { 'auth': token }
+                        });
+                        alert('Usuario actualizado correctamente');
+                    } else {
+                        // Crear
+                        await axios.post(getApiUrl(API_CONFIG.ENDPOINTS.USERS), this.edit_user, {
+                            headers: { 'auth': token }
+                        });
+                        alert('Usuario creado correctamente');
+                    }
+                    
+                    this.$bvModal.hide('userModal');
+                    this.fetchUsers();
+                } catch (error) {
+                    console.error('Error al guardar usuario:', error);
+                    alert(error.response?.data?.message || 'Error al guardar el usuario');
                 }
             },
 

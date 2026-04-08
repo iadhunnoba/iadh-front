@@ -1,4 +1,5 @@
 import axios from 'axios';
+import API_CONFIG, { getApiUrl } from '@/config/api';
 
 const TOKEN_KEY = 'token';
 const USER_KEY = 'user';
@@ -6,7 +7,7 @@ const USER_KEY = 'user';
 const authService = {
     async login(username, password) {
         try {
-            const response = await axios.post('http://localhost:3000/auth/login', {
+            const response = await axios.post(getApiUrl(API_CONFIG.ENDPOINTS.LOGIN), {
                 username,
                 password
             });
@@ -15,7 +16,7 @@ const authService = {
                 this.setToken(response.data.token);
                 
                 // Obtener información del usuario de la respuesta
-                const user = response.data.user || { username };
+                const user = response.data.userInfo || response.data.user || { username };
                 this.setUser(user);
                 
                 return { 
@@ -37,6 +38,22 @@ const authService = {
     logout() {
         localStorage.removeItem(TOKEN_KEY);
         localStorage.removeItem(USER_KEY);
+    },
+
+    async changePassword(oldPassword, newPassword, manualToken = null) {
+        try {
+            const token = manualToken || this.getToken();
+            const response = await axios.post(getApiUrl(API_CONFIG.ENDPOINTS.CHANGE_PASSWORD), {
+                oldPassword,
+                newPassword
+            }, {
+                headers: { 'auth': token }
+            });
+            return { success: true, data: response.data };
+        } catch (error) {
+            const errorMessage = error.response?.data?.message || 'Error al cambiar la contraseña';
+            return { success: false, error: errorMessage };
+        }
     },
 
     getToken() {

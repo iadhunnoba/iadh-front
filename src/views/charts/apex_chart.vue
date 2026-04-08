@@ -76,6 +76,11 @@
             <b-button @click="toggleTimer" variant="info" class="w-75">
               {{ timerActive ? (timerPaused ? 'Reanudar' : 'Pausar') : 'Iniciar Cronómetro' }}
             </b-button>
+            
+            <b-button v-if="timerActive || currentSessionId" @click="stopTimer" variant="danger" class="w-75 mt-2">
+              Finalizar Maniobra
+            </b-button>
+
             <p class="h5 mt-3">
               Tiempo restante: {{ formattedTime }}
             </p>
@@ -518,37 +523,16 @@
 // Importo influxDB
 //import {InfluxDBClient, Point} from '@influxdata/influxdb3-client'
 /* Importo axios */
-import axios from 'axios'
+/* Importo axios configurado */
+import axios from '@/plugins/axios'
+import API_CONFIG, { getApiUrl } from '@/config/api';
+import authService from '@/services/authService';
 import mqtt from 'mqtt';
-//import Vue from 'vue';
-//import VueApexCharts from 'vue-apexcharts';
 import smoothie from 'smoothie';
-
-//Vue.use(VueApexCharts);
-
-//Vue.component('apexchart', VueApexCharts);
-import '@/assets/sass/widgets/widgets.scss';
-import '@/assets/sass/scrollspyNav.scss';
-//import highlight from '@/components/plugins/highlight.vue';
 
 var lastDate = 0,
   data1 = [],
   data2 = [];
-
-// Provocaba que data1 sea igual a data2
-/* function getDayWiseTimeSeries(baseval, count, yrange) {
-  var i = 0;
-  while (i < count) {
-    let x = baseval,
-      y = Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min;
-
-    data1.push({ x, y });
-    data2.push({ x, y });
-    lastDate = baseval;
-    baseval += 86400000;
-    i++;
-  }
-} */
 
 function getDayWiseTimeSeries(baseval, count, yrange) {
   var i = 0;
@@ -609,6 +593,8 @@ export default {
       isVentricularTachycardia: false,
       timepoInicialSesion: null,
       timepoFinalSesion: null,
+      currentSessionId: null,
+      studentId: this.$route.params.id || (authService.getUser() ? authService.getUser().id : 1),
       series1: [{ data: data1.slice() }],
       series2: [{ data: data2.slice() }],
       series3: [{ data: data2.slice() }],
@@ -1303,10 +1289,25 @@ export default {
        this.series[0].data = newData;
      }, */
 
-    startTimer() {
-      if (!this.tiempoIncialSesion) { // Solo marca el tiempo inicial la primera vez
-        this.tiempoIncialSesion = Date.now();
+    async startTimer() {
+      if (!this.timepoInicialSesion) {
+        this.timepoInicialSesion = Date.now();
+        
+        try {
+          const token = localStorage.getItem('token');
+          // Iniciar sesión en el backend
+          const response = await axios.post(getApiUrl(API_CONFIG.ENDPOINTS.RCP_SESSION_START(this.studentId)), {}, {
+            headers: { 'auth': token }
+          });
+          this.currentSessionId = response.data.sessionId || response.data.id;
+          console.log("Sesión de RCP iniciada:", this.currentSessionId);
+        } catch (error) {
+          console.error("Error al iniciar sesión de RCP:", error);
+          // Mock sessionId for development if backend fails
+          this.currentSessionId = "mock-" + Date.now();
+        }
       }
+      
       this.timerInterval = setInterval(() => {
         if (this.ramainingTime > 0) {
           this.ramainingTime -= 1;
@@ -1315,13 +1316,52 @@ export default {
         }
       }, 1000);
     },
-    stopTimer() {
-      this.tiempoFinalSesion = Date.now();
+    
+    async stopTimer() {
+      this.timepoFinalSesion = Date.now();
       clearInterval(this.timerInterval);
       this.timerActive = false;
       this.timerPaused = false;
-      this.createSesion();
+      
+      await this.saveSessionReport();
     },
+
+    async saveSessionReport() {
+      // Calcular promedios para el reporte
+      // En un caso real, esto vendría de los datos acumulados
+      const calculateAverage = (series) => {
+        const data = series[0].data;
+        if (!data || data.length === 0) return 65; // Valor por defecto
+        const sum = data.reduce((acc, curr) => acc + (curr.y || 0), 0);
+        return Math.round(sum / data.length);
+      };
+
+      const report = {
+        avgPulmonaryPressure: calculateAverage(this.series1),
+        avgVentilation: calculateAverage(this.series2),
+        avgCorrectPosition: calculateAverage(this.series3),
+        observation: this.observation
+      };
+
+      console.log("Guardando reporte de sesión:", report);
+
+      try {
+        if (this.currentSessionId) {
+          const token = localStorage.getItem('token');
+          await axios.post(
+            getApiUrl(API_CONFIG.ENDPOINTS.RCP_SESSION_END(this.studentId, this.currentSessionId)),
+            report,
+            { headers: { 'auth': token } }
+          );
+          console.log("Sesión finalizada y reporte guardado con éxito");
+          this.$message.success("Reporte guardado correctamente");
+        }
+      } catch (error) {
+        console.error("Error al finalizar sesión de RCP:", error);
+        this.$message.error("Error al guardar el reporte");
+      }
+    },
+
     toggleTimer() {
       if (!this.timerActive) {
         this.timerActive = true;
@@ -1337,33 +1377,18 @@ export default {
       }
     },
     resetTimer() {
-      this.stopTimer();
-      this.ramainingTime = 180; // Restablecer el tiempo restante a 180 segundos
-      this.tiempoIncialSesion = null; // Reiniciar la sesión inicial
-      this.tiempoFinalSesion = null;  // Reiniciar la sesión final
+      clearInterval(this.timerInterval);
+      this.timerActive = false;
+      this.timerPaused = false;
+      this.ramainingTime = 180;
+      this.timepoInicialSesion = null;
+      this.timepoFinalSesion = null;
+      this.currentSessionId = null;
     },
 
+    // El método createSesion anterior se reemplaza por saveSessionReport
     createSesion() {
-      const json = {
-        fechaInicio: new Date(this.tiempoIncialSesion),
-        fechaFin: new Date(this.tiempoFinalSesion),
-        observacion: this.observation
-      };
-
-      console.log(json);
-      axios
-        .post("http://localhost:3000/sesion", json, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        })
-        .then((data) => {
-          console.log("Sesion agregada", data);
-        })
-        .catch((err) => {
-          this.errorMessage = err.response.data.message;
-          this.error = true;
-        });
+      this.saveSessionReport();
     },
   },
 

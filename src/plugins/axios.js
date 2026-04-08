@@ -1,16 +1,24 @@
 import axios from 'axios';
-import authService from '@/services/authService';
 import router from '@/router';
 import API_CONFIG from '@/config/api';
+
+// Crear una instancia de axios
+const instance = axios.create({
+    baseURL: API_CONFIG.BASE_URL
+});
 
 /**
  * Interceptor para agregar el token de autenticación a todas las peticiones
  */
-axios.interceptors.request.use(
+instance.interceptors.request.use(
     config => {
-        const token = authService.getToken();
+        const token = localStorage.getItem('token');
         if (token) {
+            // Aseguramos que la cabecera 'auth' esté presente
             config.headers[API_CONFIG.HEADERS.AUTH_HEADER] = token;
+            console.log(`Petición a ${config.url} enviada con token en cabecera 'auth'`);
+        } else {
+            console.warn(`Petición a ${config.url} sin token en localStorage`);
         }
         return config;
     },
@@ -22,21 +30,21 @@ axios.interceptors.request.use(
 /**
  * Interceptor para manejar respuestas y errores de autenticación
  */
-axios.interceptors.response.use(
+instance.interceptors.response.use(
     response => {
         // Verificar si hay un nuevo token en la respuesta y actualizarlo
         const newToken = response.headers[API_CONFIG.HEADERS.TOKEN_HEADER];
         if (newToken) {
-            authService.setToken(newToken);
+            localStorage.setItem('token', newToken);
         }
         return response;
     },
     error => {
         // Si hay error 401 (No autorizado), hacer logout y redirigir al login
         if (error.response?.status === 401) {
-            authService.logout();
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
             
-            // Solo redirigir si no estamos ya en la página de login
             if (router.currentRoute.path !== '/auth/login-boxed') {
                 router.push('/auth/login-boxed');
             }
@@ -46,4 +54,4 @@ axios.interceptors.response.use(
     }
 );
 
-export default axios;
+export default instance;

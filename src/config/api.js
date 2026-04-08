@@ -13,10 +13,12 @@ const API_CONFIG = {
         // Usuarios
         USERS: '/users',
         USER_BY_ID: (id) => `/users/${id}`,
+        STUDENTS_LIST: '/users/students',
         
-        // Estudiantes
-        STUDENTS: '/students',
-        STUDENT_BY_ID: (id) => `/students/${id}`,
+        // Sesiones de RCP
+        RCP_SESSION_START: (id) => `/students/${id}/rcp-sessions/start`,
+        RCP_SESSION_END: (id, sessionId) => `/students/${id}/rcp-sessions/${sessionId}/end`,
+        RCP_SESSION_HISTORY: (id) => `/students/${id}/rcp-sessions`,
     },
     
     // Headers

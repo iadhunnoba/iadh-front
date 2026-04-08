@@ -379,6 +379,44 @@ My job is to build your website so that it is functional and user-friendly but a
                         </div>
 
                         <div class="col-xl-12 col-lg-12 col-md-12 layout-spacing">
+                            <b-form id="password-change" class="section password">
+                                <div class="info">
+                                    <h5 class="">Cambiar Contraseña</h5>
+                                    <div class="row">
+                                        <div class="col-md-11 mx-auto">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="oldPassword">Contraseña Actual</label>
+                                                        <b-input type="password" v-model="pass.old" id="oldPassword" placeholder="Contraseña Actual"></b-input>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="newPassword">Nueva Contraseña</label>
+                                                        <b-input type="password" v-model="pass.new" id="newPassword" placeholder="Nueva Contraseña"></b-input>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="confirmPassword">Confirmar Nueva Contraseña</label>
+                                                        <b-input type="password" v-model="pass.confirm" id="confirmPassword" placeholder="Confirmar Nueva Contraseña"></b-input>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12 text-right">
+                                                    <b-button variant="primary" @click="changePassword" :disabled="loading_pass">
+                                                        <span v-if="loading_pass">Cargando...</span>
+                                                        <span v-else>Actualizar Contraseña</span>
+                                                    </b-button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </b-form>
+                        </div>
+
+                        <div class="col-xl-12 col-lg-12 col-md-12 layout-spacing">
                             <b-form id="edu-experience" class="section edu-experience">
                                 <div class="info">
                                     <h5 class="">Education</h5>
@@ -580,6 +618,7 @@ My job is to build your website so that it is functional and user-friendly but a
 <script>
     import '@/assets/sass/scrollspyNav.scss';
     import '@/assets/sass/users/account-setting.scss';
+    import authService from '@/services/authService';
 
     export default {
         metaInfo: { title: 'Account Setting' },
@@ -597,13 +636,37 @@ My job is to build your website so that it is functional and user-friendly but a
                 range_1: 25,
                 range_2: 50,
                 range_3: 70,
-                range_4: 60
+                range_4: 60,
+                pass: { old: '', new: '', confirm: '' },
+                loading_pass: false
             };
         },
         mounted() {},
         methods: {
             change_file(event) {
                 this.selected_file = URL.createObjectURL(event.target.files[0]);
+            },
+            async changePassword() {
+                if (!this.pass.old || !this.pass.new || !this.pass.confirm) {
+                    this.$message.error('Por favor complete todos los campos');
+                    return;
+                }
+                if (this.pass.new !== this.pass.confirm) {
+                    this.$message.error('La nueva contraseña y la confirmación no coinciden');
+                    return;
+                }
+
+                this.loading_pass = true;
+                const token = localStorage.getItem('token');
+                const result = await authService.changePassword(this.pass.old, this.pass.new, token);
+                this.loading_pass = false;
+
+                if (result.success) {
+                    this.$message.success('Contraseña actualizada correctamente');
+                    this.pass = { old: '', new: '', confirm: '' };
+                } else {
+                    this.$message.error(result.error);
+                }
             }
         }
     };

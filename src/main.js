@@ -26,7 +26,7 @@ Vue.use(VueMeta, {
 });
 
 // Axios
-import axios from 'axios'
+import axios from './plugins/axios';
 import VueAxios from 'vue-axios'
 
 Vue.use(VueAxios, axios)
