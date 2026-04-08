@@ -167,10 +167,17 @@
                 </div>
 
               </div>
+              <div class="row mt-4">
+                <div class="col-12">
+                  <h5>Observaciones</h5>
+                  <b-form-textarea v-model="observation" placeholder="Ingrese observaciones de la sesión..." rows="3"
+                    max-rows="6"></b-form-textarea>
+                </div>
+              </div>
               <template #modal-footer>
                 <b-button variant="default" data-dismiss="modal" @click="$bvModal.hide('modalxl')"><i
                     class="flaticon-cancel-12"></i>Descartar</b-button>
-                <b-button variant="primary">Guardar</b-button>
+                <b-button variant="primary" @click="stopTimer">Guardar</b-button>
               </template>
             </b-modal>
             <b-button v-if="permisos" variant="info" class="w-75 mt-4" v-b-modal.functionModal>Activar
@@ -597,6 +604,7 @@ export default {
       isWarningFC: false,
       isWarningTAA: false,
       isWarningTAB: false,
+      observation: '',
       bloodPressure: '',
       isVentricularTachycardia: false,
       timepoInicialSesion: null,
@@ -839,18 +847,38 @@ export default {
     // Hay que ver a que valores hay que activar los warning
 
     this.$watch('slider1', (sliderValue) => {
-      this.isWarningFC = sliderValue < 60 || sliderValue > 100;
+      if (sliderValue === '--') {
+        this.isWarningFC = true;
+      } else {
+        const val = parseFloat(sliderValue);
+        this.isWarningFC = val < 60 || val > 100;
+      }
     });
     this.$watch('slider2', (sliderValue) => {
-      this.isWarningSpO2 = sliderValue < 90;
+      if (sliderValue === '--') {
+        this.isWarningSpO2 = true;
+      } else {
+        const val = parseFloat(sliderValue);
+        this.isWarningSpO2 = val < 90;
+      }
     });
 
     this.$watch('slider3', (sliderValue) => {
-      this.isWarningTAA = sliderValue < 70 || sliderValue > 130;
+      if (sliderValue === '--') {
+        this.isWarningTAA = true;
+      } else {
+        const val = parseFloat(sliderValue);
+        this.isWarningTAA = val < 70 || val > 130;
+      }
     })
 
     this.$watch('slider4', (sliderValue) => {
-      this.isWarningTAB = sliderValue < 60 || sliderValue > 90;
+      if (sliderValue === '--') {
+        this.isWarningTAB = true;
+      } else {
+        const val = parseFloat(sliderValue);
+        this.isWarningTAB = val < 60 || val > 90;
+      }
     })
 
   },
@@ -1099,133 +1127,96 @@ export default {
 
     //Pulso normal del corazón
     activateNormalPulseHeart(cycleSpace) {
-      // Pre armado del array
-      // Cantidad de ceros al medio (pausa entre periodos)
-      // Identificar valores extremos (4, -0.8 -1.3) que corresponden a R, Q y S respectivamente
-      // Pruebas con 150 de delay en el interval, si aumenta a 200, baja el ritmo cardiaco
-      // series.append(Date.now(), 10);
-      // const data = [1, 1, 1.2, 1.3, 1.2, 1, 1, 1, 1, 2.3, 0.16, 0.17, 0.55, 0.58, 0.67, 1 , 1, 1]
-      /* 
-      Arreglo original:
-      this.graphicData = [0, 0, 0, 0, 0.25, 0.5, 0, 0, 0, -0.8, 4, -1.3, 0, 0, 0.9, 1, 0.8, 0, 0, 0, 0, 0, 0, 0, 0.3, 0.5, 0, 0, 0, -0.8, 4, -1.3, 0, 0, 0.9, 1, 0.8, 0, 0, 0];
-      */
-
-      this.graphicData = [0, 0, 0, 0.1, 0.45, 0.5, 0, 0, 0, -0.6, 4, -1.3, 0, 0, 0, 0, 0.65, 0.8, 0.65, 0.1, 0.1, 0.1, 0.1, 0.1,
-      ];
-
+      this.isVentricularTachycardia = false;
+      this.graphicData = [0, 0, 0, 0.1, 0.45, 0.5, 0, 0, 0, -0.6, 4, -1.3, 0, 0, 0, 0, 0.65, 0.8, 0.65, 0.1, 0.1, 0.1, 0.1, 0.1];
       this.cycleSpace = cycleSpace;
       this.iterator = 0;
-      this.slider1 = '75';
+      this.slider1 = 75;
 
-      // Activo la saturación de oxígeno normal
       this.activateSaturation();
-
-      // Activo la tensiòn arterial normal (120/80)
       this.activatePressure();
       this.bloodPressure = '120/80';
       this.$refs.functionModal.hide();
     },
 
-    //Pulso bajo del corazón
+    //Pulso bajo del corazón (Bradicardia sinusal)
     activateLowPulseHeart() {
-      this.activateNormalPulseHeart(120);
-      this.slider1 = '35';
-
-      /*    for (var i = 0; i < quantityZeros; i++) {
-           this.graphicData.splice(0, 0, 0);
-           this.graphicData.splice(12 + 4, 0, 0)
-         } */
-
-      // Agrego 4 ceros al principio
-      this.graphicData.splice(0, 0, 0, 0, 0, 0);
-
-      //Agrego 4 ceros después de la posición 12 del arreglo orginal, pero debido a que agregue 4 ceros, la posición
-      //  se desplazo hacia la derecha 4 lugares
-
-      this.graphicData.splice(12 + 4, 0, 0, 0, 0, 0);
-
+      this.isVentricularTachycardia = false;
+      this.graphicData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0.1, 0.45, 0.5, 0, 0, 0, -0.6, 0, 0, 0, 0, 0, 4, -1.3, 0, 0, 0, 0, 0.65, 0.8, 0.65, 0.1, 0.1, 0.1, 0.1, 0.1];
+      
+      this.cycleSpace = 120;
       this.iterator = 0;
+      this.slider1 = 35;
+      this.slider2 = 95;
+      this.slider3 = 100;
+      this.slider4 = 60;
 
+      this.graphicSaturation = [4, 0.75, 1, -1.1];
       this.cycleSpaceSaturation = 1000;
+      this.iteratorSaturation = 0;
 
-      // Tensiòn Arterial baja (90/60)
-      this.graphicPressure = [4, 2, 2.8, 2, 1.75, 1.5, 1.25, 1]
+      this.graphicPressure = [4, 2, 2.8, 2, 1.75, 1.5, 1.25, 1];
       this.cycleSpacePressure = 365;
-      this.bloodPressure = '90/60';
+      this.iteratorPressure = 0;
+      this.bloodPressure = '100/60';
       this.$refs.functionModal.hide();
     },
 
-    //Pulso bajo del corazón
+    //Pulso alto del corazón (Taquicardia sinusal)
     activateFastPulseHeart() {
+      this.isVentricularTachycardia = false;
+      this.graphicData = [0.1, 0.45, 0.5, 0, 0, -0.6, 4, -1.3, 0, 0, 0.65, 0.8, 0.65, 0.1, 0.1];
+
+      this.cycleSpace = 120;
+      this.iterator = 0;
+      this.slider1 = 115;
+      this.slider2 = 90;
+      this.slider3 = 120;
+      this.slider4 = 80;
+
+      this.graphicSaturation = [4, 0.75, 1, -1.1];
+      this.cycleSpaceSaturation = 350;
+      this.iteratorSaturation = 0;
 
       this.graphicPressure = [5, 2.5, 0];
-      this.slider1 = '85';
-
-      /*   // Eliminar ceros al principio del arreglo
-        this.graphicData.splice(0, quantityZeros);
-  
-        // Encontrar el índice del número -1.3
-        const indexNegativeOnePointThree = this.graphicData.indexOf(-1.3);
-        if (indexNegativeOnePointThree !== -1) {
-          // Eliminar ceros después del número -1.3
-          const endIndex = indexNegativeOnePointThree + quantityZeros;
-          this.graphicData.splice(indexNegativeOnePointThree + 1, endIndex);
-        }
-  
-        // Encontrar el último índice del número 0.65
-        const lastIndexZeroPointSixFive = this.graphicData.lastIndexOf(0.65);
-        if (lastIndexZeroPointSixFive !== -1) {
-          // Eliminar 3 ceros después del último número 0.65
-          const startIndex = lastIndexZeroPointSixFive + 1;
-          this.graphicData.splice(startIndex, 3);
-        }
-   */
-      // Elimino los primeros 3 ceros
-      this.graphicData.splice(0, 3);
-
-      // Elimino 2 ceros después del pico mas alto
-      this.graphicData.splice(9, 2);
-
-      // Elimino 3 ceros de los ultimos de la función
-      this.graphicData.splice(14, 2);
-
-      this.iterator = 0;
-
-      this.cycleSpaceSaturation = 350;
-
-      // Tensiòn Arterial alta (150/90)
       this.cycleSpacePressure = 350;
-      this.bloodPressure = '150/90';
+      this.iteratorPressure = 0;
+      this.bloodPressure = '120/80';
       this.$refs.functionModal.hide();
     },
 
     // Fibrilación ventricular
     activateVentricularFibrillation() {
-      /* 
-      Arreglo original:
-      this.graphicData = [-0.4, 3, -0.4, 1.3, 2.8, -1, 3.1, -0.4, 1.8, 3.5, -1, 3.3, 1.1, 2, 1.2, 1.6, -1, 3.3, -0.9, 2.9, -0.7,2.6, 1, 2.4, -0.2, 1.3, 3, -0.2]
-      */
-
+      this.isVentricularTachycardia = false;
       this.graphicData = [-0.4, 3, -0.4, 1.3, 2.8, -1, 3.1, -0.4, 1.8, 3.5, -1, 3.3, 1.1, 2, 1.2, 1.6, -1, 3.3, -0.9, 2.9, -0.7, 2.6, 1, 2.4, -0.2, 1.3, 3, -0.2, -1, 3.3, 1.1, 2, 1.2, 1.6, -1];
-
-      this.graphicPressure = [0];
-
-      this.graphicSaturation = [0];
-
-      this.iteratorPressure = 0;
-
-      this.iteratorSaturation = 0;
-
       this.cycleSpace = 180;
       this.iterator = 0;
+
+      this.graphicPressure = [0];
+      this.iteratorPressure = 0;
+      this.cycleSpacePressure = 250;
+
+      this.graphicSaturation = [0];
+      this.iteratorSaturation = 0;
+      this.cycleSpaceSaturation = 700;
+
+      this.slider1 = '--';
+      this.slider2 = '--';
+      this.slider3 = '--';
+      this.slider4 = '--';
+      this.bloodPressure = '--/--';
       this.$refs.functionModal.hide();
     },
 
     setVentricularTachycardia() {
-
       this.graphicData = [5, -2];
       this.cycleSpace = 550;
       this.iterator = 0;
+
+      this.slider2 = 94;
+      this.slider3 = 90;
+      this.slider4 = 40;
+      this.bloodPressure = '90/40';
 
       this.graphicSaturation = [4.6, 1.35, 1.6, -1.7];
       this.cycleSpaceSaturation = 700;
@@ -1234,41 +1225,35 @@ export default {
       this.graphicPressure = [1.9, 0.9, 1.1, -0.9];
       this.cycleSpacePressure = 700;
       this.iteratorPressure = 0;
-
     },
 
     // Taquicardia ventricular
     activateVentricularTachycardia() {
-      /* Arreglo original:
-      this.graphicData = [0.3, 0.5, 0, 0, 0, -0.8, 4, -1.3, 0, 0, 0.9, 1, 0.8, -0.5, -0.9, 
-      -1.2, -0.6, 1, 2.5, 2.6, 2.7, 0.1, -1.8,   
-      -1.2, -0.6, 1, 2.4, 2.5, 2.8, 0.5, -1.9, 
-      -1.2, -0.6, 1, 2.4, 2.5, 2.9, 0.2, -1.7,
-      -1.3, -0.6, 1.2, 2.5, 2.6, 2.7, 0.3, -2,
-      -1.2, -0.6, 1, 2.3, 2.5, 2.6, 0.1, -1.8,
-      -1.2, -0.6, 1, 2.4, 2.5, 2.8, 0.4, -1.5,
-      -1.2, -0.6, 1, 2.4, 2.5, 2.7, 0.5, -1.7,
-      ]
-      */
-
       this.isVentricularTachycardia = true;
+      this.slider1 = 145;
       this.setVentricularTachycardia();
       this.$refs.functionModal.hide();
-
     },
 
     // Asistolia
     activateAsystole() {
+      this.isVentricularTachycardia = false;
       this.graphicData = [0];
       this.iterator = 0;
-      this.slider1 = 0;
+      this.cycleSpace = 120;
 
       this.graphicSaturation = [0];
       this.iteratorSaturation = 0;
-      this.slider2 = '--';
+      this.cycleSpaceSaturation = 700;
 
       this.graphicPressure = [0];
       this.iteratorPressure = 0;
+      this.cycleSpacePressure = 250;
+
+      this.slider1 = '--';
+      this.slider2 = '--';
+      this.slider3 = '--';
+      this.slider4 = '--';
       this.bloodPressure = '--/--';
       this.$refs.functionModal.hide();
     },
@@ -1278,7 +1263,7 @@ export default {
       this.graphicSaturation = [4, 0.75, 1, -1.1];
       this.cycleSpaceSaturation = 700;
       this.iteratorSaturation = 0;
-      this.$refs.functionModal.hide();
+      this.slider2 = 100;
     },
 
     // Tensiòn Arterial normal (120/80)
@@ -1286,15 +1271,25 @@ export default {
       this.graphicPressure = [4, 2, 2.8, 2.25, 2, 1.75, 1.5, 1.25, 1];
       this.cycleSpacePressure = 250;
       this.iteratorPressure = 0;
-      this.$refs.functionModal.hide();
+      this.slider3 = 120;
+      this.slider4 = 80;
     },
 
     // Elevación de ST
     activateStElevation() {
+      this.isVentricularTachycardia = false;
       this.graphicData = [0, 0, 0, 0.45, 0, -0.4, 4, 0.7, 1.8];
       this.cycleSpace = 350;
       this.iterator = 0;
-      this.slider1 = '40';
+      this.slider1 = 60;
+      this.slider2 = 90;
+      this.slider3 = 160;
+      this.slider4 = 80;
+      this.bloodPressure = '160/80';
+      
+      this.activateSaturation();
+      this.activatePressure();
+      
       this.$refs.functionModal.hide();
     },
 
@@ -1351,7 +1346,8 @@ export default {
     createSesion() {
       const json = {
         fechaInicio: new Date(this.tiempoIncialSesion),
-        fechaFin: new Date(this.tiempoFinalSesion)
+        fechaFin: new Date(this.tiempoFinalSesion),
+        observacion: this.observation
       };
 
       console.log(json);

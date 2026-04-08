@@ -260,7 +260,7 @@
 
             generateColumns() {
                 // Definir el orden específico de las columnas (sin ID)
-                const columnOrder = ['surname', 'name', 'username', 'studentIdNumber'];
+                const columnOrder = ['surname', 'name', 'username'];
                 
                 this.columns = columnOrder.map(key => {
                     return {
