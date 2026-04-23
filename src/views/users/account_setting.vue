@@ -648,11 +648,11 @@ My job is to build your website so that it is functional and user-friendly but a
             },
             async changePassword() {
                 if (!this.pass.old || !this.pass.new || !this.pass.confirm) {
-                    this.$message.error('Por favor complete todos los campos');
+                    this.$swal.fire("Error", 'Por favor complete todos los campos', 'error');
                     return;
                 }
                 if (this.pass.new !== this.pass.confirm) {
-                    this.$message.error('La nueva contraseña y la confirmación no coinciden');
+                    this.$swal.fire("Error", 'La nueva contraseña y la confirmación no coinciden', 'error');
                     return;
                 }
 
@@ -662,10 +662,10 @@ My job is to build your website so that it is functional and user-friendly but a
                 this.loading_pass = false;
 
                 if (result.success) {
-                    this.$message.success('Contraseña actualizada correctamente');
+                    this.$swal.fire("Éxito", 'Contraseña actualizada correctamente', 'success');
                     this.pass = { old: '', new: '', confirm: '' };
                 } else {
-                    this.$message.error(result.error);
+                    this.$swal.fire("Error", result.error, 'error');
                 }
             }
         }

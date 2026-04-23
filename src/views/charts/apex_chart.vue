@@ -76,14 +76,12 @@
             <b-button @click="toggleTimer" variant="info" class="w-75">
               {{ timerActive ? (timerPaused ? 'Reanudar' : 'Pausar') : 'Iniciar Cronómetro' }}
             </b-button>
-            
-            <b-button v-if="timerActive || currentSessionId" @click="stopTimer" variant="danger" class="w-75 mt-2">
+
+            <b-button v-if="timerActive" @click="stopTimer" variant="danger" class="w-75 mt-2">
               Finalizar Maniobra
             </b-button>
 
-            <p class="h5 mt-3">
-              Tiempo restante: {{ formattedTime }}
-            </p>
+            <p class="h5 mt-3">Tiempo restante: {{ formattedTime }}</p>
 
             <!-- <p v-if="timerActive" class="mt-3">Tiempo restante: {{ ramainingTime }} segundos</p> -->
             <!-- Botón para restablecer el cronómetro (solo visible cuando el cronómetro ha iniciado) -->
@@ -93,7 +91,7 @@
 
             <b-button variant="info" class="w-75 mt-4" v-b-modal.modalxl>Reporte</b-button>
             <!-- Extra large Modal -->
-            <b-modal id="modalxl" title="Reporte" size="xl">
+            <b-modal id="modalxl" title="Reporte de Sesión RCP" size="xl" no-close-on-backdrop>
               <div class="row widget-statistic justify-content-center">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 layout-spacing">
                   <div class="widget">
@@ -180,9 +178,9 @@
                 </div>
               </div>
               <template #modal-footer>
-                <b-button variant="default" data-dismiss="modal" @click="$bvModal.hide('modalxl')"><i
-                    class="flaticon-cancel-12"></i>Descartar</b-button>
-                <b-button variant="primary" @click="stopTimer">Guardar</b-button>
+                <b-button variant="default" @click="discardReport"><i class="flaticon-cancel-12"></i>
+                  Descartar</b-button>
+                <b-button variant="primary" @click="saveSessionReport">Guardar Reporte</b-button>
               </template>
             </b-modal>
             <b-button v-if="permisos" variant="info" class="w-75 mt-4" v-b-modal.functionModal>Activar
@@ -314,8 +312,8 @@
                 class="progress-range-counter"></b-input>
               <b-input v-if="permisos" type="range" v-model="slider4" :min="0" :max="120"
                 class="progress-range-counter"></b-input>
-            </div> 
-          </div> 
+            </div>
+          </div>
         </div>
       </div>
       <!-- <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12 layout-spacing">
@@ -525,7 +523,7 @@
 /* Importo axios */
 /* Importo axios configurado */
 import axios from '@/plugins/axios'
-import API_CONFIG, { getApiUrl } from '@/config/api';
+import API_CONFIG from '@/config/api';
 import authService from '@/services/authService';
 import mqtt from 'mqtt';
 import smoothie from 'smoothie';
@@ -965,9 +963,9 @@ export default {
         try {
           this.client.end();
           this.initData();
-          this.$message.error("Connection maxReconnectTimes limit, stop retry");
+          this.$swal.fire("Error", "Connection maxReconnectTimes limit, stop retry", "error");
         } catch (error) {
-          this.$message.error(error.toString());
+          this.$swal.fire("Error", error.toString(), "error");
         }
       }
     },
@@ -1129,7 +1127,7 @@ export default {
     activateLowPulseHeart() {
       this.isVentricularTachycardia = false;
       this.graphicData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0.1, 0.45, 0.5, 0, 0, 0, -0.6, 0, 0, 0, 0, 0, 4, -1.3, 0, 0, 0, 0, 0.65, 0.8, 0.65, 0.1, 0.1, 0.1, 0.1, 0.1];
-      
+
       this.cycleSpace = 120;
       this.iterator = 0;
       this.slider1 = 35;
@@ -1272,10 +1270,10 @@ export default {
       this.slider3 = 160;
       this.slider4 = 80;
       this.bloodPressure = '160/80';
-      
+
       this.activateSaturation();
       this.activatePressure();
-      
+
       this.$refs.functionModal.hide();
     },
 
@@ -1292,14 +1290,11 @@ export default {
     async startTimer() {
       if (!this.timepoInicialSesion) {
         this.timepoInicialSesion = Date.now();
-        
+
         try {
-          const token = localStorage.getItem('token');
           // Iniciar sesión en el backend
-          const response = await axios.post(getApiUrl(API_CONFIG.ENDPOINTS.RCP_SESSION_START(this.studentId)), {}, {
-            headers: { 'auth': token }
-          });
-          this.currentSessionId = response.data.sessionId || response.data.id;
+          const response = await axios.post(API_CONFIG.ENDPOINTS.RCP_SESSION_START(this.studentId), {});
+          this.currentSessionId = response.data.sessionId || response.data.id || response.data.session?.id;
           console.log("Sesión de RCP iniciada:", this.currentSessionId);
         } catch (error) {
           console.error("Error al iniciar sesión de RCP:", error);
@@ -1307,7 +1302,7 @@ export default {
           this.currentSessionId = "mock-" + Date.now();
         }
       }
-      
+
       this.timerInterval = setInterval(() => {
         if (this.ramainingTime > 0) {
           this.ramainingTime -= 1;
@@ -1316,22 +1311,21 @@ export default {
         }
       }, 1000);
     },
-    
-    async stopTimer() {
+
+    stopTimer() {
       this.timepoFinalSesion = Date.now();
       clearInterval(this.timerInterval);
       this.timerActive = false;
       this.timerPaused = false;
-      
-      await this.saveSessionReport();
+
+      // Abrimos el reporte de manera automática al finalizar la maniobra
+      this.$bvModal.show('modalxl');
     },
 
     async saveSessionReport() {
-      // Calcular promedios para el reporte
-      // En un caso real, esto vendría de los datos acumulados
       const calculateAverage = (series) => {
         const data = series[0].data;
-        if (!data || data.length === 0) return 65; // Valor por defecto
+        if (!data || data.length === 0) return 65;
         const sum = data.reduce((acc, curr) => acc + (curr.y || 0), 0);
         return Math.round(sum / data.length);
       };
@@ -1343,23 +1337,41 @@ export default {
         observation: this.observation
       };
 
-      console.log("Guardando reporte de sesión:", report);
-
       try {
         if (this.currentSessionId) {
-          const token = localStorage.getItem('token');
           await axios.post(
-            getApiUrl(API_CONFIG.ENDPOINTS.RCP_SESSION_END(this.studentId, this.currentSessionId)),
-            report,
-            { headers: { 'auth': token } }
+            API_CONFIG.ENDPOINTS.RCP_SESSION_END(this.studentId, this.currentSessionId),
+            report
           );
-          console.log("Sesión finalizada y reporte guardado con éxito");
-          this.$message.success("Reporte guardado correctamente");
+          this.$swal.fire("Éxito", "Reporte guardado correctamente", "success");
+
+          // Ocultamos el modal y limpiamos todo el estado de la maniobra
+          this.$bvModal.hide('modalxl');
+          this.resetTimer();
+        } else {
+          this.$swal.fire("Atención", "No se encontró una sesión activa", "warning");
         }
       } catch (error) {
-        console.error("Error al finalizar sesión de RCP:", error);
-        this.$message.error("Error al guardar el reporte");
+        console.error("Error al finalizar:", error);
+        this.$swal.fire("Error", "Hubo un error al procesar el reporte", "error");
       }
+    },
+    discardReport() {
+      this.$swal.fire({
+        title: '¿Estás seguro?',
+        text: "Los datos de esta maniobra se perderán",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, descartar'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.$bvModal.hide('modalxl');
+          this.resetTimer();
+        } else {
+          // Si cancela, volvemos a abrir el modal por seguridad
+          this.$bvModal.show('modalxl');
+        }
+      });
     },
 
     toggleTimer() {
@@ -1376,6 +1388,7 @@ export default {
         }
       }
     },
+
     resetTimer() {
       clearInterval(this.timerInterval);
       this.timerActive = false;
@@ -1384,6 +1397,7 @@ export default {
       this.timepoInicialSesion = null;
       this.timepoFinalSesion = null;
       this.currentSessionId = null;
+      this.observation = ''; // Limpiamos observaciones previas
     },
 
     // El método createSesion anterior se reemplaza por saveSessionReport

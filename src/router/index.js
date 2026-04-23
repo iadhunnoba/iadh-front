@@ -542,6 +542,16 @@ const routes = [
         path: '/tables/miscellaneous',
         name: 'miscellaneous',
         component: () => import(/* webpackChunkName: "tables-miscellaneous" */ '../views/tables/miscellaneous.vue')
+    },
+    {
+        path: '/estudiantes',
+        name: 'StudentList',
+        component: () => import('@/views/StudentList.vue')
+    },
+    {
+        path: '/estudiantes/:id/sesiones',
+        name: 'StudentSessions',
+        component: () => import('@/views/StudentSessions.vue')
     }
 ];
 
