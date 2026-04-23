@@ -89,7 +89,6 @@
               Restablecer Cronómetro
             </b-button>
 
-            <b-button variant="info" class="w-75 mt-4" v-b-modal.modalxl>Reporte</b-button>
             <!-- Extra large Modal -->
             <b-modal id="modalxl" title="Reporte de Sesión RCP" size="xl" no-close-on-backdrop>
               <div class="row widget-statistic justify-content-center">
@@ -963,9 +962,9 @@ export default {
         try {
           this.client.end();
           this.initData();
-          this.$swal.fire("Error", "Connection maxReconnectTimes limit, stop retry", "error");
+          console.warn("MQTT: Connection maxReconnectTimes limit, stop retry");
         } catch (error) {
-          this.$swal.fire("Error", error.toString(), "error");
+          console.error("MQTT Error:", error.toString());
         }
       }
     },
