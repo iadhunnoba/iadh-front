@@ -28,6 +28,7 @@
                 </div>
               </div>
             </div>
+
             <div class="browser-list">
               <div class="w-icon icon-fill-danger">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -44,12 +45,12 @@
                   <h6 v-bind:style="{ fontSize: 1.2 + 'em' }">Presión interna pulmones</h6>
                   <p v-bind:style="{ fontSize: 1.2 + 'em' }" class="browser-count">{{ humidity }}%</p>
                 </div>
-
                 <div class="w-browser-stats">
                   <b-progress variant="gradient-danger" :value="humidity" :min="0" :max="100"></b-progress>
                 </div>
               </div>
             </div>
+
             <div class="browser-list">
               <div class="w-icon icon-fill-warning">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -71,19 +72,20 @@
                 </div>
               </div>
             </div>
-            <b-button @click="toggleTimer" variant="info" class="w-75">
-              {{ timerActive ? (timerPaused ? 'Reanudar' : 'Pausar') : 'Iniciar Cronómetro' }}
-            </b-button>
 
-            <b-button v-if="timerActive" @click="stopTimer" variant="danger" class="w-75 mt-2">
-              Finalizar Maniobra
-            </b-button>
+            <div v-if="userRole !== 'estudiante'">
+              <b-button @click="sendCommand('TOGGLE_TIMER')" variant="info" class="w-75 mt-3">
+                {{ timerActive ? (timerPaused ? 'Reanudar' : 'Pausar') : 'Iniciar Cronómetro' }}
+              </b-button>
+              <b-button v-if="timerActive" @click="sendCommand('STOP_TIMER')" variant="danger" class="w-75 mt-2">
+                Finalizar Maniobra
+              </b-button>
+              <b-button @click="sendCommand('RESET_TIMER')" variant="secondary" class="w-75 mt-2" v-if="timerActive">
+                Restablecer Cronómetro
+              </b-button>
+            </div>
 
-            <p class="h5 mt-3">Tiempo restante: {{ formattedTime }}</p>
-
-            <b-button @click="resetTimer" variant="secondary" class="w-75 mt-2" v-if="timerActive">
-              Restablecer Cronómetro
-            </b-button>
+            <p class="h5 mt-3 mb-3">Tiempo restante: {{ formattedTime }}</p>
 
             <b-modal id="modalxl" title="Reporte de Sesión RCP" size="xl" no-close-on-backdrop>
               <div class="row widget-statistic justify-content-center">
@@ -192,42 +194,44 @@
               </template>
             </b-modal>
 
-            <b-button v-if="permisos" variant="info" class="w-75 mt-4" v-b-modal.functionModal>Activar
+            <b-button v-if="userRole !== 'estudiante' && permisos" variant="info" class="w-75 mt-4"
+              v-b-modal.functionModal>Activar
               funciones</b-button>
-            <b-modal id="functionModal" ref="functionModal" title="Funciones" :hide-footer="true">
-              <div v-if="permisos" class="row">
+
+            <b-modal id="functionModal" ref="functionModal" title="Funciones del Simulador" :hide-footer="true">
+              <div class="row">
                 <div class="col-4 col-md-6">
                   <b-button variant="info" class="w-100 mb-3 mr-1 equal-btn"
-                    @click="activateNormalPulseHeart(120)">Activar ritmo
-                    sinusal del corazón</b-button>
-                </div>
-                <div class="col-4 col-md-6">
-                  <b-button variant="info" class="w-100 mb-3 mr-1 equal-btn" @click="activateLowPulseHeart">Activar
-                    bradicardia
-                    sinusal</b-button>
-                </div>
-                <div class="col-4 col-md-6">
-                  <b-button variant="info" class="w-100 mb-3 mr-1 equal-btn" @click="activateFastPulseHeart">Activar
-                    taquicardia
-                    sinusal</b-button>
+                    @click="sendCommand('ACTIVATE_NORMAL', { cycleSpace: 120 })">Activar ritmo sinusal del
+                    corazón</b-button>
                 </div>
                 <div class="col-4 col-md-6">
                   <b-button variant="info" class="w-100 mb-3 mr-1 equal-btn"
-                    @click="activateVentricularFibrillation">Activar
+                    @click="sendCommand('ACTIVATE_LOW_PULSE')">Activar
+                    bradicardia sinusal</b-button>
+                </div>
+                <div class="col-4 col-md-6">
+                  <b-button variant="info" class="w-100 mb-3 mr-1 equal-btn"
+                    @click="sendCommand('ACTIVATE_FAST_PULSE')">Activar
+                    taquicardia sinusal</b-button>
+                </div>
+                <div class="col-4 col-md-6">
+                  <b-button variant="info" class="w-100 mb-3 mr-1 equal-btn"
+                    @click="sendCommand('ACTIVATE_VFIB')">Activar
                     fibrilación ventricular</b-button>
                 </div>
                 <div class="col-4 col-md-6">
                   <b-button variant="info" class="w-100 mb-3 mr-1 equal-btn"
-                    @click="activateVentricularTachycardia">Activar
+                    @click="sendCommand('ACTIVATE_VTACH')">Activar
                     taquicardia ventricular</b-button>
                 </div>
                 <div class="col-4 col-md-6">
-                  <b-button variant="info" class="w-100 mb-3 mr-1 equal-btn" @click="activateStElevation">Supradesnivel
-                    del
-                    ST</b-button>
+                  <b-button variant="info" class="w-100 mb-3 mr-1 equal-btn"
+                    @click="sendCommand('ACTIVATE_ST_ELEVATION')">Supradesnivel del ST</b-button>
                 </div>
                 <div class="col-4 col-md-6">
-                  <b-button variant="info" class="w-100 mb-3 mr-1 equal-btn" @click="activateAsystole">Activar
+                  <b-button variant="info" class="w-100 mb-3 mr-1 equal-btn"
+                    @click="sendCommand('ACTIVATE_ASYSTOLE')">Activar
                     asistolia</b-button>
                 </div>
               </div>
@@ -249,8 +253,8 @@
                     <span class="range-count-number" v-bind:class="{ warning: isWarningFC }"
                       v-bind:style="{ fontSize: 2.5 + 'em' }">FC: {{ slider1 }}</span>
                   </div>
-                  <b-input v-if="permisos" type="range" v-model="slider1" :min="0" :max="240"
-                    class="progress-range-counter"></b-input>
+                  <b-input v-if="userRole !== 'estudiante' && permisos" type="range" v-model="slider1" :min="0"
+                    :max="240" class="progress-range-counter"></b-input>
                 </div>
               </div>
             </div>
@@ -266,7 +270,7 @@
                 <span class="range-count-number" v-bind:class="{ warning: isWarningSpO2 }"
                   v-bind:style="{ fontSize: 2.5 + 'em' }">SpO2: {{ slider2 }}</span>
               </div>
-              <b-input v-if="permisos" type="range" v-model="slider2" :min="0" :max="100"
+              <b-input v-if="userRole !== 'estudiante' && permisos" type="range" v-model="slider2" :min="0" :max="100"
                 class="progress-range-counter"></b-input>
             </div>
           </div>
@@ -281,9 +285,9 @@
                 <span class="range-count-number" v-bind:class="{ warning: isWarningTAA || isWarningTAB }"
                   v-bind:style="{ fontSize: 2.5 + 'em' }">TA: {{ slider3 }} / {{ slider4 }}</span>
               </div>
-              <b-input v-if="permisos" type="range" v-model="slider3" :min="0" :max="240"
+              <b-input v-if="userRole !== 'estudiante' && permisos" type="range" v-model="slider3" :min="0" :max="240"
                 class="progress-range-counter"></b-input>
-              <b-input v-if="permisos" type="range" v-model="slider4" :min="0" :max="120"
+              <b-input v-if="userRole !== 'estudiante' && permisos" type="range" v-model="slider4" :min="0" :max="120"
                 class="progress-range-counter"></b-input>
             </div>
           </div>
@@ -295,7 +299,6 @@
 
 <script>
 import axios from '@/plugins/axios'
-import API_CONFIG from '@/config/api';
 import authService from '@/services/authService';
 import mqtt from 'mqtt';
 import smoothie from 'smoothie';
@@ -309,8 +312,8 @@ export default {
       permisos: true,
       slider1: 75,
       slider2: 100,
-      slider3: 120, // valor inicial sugerido
-      slider4: 80,  // valor inicial sugerido
+      slider3: 120,
+      slider4: 80,
       isWarningSpO2: false,
       isWarningFC: false,
       isWarningTAA: false,
@@ -348,7 +351,6 @@ export default {
       temperature: 0,
       humidity: 0,
       motionDetected: 0,
-
       pressure: null,
       flowrate: null,
       touch: null,
@@ -360,14 +362,20 @@ export default {
         port: 8083,
         endpoint: "/mqtt",
         clean: true,
-        connectTimeout: 30 * 1000, // ms
-        reconnectPeriod: 4000, // ms
+        connectTimeout: 30 * 1000,
+        reconnectPeriod: 4000,
+        // Mantener clientId dinámico es clave para que múltiples pantallas se conecten simultáneamente sin pisarse
         clientId: "emqx_vue_" + Math.random().toString(16).substring(2, 8),
         username: "vuesocket",
         password: "test1234",
       },
-      subscription: {
+      subscriptionSensor: {
         topic: "simulador/situacion",
+        qos: 0,
+      },
+      // Nuevo Topic para Sincronización Profesor-Alumno
+      subscriptionControl: {
+        topic: "simulador/control",
         qos: 0,
       },
       client: {
@@ -382,264 +390,136 @@ export default {
   mounted() {
     this.initData();
     this.createConnection();
-    this.doSubscribe();
 
     // Si es admin/profesor cargamos la lista de estudiantes
     if (this.userRole !== 'estudiante') {
       this.fetchStudents();
     }
 
-    // Gráfico del frecuencia cardíaca
+    // Configuración Gráficos Smoothie (Se mantiene intacta)
     this.graphicData = [];
     this.cycleSpace = 0;
     this.iterator = 0;
-
     var series = new smoothie.TimeSeries();
     var canvas = this.$refs.chart;
-
-    var chart = new smoothie.SmoothieChart({
-      grid: {
-        strokeStyle: '#bbbbbb', fillStyle: '#ffffff',
-        lineWidth: 0, verticalSections: 6,
-      }, maxValue: 7, minValue: -4, millisPerPixel: 20
-    });
+    var chart = new smoothie.SmoothieChart({ grid: { strokeStyle: '#bbbbbb', fillStyle: '#ffffff', lineWidth: 0, verticalSections: 6 }, maxValue: 7, minValue: -4, millisPerPixel: 20 });
     chart.streamTo(canvas, 1000);
     chart.addTimeSeries(series, { lineWidth: 5, strokeStyle: '#00ff00' });
 
-    // Gráfico de la saturación de oxígeno
     this.graphicSaturation = [];
     this.cycleSpaceSaturation = 0;
     this.iteratorSaturation = 0;
-
     var seriesSaturation = new smoothie.TimeSeries();
     var canvasSaturation = this.$refs.saturation;
-
-    var chartSaturation = new smoothie.SmoothieChart({
-      grid: {
-        strokeStyle: '#bbbbbb', fillStyle: '#ffffff',
-        lineWidth: 0, verticalSections: 6,
-      }, maxValue: 7, minValue: -4, millisPerPixel: 20
-    });
+    var chartSaturation = new smoothie.SmoothieChart({ grid: { strokeStyle: '#bbbbbb', fillStyle: '#ffffff', lineWidth: 0, verticalSections: 6 }, maxValue: 7, minValue: -4, millisPerPixel: 20 });
     chartSaturation.streamTo(canvasSaturation, 1000);
     chartSaturation.addTimeSeries(seriesSaturation, { lineWidth: 5, strokeStyle: '#FFFF00' });
 
-    // Gráfico de la tensión arterial
     this.graphicPressure = [];
     this.cycleSpacePressure = 0;
     this.iteratorPressure = 0;
-
     var seriesPressure = new smoothie.TimeSeries();
     var canvasPressure = this.$refs.tensionArterial;
-
-    var chartPressure = new smoothie.SmoothieChart({
-      grid: {
-        strokeStyle: '#bbbbbb', fillStyle: '#ffffff',
-        lineWidth: 0, verticalSections: 6,
-      }, maxValue: 7, minValue: -4, millisPerPixel: 20
-    });
+    var chartPressure = new smoothie.SmoothieChart({ grid: { strokeStyle: '#bbbbbb', fillStyle: '#ffffff', lineWidth: 0, verticalSections: 6 }, maxValue: 7, minValue: -4, millisPerPixel: 20 });
     chartPressure.streamTo(canvasPressure, 1000);
     chartPressure.addTimeSeries(seriesPressure, { lineWidth: 5, strokeStyle: '#FF0000' });
 
-    // Activo el pulso normal del corazón
-    this.activateNormalPulseHeart(120);
+    this.localActivateNormalPulseHeart(120);
 
-    const runIteration = () => {
-      series.append(Date.now(), this.graphicData[this.iterator]);
-      this.iterator++;
-      if (this.iterator === this.graphicData.length) {
-        this.iterator = 0;
-      }
-      setTimeout(runIteration, this.cycleSpace);
-    };
+    const runIteration = () => { series.append(Date.now(), this.graphicData[this.iterator]); this.iterator++; if (this.iterator === this.graphicData.length) { this.iterator = 0; } setTimeout(runIteration, this.cycleSpace); };
     setTimeout(runIteration, this.cycleSpace);
 
-    const runIterationSaturation = () => {
-      seriesSaturation.append(Date.now(), this.graphicSaturation[this.iteratorSaturation]);
-      this.iteratorSaturation++;
-      if (this.iteratorSaturation === this.graphicSaturation.length) {
-        this.iteratorSaturation = 0;
-      }
-      setTimeout(runIterationSaturation, this.cycleSpaceSaturation);
-    };
+    const runIterationSaturation = () => { seriesSaturation.append(Date.now(), this.graphicSaturation[this.iteratorSaturation]); this.iteratorSaturation++; if (this.iteratorSaturation === this.graphicSaturation.length) { this.iteratorSaturation = 0; } setTimeout(runIterationSaturation, this.cycleSpaceSaturation); };
     setTimeout(runIterationSaturation, this.cycleSpaceSaturation);
 
-    const runIterationPressure = () => {
-      seriesPressure.append(Date.now(), this.graphicPressure[this.iteratorPressure]);
-      this.iteratorPressure++;
-      if (this.iteratorPressure === this.graphicPressure.length) {
-        this.iteratorPressure = 0;
-      }
-      setTimeout(runIterationPressure, this.cycleSpacePressure);
-    };
+    const runIterationPressure = () => { seriesPressure.append(Date.now(), this.graphicPressure[this.iteratorPressure]); this.iteratorPressure++; if (this.iteratorPressure === this.graphicPressure.length) { this.iteratorPressure = 0; } setTimeout(runIterationPressure, this.cycleSpacePressure); };
     setTimeout(runIterationPressure, this.cycleSpacePressure);
 
-    this.$watch('slider1', (sliderValue) => {
-      if (sliderValue === '--') {
-        this.isWarningFC = true;
-      } else {
-        const val = parseFloat(sliderValue);
-        this.isWarningFC = val < 60 || val > 100;
-      }
-    });
-
-    this.$watch('slider2', (sliderValue) => {
-      if (sliderValue === '--') {
-        this.isWarningSpO2 = true;
-      } else {
-        const val = parseFloat(sliderValue);
-        this.isWarningSpO2 = val < 90;
-      }
-    });
-
-    this.$watch('slider3', (sliderValue) => {
-      if (sliderValue === '--') {
-        this.isWarningTAA = true;
-      } else {
-        const val = parseFloat(sliderValue);
-        this.isWarningTAA = val < 70 || val > 130;
-      }
-    })
-
-    this.$watch('slider4', (sliderValue) => {
-      if (sliderValue === '--') {
-        this.isWarningTAB = true;
-      } else {
-        const val = parseFloat(sliderValue);
-        this.isWarningTAB = val < 60 || val > 90;
-      }
-    })
+    // Watchers para advertencias
+    this.$watch('slider1', (val) => { this.isWarningFC = val === '--' || parseFloat(val) < 60 || parseFloat(val) > 100; });
+    this.$watch('slider2', (val) => { this.isWarningSpO2 = val === '--' || parseFloat(val) < 90; });
+    this.$watch('slider3', (val) => { this.isWarningTAA = val === '--' || parseFloat(val) < 70 || parseFloat(val) > 130; });
+    this.$watch('slider4', (val) => { this.isWarningTAB = val === '--' || parseFloat(val) < 60 || parseFloat(val) > 90; });
   },
 
   computed: {
     formattedTime() {
-      // Format time in minutes and seconds
       const minutes = Math.floor(this.ramainingTime / 60);
       const seconds = this.ramainingTime % 60;
       return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     },
-
-    // Buscador interactivo de estudiantes
     filteredStudents() {
       if (!this.searchStudent) return this.students;
       const search = this.searchStudent.toLowerCase();
-      return this.students.filter(s =>
-        (s.name && s.name.toLowerCase().includes(search)) ||
-        (s.surname && s.surname.toLowerCase().includes(search)) ||
-        (s.username && s.username.toLowerCase().includes(search)) ||
-        (s.studentIdNumber && s.studentIdNumber.toLowerCase().includes(search))
-      );
+      return this.students.filter(s => (s.name && s.name.toLowerCase().includes(search)) || (s.surname && s.surname.toLowerCase().includes(search)) || (s.username && s.username.toLowerCase().includes(search)) || (s.studentIdNumber && s.studentIdNumber.toLowerCase().includes(search)));
     },
     studentOptions() {
-      return this.filteredStudents.map(s => ({
-        value: s.id,
-        text: `${s.name} ${s.surname} - ${s.username} (ID: ${s.studentIdNumber || 'N/A'})`
-      }));
+      return this.filteredStudents.map(s => ({ value: s.id, text: `${s.name} ${s.surname} - ${s.username} (ID: ${s.studentIdNumber || 'N/A'})` }));
     },
-
-    // Promedios calculados para mostrar en las cards
     avgPressure() { return this.getAverage(this.series1); },
     avgVentilation() { return this.getAverage(this.series2); },
     avgPosition() { return this.getAverage(this.series3); },
-
-    followers_options() {
-      const is_dark = this.$store.state.is_dark_mode;
-      let option = {
-        chart: { sparkline: { enabled: true } },
-        stroke: { curve: 'smooth', width: 2 },
-        colors: ['#4361ee'],
-        yaxis: { min: 0 },
-        tooltip: { theme: is_dark ? 'dark' : 'light', x: { show: false } },
-      };
-      if (is_dark) {
-        option['fill'] = { type: 'gradient', gradient: { type: 'vertical', shadeIntensity: 1, inverseColors: !1, opacityFrom: 0.3, opacityTo: 0.05, stops: [100, 100] } };
-      }
-      return option;
-    },
-    followers_options2() {
-      const is_dark = this.$store.state.is_dark_mode;
-      let option = {
-        chart: { sparkline: { enabled: true } },
-        stroke: { curve: 'smooth', width: 2 },
-        colors: ['#F3A695'],
-        yaxis: { min: 0 },
-        tooltip: { theme: is_dark ? 'dark' : 'light', x: { show: false } },
-      };
-      if (is_dark) {
-        option['fill'] = { type: 'gradient', gradient: { type: 'vertical', shadeIntensity: 1, inverseColors: !1, opacityFrom: 0.3, opacityTo: 0.05, stops: [100, 100] } };
-      }
-      return option;
-    },
-    followers_options3() {
-      const is_dark = this.$store.state.is_dark_mode;
-      let option = {
-        chart: { sparkline: { enabled: true } },
-        stroke: { curve: 'smooth', width: 2 },
-        colors: ['#52C1B7'],
-        yaxis: { min: 0 },
-        tooltip: { theme: is_dark ? 'dark' : 'light', x: { show: false } },
-      };
-      if (is_dark) {
-        option['fill'] = { type: 'gradient', gradient: { type: 'vertical', shadeIntensity: 1, inverseColors: !1, opacityFrom: 0.3, opacityTo: 0.05, stops: [100, 100] } };
-      }
-      return option;
-    },
+    followers_options() { return this.getChartOptions('#4361ee'); },
+    followers_options2() { return this.getChartOptions('#F3A695'); },
+    followers_options3() { return this.getChartOptions('#52C1B7'); }
   },
 
   watch: {
     slider1(sliderValue) {
       if (this.isVentricularTachycardia) {
         if (sliderValue == '0') {
-          this.activateAsystole();
+          this.localActivateAsystole();
         } else {
           this.setVentricularTachycardia();
-          this.$refs.functionModal.hide();
+          if (this.$refs.functionModal) this.$refs.functionModal.hide();
         }
       }
     }
   },
 
   methods: {
-    async fetchStudents() {
-      try {
-        const res = await axios.get('/users/students?limit=200');
-        this.students = res.data.data;
-      } catch (error) {
-        console.error("No se pudieron cargar los estudiantes", error);
-      }
-    },
-    getAverage(series) {
-      const data = series[0].data;
-      if (!data || data.length === 0) return 65;
-      const sum = data.reduce((acc, curr) => acc + (curr.y || 0), 0);
-      return Math.round(sum / data.length);
-    },
+    // --- LÓGICA MAESTRO/ESCLAVO VÍA MQTT --- //
 
-    initData() {
-      this.client = {
-        connected: false,
-      };
-      this.retryTimes = 0;
-      this.connecting = false;
-      this.subscribeSuccess = false;
-    },
+    // Método que el Profesor usa para emitir comandos a TODAS las pantallas
+    sendCommand(action, payload = {}) {
+      if (this.userRole === 'estudiante') return; // El estudiante no puede enviar comandos
 
-    handleOnReConnect() {
-      this.retryTimes += 1;
-      if (this.retryTimes > 5) {
-        try {
-          this.client.end();
-          this.initData();
-          console.warn("MQTT: Connection maxReconnectTimes limit, stop retry");
-        } catch (error) {
-          console.error("MQTT Error:", error.toString());
-        }
+      const command = { action, ...payload };
+
+      // A) Ejecutamos la acción localmente DE INMEDIATO para que el profe no tenga lag
+      this.executeCommand(command);
+
+      // B) Enviamos la orden por MQTT para que la TV del alumno reaccione
+      if (this.client && this.client.connected) {
+        const message = JSON.stringify(command);
+        this.client.publish(this.subscriptionControl.topic, message, { qos: 0 });
+      } else {
+        console.warn("MQTT no conectado. La función se activó solo en tu pantalla local.");
       }
     },
 
+    // Método que recibe comandos MQTT y los ejecuta localmente en la vista
+    executeCommand(cmd) {
+      switch (cmd.action) {
+        case 'TOGGLE_TIMER': this.localToggleTimer(); break;
+        case 'STOP_TIMER': this.localStopTimer(); break;
+        case 'RESET_TIMER': this.localResetTimer(); break;
+        case 'ACTIVATE_NORMAL': this.localActivateNormalPulseHeart(cmd.cycleSpace); break;
+        case 'ACTIVATE_LOW_PULSE': this.localActivateLowPulseHeart(); break;
+        case 'ACTIVATE_FAST_PULSE': this.localActivateFastPulseHeart(); break;
+        case 'ACTIVATE_VFIB': this.localActivateVentricularFibrillation(); break;
+        case 'ACTIVATE_VTACH': this.localActivateVentricularTachycardia(); break;
+        case 'ACTIVATE_ST_ELEVATION': this.localActivateStElevation(); break;
+        case 'ACTIVATE_ASYSTOLE': this.localActivateAsystole(); break;
+      }
+    },
+
+    // --- CONEXIÓN MQTT --- //
+
+    // 3. ACTUALIZAMOS LA CONEXIÓN PARA LEER LOS MENSAJES CORRECTAMENTE
     createConnection() {
       try {
         this.connecting = true;
-
         const { protocol, host, port, endpoint, ...options } = this.connection;
         const connectUrl = `${protocol}://${host}:${port}${endpoint}`;
 
@@ -649,397 +529,216 @@ export default {
           this.client.on("connect", () => {
             this.connecting = false;
             this.client.connected = true;
-            console.log("Connection succeeded! 🎉");
-
-            this.client.subscribe(
-              this.subscription.topic,
-              { qos: this.subscription.qos },
-              (error, res) => {
-                if (error) {
-                  console.error('Subscription failed:', error);
-                  return;
-                }
-                console.log('Subscribe to topics res', res);
-                this.subscribeSuccess = true;
-              }
-            );
+            this.doSubscribe(); // Nos suscribimos según el rol
           });
 
           this.client.on("reconnect", this.handleOnReConnect);
-
           this.client.on("error", (error) => {
-            console.log("Connection failed", error);
+            console.warn("Error de conexión MQTT:", error);
             this.client.connected = false;
             this.connecting = false;
           });
 
           this.client.on("message", (topic, message) => {
             const payloadString = message.toString();
-            // console.log(`Mensaje recibido en el topic "${topic}":`, payloadString);
 
             try {
               const parsedMessage = JSON.parse(payloadString);
 
-              if (parsedMessage.temperature !== undefined) {
-                this.temperature = parseFloat(parsedMessage.temperature).toFixed(1);
+              // A. Comando de control (Solo la TV del alumno lo procesará)
+              if (topic === this.subscriptionControl.topic && this.userRole === 'estudiante') {
+                this.executeCommand(parsedMessage);
               }
-              if (parsedMessage.pressure !== undefined) {
-                this.pressure = parseFloat(parsedMessage.pressure).toFixed(3);
-              }
-              if (parsedMessage.flowrate !== undefined) {
-                this.flowrate = parsedMessage.flowrate;
-              }
-              if (parsedMessage.touch !== undefined) {
-                this.touch = parsedMessage.touch;
-              }
-              // mapeo para la compatibilidad con el resto del código
-              if (parsedMessage.humidity !== undefined) {
-                this.humidity = parsedMessage.humidity;
-              }
-              if (parsedMessage.motionDetected !== undefined) {
-                this.motionDetected = parsedMessage.motionDetected;
+              // B. Datos de sensores (Ambos los procesan para ver las gráficas)
+              else if (topic === this.subscriptionSensor.topic) {
+                if (parsedMessage.temperature !== undefined) this.temperature = parseFloat(parsedMessage.temperature).toFixed(1);
+                if (parsedMessage.pressure !== undefined) this.pressure = parseFloat(parsedMessage.pressure).toFixed(3);
+                if (parsedMessage.flowrate !== undefined) this.flowrate = parsedMessage.flowrate;
+                if (parsedMessage.touch !== undefined) this.touch = parsedMessage.touch;
+                if (parsedMessage.humidity !== undefined) this.humidity = parsedMessage.humidity;
+                if (parsedMessage.motionDetected !== undefined) this.motionDetected = parsedMessage.motionDetected;
               }
             } catch (error) {
-              console.warn('No se pudo parsear el mensaje como JSON:', error);
+              // Ignorar errores silenciosos de parseo si el sensor manda basura
             }
           });
         }
       } catch (error) {
         this.connecting = false;
-        console.log("mqtt.connect error", error);
+        console.error("Error al crear conexión MQTT:", error);
       }
     },
 
+    // 2. ACTUALIZAMOS LA SUSCRIPCIÓN MQTT (Para evitar que el profe ejecute la acción 2 veces)
     doSubscribe() {
-      const { topic, qos } = this.subscription
-      this.client.subscribe(topic, { qos }, (error, res) => {
+      // El profesor solo necesita escuchar a los sensores
+      const topics = [this.subscriptionSensor.topic];
+
+      // Solo si es la TV del estudiante, escuchamos los comandos del profesor
+      if (this.userRole === 'estudiante') {
+        topics.push(this.subscriptionControl.topic);
+      }
+
+      this.client.subscribe(topics, { qos: 0 }, (error) => {
         if (error) {
-          console.log('Subscribe to topics error', error)
-          return
+          console.error('Error al suscribirse a MQTT:', error);
+          return;
         }
-        this.subscribeSuccess = true
-        console.log('Subscribe to topics res', res)
-      })
+        this.subscribeSuccess = true;
+      });
     },
 
-    // Pulso normal del corazón
-    activateNormalPulseHeart(cycleSpace) {
+    initData() { this.client = { connected: false }; this.retryTimes = 0; this.connecting = false; this.subscribeSuccess = false; },
+    handleOnReConnect() { this.retryTimes += 1; if (this.retryTimes > 5) { this.client.end(); this.initData(); } },
+
+    // --- FUNCIONES LOCALES MÉDICAS (Se ejecutan al recibir orden MQTT) --- //
+
+    localActivateNormalPulseHeart(cycleSpace) {
       this.isVentricularTachycardia = false;
       this.graphicData = [0, 0, 0, 0.1, 0.45, 0.5, 0, 0, 0, -0.6, 4, -1.3, 0, 0, 0, 0, 0.65, 0.8, 0.65, 0.1, 0.1, 0.1, 0.1, 0.1];
       this.cycleSpace = cycleSpace;
       this.iterator = 0;
       this.slider1 = 75;
-
       this.activateSaturation();
       this.activatePressure();
       this.bloodPressure = '120/80';
-      this.$refs.functionModal.hide();
+      if (this.$refs.functionModal) this.$refs.functionModal.hide();
     },
 
-    // Pulso bajo del corazón (Bradicardia sinusal)
-    activateLowPulseHeart() {
+    localActivateLowPulseHeart() {
       this.isVentricularTachycardia = false;
-      this.graphicData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0.1, 0.45, 0.5, 0, 0, 0, -0.6, 0, 0, 0, 0, 0, 4, -1.3, 0, 0, 0, 0, 0.65, 0.8, 0.65, 0.1, 0.1, 0.1, 0.1, 0.1];
-
+      this.graphicData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.1, 0.45, 0.5, 0, 0, 0, -0.6, 0, 0, 0, 0, 0, 4, -1.3, 0, 0, 0, 0, 0.65, 0.8, 0.65, 0.1, 0.1, 0.1, 0.1, 0.1];
       this.cycleSpace = 120;
       this.iterator = 0;
-      this.slider1 = 35;
-      this.slider2 = 95;
-      this.slider3 = 100;
-      this.slider4 = 60;
-
-      this.graphicSaturation = [4, 0.75, 1, -1.1];
-      this.cycleSpaceSaturation = 1000;
-      this.iteratorSaturation = 0;
-
-      this.graphicPressure = [4, 2, 2.8, 2, 1.75, 1.5, 1.25, 1];
-      this.cycleSpacePressure = 365;
-      this.iteratorPressure = 0;
+      this.slider1 = 35; this.slider2 = 95; this.slider3 = 100; this.slider4 = 60;
+      this.graphicSaturation = [4, 0.75, 1, -1.1]; this.cycleSpaceSaturation = 1000; this.iteratorSaturation = 0;
+      this.graphicPressure = [4, 2, 2.8, 2, 1.75, 1.5, 1.25, 1]; this.cycleSpacePressure = 365; this.iteratorPressure = 0;
       this.bloodPressure = '100/60';
-      this.$refs.functionModal.hide();
+      if (this.$refs.functionModal) this.$refs.functionModal.hide();
     },
 
-    // Pulso alto del corazón (Taquicardia sinusal)
-    activateFastPulseHeart() {
+    localActivateFastPulseHeart() {
       this.isVentricularTachycardia = false;
       this.graphicData = [0.1, 0.45, 0.5, 0, 0, -0.6, 4, -1.3, 0, 0, 0.65, 0.8, 0.65, 0.1, 0.1];
-
       this.cycleSpace = 120;
       this.iterator = 0;
-      this.slider1 = 115;
-      this.slider2 = 90;
-      this.slider3 = 120;
-      this.slider4 = 80;
-
-      this.graphicSaturation = [4, 0.75, 1, -1.1];
-      this.cycleSpaceSaturation = 350;
-      this.iteratorSaturation = 0;
-
-      this.graphicPressure = [5, 2.5, 0];
-      this.cycleSpacePressure = 350;
-      this.iteratorPressure = 0;
+      this.slider1 = 115; this.slider2 = 90; this.slider3 = 120; this.slider4 = 80;
+      this.graphicSaturation = [4, 0.75, 1, -1.1]; this.cycleSpaceSaturation = 350; this.iteratorSaturation = 0;
+      this.graphicPressure = [5, 2.5, 0]; this.cycleSpacePressure = 350; this.iteratorPressure = 0;
       this.bloodPressure = '120/80';
-      this.$refs.functionModal.hide();
+      if (this.$refs.functionModal) this.$refs.functionModal.hide();
     },
 
-    // Fibrilación ventricular
-    activateVentricularFibrillation() {
+    localActivateVentricularFibrillation() {
       this.isVentricularTachycardia = false;
       this.graphicData = [-0.4, 3, -0.4, 1.3, 2.8, -1, 3.1, -0.4, 1.8, 3.5, -1, 3.3, 1.1, 2, 1.2, 1.6, -1, 3.3, -0.9, 2.9, -0.7, 2.6, 1, 2.4, -0.2, 1.3, 3, -0.2, -1, 3.3, 1.1, 2, 1.2, 1.6, -1];
-      this.cycleSpace = 180;
-      this.iterator = 0;
-
-      this.graphicPressure = [0];
-      this.iteratorPressure = 0;
-      this.cycleSpacePressure = 250;
-
-      this.graphicSaturation = [0];
-      this.iteratorSaturation = 0;
-      this.cycleSpaceSaturation = 700;
-
-      this.slider1 = '--';
-      this.slider2 = '--';
-      this.slider3 = '--';
-      this.slider4 = '--';
+      this.cycleSpace = 180; this.iterator = 0;
+      this.graphicPressure = [0]; this.iteratorPressure = 0; this.cycleSpacePressure = 250;
+      this.graphicSaturation = [0]; this.iteratorSaturation = 0; this.cycleSpaceSaturation = 700;
+      this.slider1 = '--'; this.slider2 = '--'; this.slider3 = '--'; this.slider4 = '--';
       this.bloodPressure = '--/--';
-      this.$refs.functionModal.hide();
+      if (this.$refs.functionModal) this.$refs.functionModal.hide();
     },
 
-    setVentricularTachycardia() {
-      this.graphicData = [5, -2];
-      this.cycleSpace = 550;
-      this.iterator = 0;
-
-      this.slider2 = 94;
-      this.slider3 = 90;
-      this.slider4 = 40;
-      this.bloodPressure = '90/40';
-
-      this.graphicSaturation = [4.6, 1.35, 1.6, -1.7];
-      this.cycleSpaceSaturation = 700;
-      this.iteratorSaturation = 0;
-
-      this.graphicPressure = [1.9, 0.9, 1.1, -0.9];
-      this.cycleSpacePressure = 700;
-      this.iteratorPressure = 0;
-    },
-
-    // Taquicardia ventricular
-    activateVentricularTachycardia() {
+    localActivateVentricularTachycardia() {
       this.isVentricularTachycardia = true;
       this.slider1 = 145;
       this.setVentricularTachycardia();
-      this.$refs.functionModal.hide();
+      if (this.$refs.functionModal) this.$refs.functionModal.hide();
     },
 
-    // Elevación de ST (tus valores ajustados)
-    activateStElevation() {
+    setVentricularTachycardia() {
+      this.graphicData = [5, -2]; this.cycleSpace = 550; this.iterator = 0;
+      this.slider2 = 94; this.slider3 = 90; this.slider4 = 40; this.bloodPressure = '90/40';
+      this.graphicSaturation = [4.6, 1.35, 1.6, -1.7]; this.cycleSpaceSaturation = 700; this.iteratorSaturation = 0;
+      this.graphicPressure = [1.9, 0.9, 1.1, -0.9]; this.cycleSpacePressure = 700; this.iteratorPressure = 0;
+    },
+
+    localActivateStElevation() {
       this.isVentricularTachycardia = false;
       this.graphicData = [0, 0, 0, 0.45, 0, -0.4, 4, 0.7, 1.8];
-      this.cycleSpace = 350;
-      this.iterator = 0;
-
-      this.activateSaturation();
-      this.activatePressure();
-
-      this.slider1 = 60;
-      this.slider2 = 90;
-      this.slider3 = 160;
-      this.slider4 = 80;
-      this.bloodPressure = '160/80';
-
-      this.$refs.functionModal.hide();
+      this.cycleSpace = 350; this.iterator = 0;
+      this.activateSaturation(); this.activatePressure();
+      this.slider1 = 60; this.slider2 = 90; this.slider3 = 160; this.slider4 = 80; this.bloodPressure = '160/80';
+      if (this.$refs.functionModal) this.$refs.functionModal.hide();
     },
 
-    // Asistolia
-    activateAsystole() {
+    localActivateAsystole() {
       this.isVentricularTachycardia = false;
-      this.graphicData = [0];
-      this.iterator = 0;
-      this.cycleSpace = 120;
-
-      this.graphicSaturation = [0];
-      this.iteratorSaturation = 0;
-      this.cycleSpaceSaturation = 700;
-
-      this.graphicPressure = [0];
-      this.iteratorPressure = 0;
-      this.cycleSpacePressure = 250;
-
-      this.slider1 = '--';
-      this.slider2 = '--';
-      this.slider3 = '--';
-      this.slider4 = '--';
-      this.bloodPressure = '--/--';
-      this.$refs.functionModal.hide();
+      this.graphicData = [0]; this.iterator = 0; this.cycleSpace = 120;
+      this.graphicSaturation = [0]; this.iteratorSaturation = 0; this.cycleSpaceSaturation = 700;
+      this.graphicPressure = [0]; this.iteratorPressure = 0; this.cycleSpacePressure = 250;
+      this.slider1 = '--'; this.slider2 = '--'; this.slider3 = '--'; this.slider4 = '--'; this.bloodPressure = '--/--';
+      if (this.$refs.functionModal) this.$refs.functionModal.hide();
     },
 
-    // Saturación de oxígeno
-    activateSaturation() {
-      this.graphicSaturation = [4, 0.75, 1, -1.1];
-      this.cycleSpaceSaturation = 700;
-      this.iteratorSaturation = 0;
-      this.slider2 = 100;
-    },
+    activateSaturation() { this.graphicSaturation = [4, 0.75, 1, -1.1]; this.cycleSpaceSaturation = 700; this.iteratorSaturation = 0; this.slider2 = 100; },
+    activatePressure() { this.graphicPressure = [4, 2, 2.8, 2.25, 2, 1.75, 1.5, 1.25, 1]; this.cycleSpacePressure = 250; this.iteratorPressure = 0; this.slider3 = 120; this.slider4 = 80; },
 
-    // Tensión Arterial normal (120/80)
-    activatePressure() {
-      this.graphicPressure = [4, 2, 2.8, 2.25, 2, 1.75, 1.5, 1.25, 1];
-      this.cycleSpacePressure = 250;
-      this.iteratorPressure = 0;
-      this.slider3 = 120;
-      this.slider4 = 80;
-    },
+    // --- FUNCIONES LOCALES DEL CRONÓMETRO --- //
 
-    async startTimer() {
-      if (!this.timepoInicialSesion) {
-        this.timepoInicialSesion = Date.now();
-        this.recordedPressure = [];
-        this.recordedVentilation = [];
-        this.recordedPosition = [];
-
-        try {
-          if (this.userRole === 'estudiante') {
-            const response = await axios.post(API_CONFIG.ENDPOINTS.RCP_SESSION_START(this.studentId), {});
-            this.currentSessionId = response.data.sessionId || response.data.id || response.data.session?.id;
-            console.log("Sesión de RCP iniciada:", this.currentSessionId);
-          }
-        } catch (error) {
-          console.error("Error al iniciar sesión de RCP:", error);
-          this.currentSessionId = "mock-" + Date.now();
-        }
-      }
-
-      this.timerInterval = setInterval(() => {
-        if (!this.timerPaused) {
-          if (this.ramainingTime > 0) {
-            this.ramainingTime -= 1;
-
-            // Recolección de datos en tiempo real. Default a 65 si son nulos.
-            // Presión pulmonar = humidity en tu template
-            let p = this.humidity ? parseFloat(this.humidity) : 65;
-            // Ventilación = motionDetected en tu template
-            let v = this.motionDetected ? parseFloat(this.motionDetected) : 65;
-            // Posición/Compresiones = temperature en tu template
-            let pos = this.temperature ? parseFloat(this.temperature) : 65;
-
-            const now = Date.now();
-            this.recordedPressure.push({ x: now, y: p });
-            this.recordedVentilation.push({ x: now, y: v });
-            this.recordedPosition.push({ x: now, y: pos });
-
-          } else {
-            this.stopTimer();
-          }
-        }
-      }, 1000);
-    },
-
-    stopTimer() {
-      this.timepoFinalSesion = Date.now();
-      clearInterval(this.timerInterval);
-      this.timerActive = false;
-      this.timerPaused = false;
-
-      // Volcamos los datos recolectados en las series de las gráficas del modal
-      if (this.recordedPressure.length > 0) {
-        this.series1 = [{ data: this.recordedPressure }];
-        this.series2 = [{ data: this.recordedVentilation }];
-        this.series3 = [{ data: this.recordedPosition }];
-      } else {
-        // En caso de que finalice apenas inicia
-        this.series1 = [{ data: [{ x: Date.now(), y: 65 }] }];
-        this.series2 = [{ data: [{ x: Date.now(), y: 65 }] }];
-        this.series3 = [{ data: [{ x: Date.now(), y: 65 }] }];
-      }
-
-      // Abrimos el reporte de manera automática al finalizar la maniobra
-      this.$bvModal.show('modalxl');
-    },
-
-    async saveSessionReport() {
-      // Si no es estudiante, validamos que haya elegido uno para asignar el reporte
-      if (this.userRole !== 'estudiante' && !this.selectedStudentId) {
-        this.$swal.fire("Atención", "Debe seleccionar un estudiante para asignarle el reporte.", "warning");
-        return;
-      }
-
-      const finalStudentId = this.userRole === 'estudiante' ? this.studentId : this.selectedStudentId;
-
-      // Cálculo del tiempo de la maniobra para enviarlo a BD y evitar el "-1"
-      const durationSeconds = 180 - this.ramainingTime;
-
-      const report = {
-        avgPulmonaryPressure: this.getAverage(this.series1),
-        avgVentilation: this.getAverage(this.series2),
-        avgCorrectPosition: this.getAverage(this.series3),
-        observation: this.observation,
-        duration: durationSeconds > 0 ? durationSeconds : 1,
-        startedAt: new Date(this.timepoInicialSesion).toISOString(),
-        endedAt: new Date(this.timepoFinalSesion).toISOString()
-      };
-
-      try {
-        let sessionId = this.currentSessionId;
-
-        // Para profe/admin, como no arrancaron sesión en BD al principio, la arranco acá
-        if (this.userRole !== 'estudiante') {
-          const startRes = await axios.post(`/students/${finalStudentId}/rcp-sessions/start`, {
-            startedAt: new Date(this.timepoInicialSesion).toISOString()
-          });
-          sessionId = startRes.data.session.id;
-        }
-
-        if (sessionId && !sessionId.toString().startsWith("mock")) {
-          await axios.post(`/students/${finalStudentId}/rcp-sessions/${sessionId}/end`, report);
-          this.$swal.fire("Éxito", "Reporte guardado correctamente", "success");
-
-          // Ocultamos el modal y limpiamos todo el estado de la maniobra
-          this.$bvModal.hide('modalxl');
-          this.resetTimer();
-        } else {
-          this.$swal.fire("Atención", "No se encontró una sesión activa o válida", "warning");
-        }
-      } catch (error) {
-        console.error("Error al finalizar:", error);
-        this.$swal.fire("Error", "Hubo un error al procesar el reporte", "error");
-      }
-    },
-
-    discardReport() {
-      this.$swal.fire({
-        title: '¿Estás seguro?',
-        text: "Los datos de esta maniobra se perderán",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Sí, descartar'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          this.$bvModal.hide('modalxl');
-          this.resetTimer();
-        } else {
-          // Si cancela, volvemos a abrir el modal por seguridad
-          this.$bvModal.show('modalxl');
-        }
-      });
-    },
-
-    toggleTimer() {
+    localToggleTimer() {
       if (!this.timerActive) {
         this.timerActive = true;
-        this.startTimer();
+        this.startTimerInterval();
       } else {
         if (!this.timerPaused) {
           this.timerPaused = true;
           clearInterval(this.timerInterval);
         } else {
           this.timerPaused = false;
-          this.startTimer();
+          this.startTimerInterval();
         }
       }
     },
 
-    resetTimer() {
+    async startTimerInterval() {
+      if (!this.timepoInicialSesion) {
+        this.timepoInicialSesion = Date.now();
+        this.recordedPressure = []; this.recordedVentilation = []; this.recordedPosition = [];
+      }
+
+      this.timerInterval = setInterval(() => {
+        if (!this.timerPaused) {
+          if (this.ramainingTime > 0) {
+            this.ramainingTime -= 1;
+            let p = this.humidity ? parseFloat(this.humidity) : 65;
+            let v = this.motionDetected ? parseFloat(this.motionDetected) : 65;
+            let pos = this.temperature ? parseFloat(this.temperature) : 65;
+            const now = Date.now();
+            this.recordedPressure.push({ x: now, y: p });
+            this.recordedVentilation.push({ x: now, y: v });
+            this.recordedPosition.push({ x: now, y: pos });
+          } else {
+            this.localStopTimer();
+          }
+        }
+      }, 1000);
+    },
+
+    localStopTimer() {
+      this.timepoFinalSesion = Date.now();
+      clearInterval(this.timerInterval);
+      this.timerActive = false;
+      this.timerPaused = false;
+
+      if (this.recordedPressure.length > 0) {
+        this.series1 = [{ data: this.recordedPressure }];
+        this.series2 = [{ data: this.recordedVentilation }];
+        this.series3 = [{ data: this.recordedPosition }];
+      } else {
+        this.series1 = [{ data: [{ x: Date.now(), y: 65 }] }];
+        this.series2 = [{ data: [{ x: Date.now(), y: 65 }] }];
+        this.series3 = [{ data: [{ x: Date.now(), y: 65 }] }];
+      }
+
+      // IMPORTANTE: El modal SOLO se abre en la vista del profesor
+      if (this.userRole !== 'estudiante') {
+        this.$bvModal.show('modalxl');
+      }
+    },
+
+    localResetTimer() {
       clearInterval(this.timerInterval);
       this.timerActive = false;
       this.timerPaused = false;
@@ -1050,6 +749,62 @@ export default {
       this.observation = '';
       this.selectedStudentId = null;
     },
+
+    // --- HELPERS (API y Gráficas) --- //
+
+    async fetchStudents() {
+      try { const res = await axios.get('/users/students?limit=200'); this.students = res.data.data; }
+      catch (error) { console.error("Error", error); }
+    },
+    getChartOptions(color) {
+      const is_dark = this.$store.state.is_dark_mode;
+      let option = { chart: { sparkline: { enabled: true } }, stroke: { curve: 'smooth', width: 2 }, colors: [color], yaxis: { min: 0 }, tooltip: { theme: is_dark ? 'dark' : 'light', x: { show: false } } };
+      if (is_dark) option['fill'] = { type: 'gradient', gradient: { type: 'vertical', shadeIntensity: 1, inverseColors: !1, opacityFrom: 0.3, opacityTo: 0.05, stops: [100, 100] } };
+      return option;
+    },
+    getAverage(series) {
+      const data = series[0].data; if (!data || data.length === 0) return 65;
+      return Math.round(data.reduce((acc, curr) => acc + (curr.y || 0), 0) / data.length);
+    },
+
+    // --- LÓGICA DE REPORTE (Solo Profesor) --- //
+
+    async saveSessionReport() {
+      if (this.userRole !== 'estudiante' && !this.selectedStudentId) {
+        this.$swal.fire("Atención", "Debe seleccionar un estudiante para asignarle el reporte.", "warning"); return;
+      }
+      const durationSeconds = 180 - this.ramainingTime;
+      const report = {
+        avgPulmonaryPressure: this.getAverage(this.series1), avgVentilation: this.getAverage(this.series2),
+        avgCorrectPosition: this.getAverage(this.series3), observation: this.observation,
+        duration: durationSeconds > 0 ? durationSeconds : 1,
+        startedAt: new Date(this.timepoInicialSesion).toISOString(), endedAt: new Date(this.timepoFinalSesion).toISOString()
+      };
+
+      try {
+        const startRes = await axios.post(`/students/${this.selectedStudentId}/rcp-sessions/start`, { startedAt: report.startedAt });
+        const sessionId = startRes.data.session.id;
+
+        await axios.post(`/students/${this.selectedStudentId}/rcp-sessions/${sessionId}/end`, report);
+        this.$swal.fire("Éxito", "Reporte guardado correctamente", "success");
+        this.$bvModal.hide('modalxl');
+        this.sendCommand('RESET_TIMER'); // Avisamos a todos (incluida la TV) que reinicien todo
+      } catch (error) {
+        this.$swal.fire("Error", "Hubo un error al procesar el reporte", "error");
+      }
+    },
+
+    discardReport() {
+      this.$swal.fire({
+        title: '¿Estás seguro?', text: "Los datos se perderán", icon: 'warning',
+        showCancelButton: true, confirmButtonText: 'Sí, descartar'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.$bvModal.hide('modalxl');
+          this.sendCommand('RESET_TIMER'); // Ordenamos reiniciar todo
+        } else { this.$bvModal.show('modalxl'); }
+      });
+    }
   },
 };
 </script>
