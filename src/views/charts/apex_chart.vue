@@ -1,7 +1,5 @@
 <template>
   <div class="home">
-    <!-- <apexchart ref="realtimeChart1" type="line" height="350" :options="chartOptions" :series="series1" /> -->
-
     <div class="row mt-4 mx-4">
       <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
         <div class="widget widget-visitor-by-browser text-center">
@@ -83,16 +81,13 @@
 
             <p class="h5 mt-3">Tiempo restante: {{ formattedTime }}</p>
 
-            <!-- <p v-if="timerActive" class="mt-3">Tiempo restante: {{ ramainingTime }} segundos</p> -->
-            <!-- Botón para restablecer el cronómetro (solo visible cuando el cronómetro ha iniciado) -->
             <b-button @click="resetTimer" variant="secondary" class="w-75 mt-2" v-if="timerActive">
               Restablecer Cronómetro
             </b-button>
 
-            <!-- Extra large Modal -->
             <b-modal id="modalxl" title="Reporte de Sesión RCP" size="xl" no-close-on-backdrop>
               <div class="row widget-statistic justify-content-center">
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 layout-spacing">
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 layout-spacing">
                   <div class="widget">
                     <div class="widget-heading">
                       <div class="w-title">
@@ -104,7 +99,7 @@
                           </svg>
                         </div>
                         <div>
-                          <p class="w-value">65%</p>
+                          <p class="w-value">{{ avgPressure }}%</p>
                           <h5>Presión pulmonar - Promedio</h5>
                         </div>
                       </div>
@@ -117,7 +112,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 layout-spacing">
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 layout-spacing">
                   <div class="widget">
                     <div class="widget-heading">
                       <div class="w-title">
@@ -129,7 +124,7 @@
                           </svg>
                         </div>
                         <div>
-                          <p class="w-value">65%</p>
+                          <p class="w-value">{{ avgVentilation }}%</p>
                           <h5>Ventilación - Promedio</h5>
                         </div>
                       </div>
@@ -142,7 +137,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 layout-spacing">
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 layout-spacing">
                   <div class="widget">
                     <div class="widget-heading">
                       <div class="w-title">
@@ -154,8 +149,8 @@
                           </svg>
                         </div>
                         <div>
-                          <p class="w-value">65%</p>
-                          <h5>Posición correcta de la maniobra - Promedio</h5>
+                          <p class="w-value">{{ avgPosition }}%</p>
+                          <h5>Posición correcta - Promedio</h5>
                         </div>
                       </div>
                     </div>
@@ -167,8 +162,22 @@
                     </div>
                   </div>
                 </div>
-
               </div>
+
+              <div v-if="userRole !== 'estudiante'" class="row mt-2 mb-4 p-3 border rounded">
+                <div class="col-12">
+                  <h5 class="text-primary mb-3">Asignar Reporte a Estudiante</h5>
+                  <b-form-input v-model="searchStudent" placeholder="Buscar por nombre, apellido o ID..."
+                    class="mb-2"></b-form-input>
+                  <b-form-select v-model="selectedStudentId" :options="studentOptions">
+                    <template #first>
+                      <b-form-select-option :value="null" disabled>-- Seleccione un estudiante de la lista
+                        --</b-form-select-option>
+                    </template>
+                  </b-form-select>
+                </div>
+              </div>
+
               <div class="row mt-4">
                 <div class="col-12">
                   <h5>Observaciones</h5>
@@ -182,6 +191,7 @@
                 <b-button variant="primary" @click="saveSessionReport">Guardar Reporte</b-button>
               </template>
             </b-modal>
+
             <b-button v-if="permisos" variant="info" class="w-75 mt-4" v-b-modal.functionModal>Activar
               funciones</b-button>
             <b-modal id="functionModal" ref="functionModal" title="Funciones" :hide-footer="true">
@@ -212,7 +222,7 @@
                     taquicardia ventricular</b-button>
                 </div>
                 <div class="col-4 col-md-6">
-                  <b-button variant="info" class="w-100 mb-3 mr-1 equal-btn" @click="activateStElevation"> Supradesnivel
+                  <b-button variant="info" class="w-100 mb-3 mr-1 equal-btn" @click="activateStElevation">Supradesnivel
                     del
                     ST</b-button>
                 </div>
@@ -243,42 +253,6 @@
                     class="progress-range-counter"></b-input>
                 </div>
               </div>
-              <!--    <div v-if="permisos" class="row">
-                <div class="col-4 col-md-6">
-                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateNormalPulseHeart(120)">Activar pulso
-                    normal
-                    del
-                    corazón</b-button>
-                </div>
-                <div class="col-4 col-md-6">
-                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateLowPulseHeart">Activar frecuencia
-                    cardiaca
-                    baja</b-button>
-                </div>
-                <div class="col-4 col-md-6">
-                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateFastPulseHeart">Activar frecuencia
-                    cardiaca
-                    alta</b-button>
-                </div>
-                <div class="col-4 col-md-6">
-                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateVentricularFibrillation">Activar
-                    fibrilación
-                    ventricular</b-button>
-                </div>
-                <div class="col-4 col-md-6">
-                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateVentricularTachycardia">Activar
-                    taquicarida
-                    ventricular</b-button>
-                </div>
-                <div class="col-4 col-md-6">
-                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateStElevation">Elevación de
-                    ST</b-button>
-                </div>
-                <div class="col-4 col-md-6">
-                  <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateAsystole">Activar
-                    asistolia</b-button>
-                </div>
-              </div> -->
             </div>
           </div>
         </div>
@@ -315,264 +289,20 @@
           </div>
         </div>
       </div>
-      <!-- <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12 layout-spacing">
-        <div class="row widget-statistic">
-          <div class="col-xl-12 col-lg-12 col-md-8 col-sm-4 col-12 layout-spacing">
-            <div class="widget">
-              <div class="widget-heading">
-                <div class="w-title">
-                  <div class="w-icon icon-fill-primary">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                      class="feather feather-activity">
-                      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-                    </svg>
-                  </div>
-                  <div>
-                    <p class="w-value">65%</p>
-                    <h5>Presión pulmonar - Promedio</h5>
-                  </div>
-                </div>
-              </div>
-              <div class="widget-content">
-                <div class="w-chart">
-                  <apexchart v-if="followers_options" height="160" type="area" :options="followers_options"
-                    :series="series1"></apexchart>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-xl-12 col-lg-12 col-md-8 col-sm-4 col-12 layout-spacing">
-            <div class="widget">
-              <div class="widget-heading">
-                <div class="w-title">
-                  <div class="w-icon icon-fill-primary2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                      class="feather feather-activity">
-                      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-                    </svg>
-                  </div>
-                  <div>
-                    <p class="w-value">65%</p>
-                    <h5>Presión pulmonar - Promedio</h5>
-                  </div>
-                </div>
-              </div>
-              <div class="widget-content">
-                <div class="w-chart">
-                  <apexchart v-if="followers_options2" height="160" type="area" :options="followers_options2"
-                    :series="series2"></apexchart>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div> -->
     </div>
-
-    <!-- <div class="row m-4">
-        <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12 layout-spacing">
-             <div class="widget widget-expenses">
-                    <div class="widget-heading">
-                        <h5>Expenses</h5>
-                        <div class="task-action">
-                            <b-dropdown variant="icon-only" toggle-tag="a" :right="true">
-                                <template #button-content>
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="24"
-                                        height="24"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        stroke-width="2"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        class="feather feather-more-horizontal"
-                                    >
-                                        <circle cx="12" cy="12" r="1"></circle>
-                                        <circle cx="19" cy="12" r="1"></circle>
-                                        <circle cx="5" cy="12" r="1"></circle>
-                                    </svg>
-                                </template>
-
-                                <b-dropdown-item>This Week</b-dropdown-item>
-                                <b-dropdown-item>Last Week</b-dropdown-item>
-                                <b-dropdown-item>Last Month</b-dropdown-item>
-                            </b-dropdown>
-                        </div>
-                    </div>
-
-                    <div class="widget-content">
-                        <p class="value">
-                            $ 45,141
-                            <span>this week </span>
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                class="feather feather-trending-up"
-                            >
-                                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
-                                <polyline points="17 6 23 6 23 12"></polyline>
-                            </svg>
-                        </p>
-                        <div class="w-progress-stats">
-                            <b-progress variant="gradient-secondary" :value="57" :min="0" :max="100"></b-progress>
-                            <div class="w-icon">57%</div>
-                        </div>
-                    </div>
-                </div>
-        </div>
-    </div> -->
-
-    <!--  <div class="row m-4">
-      <div class="col-12 col-md-6 mt-3">
-        <canvas ref="chart" class="w-100" width="600" height="300"></canvas>
-      </div>
-      <div class="col-12 col-md-6">
-        <div class="row">
-          <div class="col-12">
-            <div class="custom-progress progress-up mb-2" style="width: 100%">
-              <div class="range-count">
-                <span class="range-count-number" v-bind:class="{ warning: isWarningPulseHeart }"
-                  v-bind:style="{ fontSize: 4 + 'em' }">HR: {{ slider1 }}</span>
-              </div>
-            </div>
-          </div>
-          <div v-if="permisos" class="row">
-            <div class="col-4 col-md-6">
-              <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateNormalPulseHeart(120)">Activar pulso
-                normal
-                del
-                corazón</b-button>
-            </div>
-            <div class="col-4 col-md-6">
-              <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateLowPulseHeart">Activar frecuencia
-                cardiaca
-                baja</b-button>
-            </div>
-            <div class="col-4 col-md-6">
-              <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateFastPulseHeart">Activar frecuencia
-                cardiaca
-                alta</b-button>
-            </div>
-            <div class="col-4 col-md-6">
-              <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateVentricularFibrillation">Activar
-                fibrilación
-                ventricular</b-button>
-            </div>
-            <div class="col-4 col-md-6">
-              <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateVentricularTachycardia">Activar
-                taquicarida
-                ventricular</b-button>
-            </div>
-            <div class="col-4 col-md-6">
-              <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateStElevation">Elevación de
-                ST</b-button>
-            </div>
-            <div class="col-4 col-md-6">
-              <b-button variant="info" class="w-100 mb-3 mr-1" @click="activateAsystole">Activar
-                asistolia</b-button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="row m-4">
-      <div class="col-12 col-md-6 mt-3">
-        <canvas ref="saturation" class="w-100" width="600" height="300"></canvas>
-      </div>
-      <div class="col-12 col-md-6">
-        <div class="custom-progress progress-up" style="width: 100%">
-          <div class="range-count">
-            <span class="range-count-number" v-bind:class="{ warning: isWarning }"
-              v-bind:style="{ fontSize: 4 + 'em' }">SpO2: {{ slider2 }}</span>
-          </div>
-          <b-input v-if="permisos" type="range" v-model="slider2" :min="0" :max="100"
-            class="progress-range-counter"></b-input>
-        </div>
-      </div>
-    </div>
-    <div class="row m-4">
-      <div class="col-12 col-md-6 mt-3">
-        <canvas ref="tensionArterial" class="w-100" width="600" height="300"></canvas>
-      </div>
-      <div class="col-12 col-md-6">
-        <div class="custom-progress progress-up" style="width: 100%">
-          <div class="range-count">
-            <span class="range-count-number" v-bind:style="{ fontSize: 4 + 'em' }">ABP: {{ bloodPressure }}</span>
-          </div>
-        </div>
-      </div>
-    </div> -->
   </div>
 </template>
 
 <script>
-// Importo influxDB
-//import {InfluxDBClient, Point} from '@influxdata/influxdb3-client'
-/* Importo axios */
-/* Importo axios configurado */
 import axios from '@/plugins/axios'
 import API_CONFIG from '@/config/api';
 import authService from '@/services/authService';
 import mqtt from 'mqtt';
 import smoothie from 'smoothie';
 
-var lastDate = 0,
-  data1 = [],
-  data2 = [];
-
-function getDayWiseTimeSeries(baseval, count, yrange) {
-  var i = 0;
-  while (i < count) {
-    let x = baseval;
-    let y1 = Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min;
-    let y2 = Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min;
-
-    data1.push({ x, y: y1 });
-    data2.push({ x, y: y2 });
-    lastDate = baseval;
-    baseval += 86400000;
-    i++;
-  }
-}
-
-getDayWiseTimeSeries(new Date('11 Feb 2017 GMT').getTime(), 10, {
-  min: 10,
-  max: 90,
-});
-
-function getNewSeries(baseval, yrange) {
-  var newDate = baseval + 86400000;
-  lastDate = newDate;
-  data1.push({
-    x: newDate,
-    y: Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min,
-  });
-  data2.push({
-    x: newDate,
-    y: Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min,
-  });
-}
-function resetData() {
-  data1 = data1.slice(data1.length - 10, data1.length);
-  data2 = data2.slice(data2.length - 10, data2.length);
-}
-
 export default {
   name: 'home',
-  components: {
-    //apexchart: VueApexCharts,
-  },
+  components: {},
   data() {
     return {
       tokenInflux: process.env.INFLUXDB_TOKEN,
@@ -591,57 +321,28 @@ export default {
       timepoInicialSesion: null,
       timepoFinalSesion: null,
       currentSessionId: null,
-      studentId: this.$route.params.id || (authService.getUser() ? authService.getUser().id : 1),
-      series1: [{ data: data1.slice() }],
-      series2: [{ data: data2.slice() }],
-      series3: [{ data: data2.slice() }],
-      randomValue: 0,
-      chartOptions: {
-        chart: {
-          animations: {
-            enabled: true,
-            easing: 'linear',
-            dynamicAnimation: {
-              speed: 2000,
-            },
-          },
-          toolbar: {
-            show: false,
-          },
-          zoom: {
-            enabled: false,
-          },
-        },
-        dataLabels: {
-          enabled: false,
-        },
-        stroke: {
-          curve: 'smooth',
-        },
 
-        title: {
-          text: 'Dynamic Updating Chart',
-          align: 'left',
-        },
-        markers: {
-          size: 0,
-        },
-        xaxis: {
-          type: 'datetime',
-          range: 777600000,
-        },
-        yaxis: {
-          max: 100,
-        },
-        legend: {
-          show: false,
-        },
-      },
+      // Roles y Estudiantes
+      userRole: authService.getUser() ? authService.getUser().role : 'estudiante',
+      studentId: this.$route.params.id || (authService.getUser() ? authService.getUser().id : 1),
+      students: [],
+      searchStudent: '',
+      selectedStudentId: null,
+
+      // Arrays para recolectar datos reales durante la maniobra
+      recordedPressure: [],
+      recordedVentilation: [],
+      recordedPosition: [],
+
+      series1: [{ data: [] }],
+      series2: [{ data: [] }],
+      series3: [{ data: [] }],
+
       // Variables necesarias para el cronómetro de la maniobra
-      timerActive: false,      // Variable para controlar el estado del cronómetro
-      timerPaused: false,     // Variable para controlar el estado de pausa del cronómetro
-      ramainingTime: 180,          // Tiempo restante en segundos (3 minutos = 180 segundos)
-      timerInterval: null,     // Referencia al interval del cronómetro
+      timerActive: false,
+      timerPaused: false,
+      ramainingTime: 180,
+      timerInterval: null,
 
       // Variables para obtener valores desde esp32
       temperature: 0,
@@ -655,17 +356,13 @@ export default {
       // EMQX CONNECTION VARS
       connection: {
         protocol: "ws",
-        //host: "192.168.0.223",
         host: "172.19.185.55",
-        // ws: 8083; wss: 8084
         port: 8083,
         endpoint: "/mqtt",
-        // for more options, please refer to https://github.com/mqttjs/MQTT.js#mqttclientstreambuilder-options
         clean: true,
         connectTimeout: 30 * 1000, // ms
         reconnectPeriod: 4000, // ms
         clientId: "emqx_vue_" + Math.random().toString(16).substring(2, 8),
-        // auth
         username: "vuesocket",
         password: "test1234",
       },
@@ -673,13 +370,6 @@ export default {
         topic: "simulador/situacion",
         qos: 0,
       },
-      publish: {
-        topic: "simulador/situacion",
-        qos: 0,
-        payload: '{ "msg": "Hello, I am browser." }',
-      },
-      receiveNews: "",
-      qosList: [0, 1, 2],
       client: {
         connected: false,
       },
@@ -690,29 +380,16 @@ export default {
   },
 
   mounted() {
-    // Código MQTT para conectarte al broker, suscribirte a topicos, etc.
-    // Me conecto al broker MQTT a través de WebSockets
-
-    // Esta conexión es para cuando corro el servidor en la misma compu que la app
-    //let client = mqtt.connect('ws://localhost:8083/mqtt');
-    //let client = mqtt.connect('ws://192.168.0');
-
-    //client.subscribe('/iadh');
-
-    // Me mantengo escuchando al broker
-    // client.on('message', function (topic, message) {
-    //   console.log(message.toString());
-    // });
-
-    //client.publish('/iadh', '¡Buenas!');
-
     this.initData();
     this.createConnection();
     this.doSubscribe();
 
-    // Gràfico del frecuencia cardíaca
-    /* Declaro las variables que necesito para volver dinamico el gràfico: 
-    los datos del gràfico, el espacio entre cada ciclo y un iterador (Necesito un iterador dinamico porque a la hora de producir una cambio de datos, necesito que iterador vuelva a cero, para evitar problema con los índices de los arreglos, debido a que tienen diferente longitud, y me ayuda para actualizar el espacio entre cada ciclo) */
+    // Si es admin/profesor cargamos la lista de estudiantes
+    if (this.userRole !== 'estudiante') {
+      this.fetchStudents();
+    }
+
+    // Gráfico del frecuencia cardíaca
     this.graphicData = [];
     this.cycleSpace = 0;
     this.iterator = 0;
@@ -727,10 +404,9 @@ export default {
       }, maxValue: 7, minValue: -4, millisPerPixel: 20
     });
     chart.streamTo(canvas, 1000);
-
     chart.addTimeSeries(series, { lineWidth: 5, strokeStyle: '#00ff00' });
 
-    // Gràfico de la suturaciòn de oxìgeno
+    // Gráfico de la saturación de oxígeno
     this.graphicSaturation = [];
     this.cycleSpaceSaturation = 0;
     this.iteratorSaturation = 0;
@@ -745,10 +421,9 @@ export default {
       }, maxValue: 7, minValue: -4, millisPerPixel: 20
     });
     chartSaturation.streamTo(canvasSaturation, 1000);
-
     chartSaturation.addTimeSeries(seriesSaturation, { lineWidth: 5, strokeStyle: '#FFFF00' });
 
-    // Gràfico de la suturaciòn de la tensiòn arterial
+    // Gráfico de la tensión arterial
     this.graphicPressure = [];
     this.cycleSpacePressure = 0;
     this.iteratorPressure = 0;
@@ -763,71 +438,40 @@ export default {
       }, maxValue: 7, minValue: -4, millisPerPixel: 20
     });
     chartPressure.streamTo(canvasPressure, 1000);
-
     chartPressure.addTimeSeries(seriesPressure, { lineWidth: 5, strokeStyle: '#FF0000' });
 
     // Activo el pulso normal del corazón
     this.activateNormalPulseHeart(120);
 
-    /* Defino la función runIteration que se ejecuta en cada iteración del ciclo. Dentro de esta función, se actualiza this.cycleSpace cuando this.iterator es igual a 0, y luego se utiliza setTimeout para programar la próxima iteración de runIteration con el nuevo tiempo de espera this.cycleSpace. */
-
     const runIteration = () => {
-      //series.append(Date.now(), Math.random());
       series.append(Date.now(), this.graphicData[this.iterator]);
       this.iterator++;
-
       if (this.iterator === this.graphicData.length) {
         this.iterator = 0;
       }
-
       setTimeout(runIteration, this.cycleSpace);
     };
-
     setTimeout(runIteration, this.cycleSpace);
 
     const runIterationSaturation = () => {
       seriesSaturation.append(Date.now(), this.graphicSaturation[this.iteratorSaturation]);
       this.iteratorSaturation++;
-
       if (this.iteratorSaturation === this.graphicSaturation.length) {
         this.iteratorSaturation = 0;
       }
-
       setTimeout(runIterationSaturation, this.cycleSpaceSaturation);
     };
-
     setTimeout(runIterationSaturation, this.cycleSpaceSaturation);
 
     const runIterationPressure = () => {
       seriesPressure.append(Date.now(), this.graphicPressure[this.iteratorPressure]);
       this.iteratorPressure++;
-
       if (this.iteratorPressure === this.graphicPressure.length) {
         this.iteratorPressure = 0;
       }
-
       setTimeout(runIterationPressure, this.cycleSpacePressure);
     };
-
     setTimeout(runIterationPressure, this.cycleSpacePressure);
-
-    /* this.$watch('slider1', (sliderValue) => {
-      if (sliderValue < 40) {
-        this.activateLowPulseHeart(4);
-        this.cycleSpaceSaturation = 1000;
-      } else if (sliderValue == 60) {
-        this.activateNormalPulseHeart(120);
-        this.cycleSpaceSaturation = 700;
-      } else if (sliderValue > 95) {
-        this.activateFastPulseHeart(4);
-        this.cycleSpaceSaturation = 350;
-      } else if (sliderValue > 75) {
-        this.activateFastPulseHeart(2);
-        this.cycleSpaceSaturation = 500;
-      } 
-    }); */
-
-    // Hay que ver a que valores hay que activar los warning
 
     this.$watch('slider1', (sliderValue) => {
       if (sliderValue === '--') {
@@ -837,6 +481,7 @@ export default {
         this.isWarningFC = val < 60 || val > 100;
       }
     });
+
     this.$watch('slider2', (sliderValue) => {
       if (sliderValue === '--') {
         this.isWarningSpO2 = true;
@@ -863,24 +508,45 @@ export default {
         this.isWarningTAB = val < 60 || val > 90;
       }
     })
-
   },
 
   computed: {
     formattedTime() {
-
       // Format time in minutes and seconds
       const minutes = Math.floor(this.ramainingTime / 60);
       const seconds = this.ramainingTime % 60;
       return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     },
+
+    // Buscador interactivo de estudiantes
+    filteredStudents() {
+      if (!this.searchStudent) return this.students;
+      const search = this.searchStudent.toLowerCase();
+      return this.students.filter(s =>
+        (s.name && s.name.toLowerCase().includes(search)) ||
+        (s.surname && s.surname.toLowerCase().includes(search)) ||
+        (s.username && s.username.toLowerCase().includes(search)) ||
+        (s.studentIdNumber && s.studentIdNumber.toLowerCase().includes(search))
+      );
+    },
+    studentOptions() {
+      return this.filteredStudents.map(s => ({
+        value: s.id,
+        text: `${s.name} ${s.surname} - ${s.username} (ID: ${s.studentIdNumber || 'N/A'})`
+      }));
+    },
+
+    // Promedios calculados para mostrar en las cards
+    avgPressure() { return this.getAverage(this.series1); },
+    avgVentilation() { return this.getAverage(this.series2); },
+    avgPosition() { return this.getAverage(this.series3); },
+
     followers_options() {
       const is_dark = this.$store.state.is_dark_mode;
       let option = {
         chart: { sparkline: { enabled: true } },
         stroke: { curve: 'smooth', width: 2 },
-        colors: ['#4361ee'], //F3A695
-        //labels: ['1', '2', '3', '4', '5', '6', '7'],
+        colors: ['#4361ee'],
         yaxis: { min: 0 },
         tooltip: { theme: is_dark ? 'dark' : 'light', x: { show: false } },
       };
@@ -889,14 +555,12 @@ export default {
       }
       return option;
     },
-
     followers_options2() {
       const is_dark = this.$store.state.is_dark_mode;
       let option = {
         chart: { sparkline: { enabled: true } },
         stroke: { curve: 'smooth', width: 2 },
         colors: ['#F3A695'],
-        //labels: ['1', '2', '3', '4', '5', '6', '7'],
         yaxis: { min: 0 },
         tooltip: { theme: is_dark ? 'dark' : 'light', x: { show: false } },
       };
@@ -911,7 +575,6 @@ export default {
         chart: { sparkline: { enabled: true } },
         stroke: { curve: 'smooth', width: 2 },
         colors: ['#52C1B7'],
-        //labels: ['1', '2', '3', '4', '5', '6', '7'],
         yaxis: { min: 0 },
         tooltip: { theme: is_dark ? 'dark' : 'light', x: { show: false } },
       };
@@ -923,29 +586,33 @@ export default {
   },
 
   watch: {
-
     slider1(sliderValue) {
-
       if (this.isVentricularTachycardia) {
-
         if (sliderValue == '0') {
-
           this.activateAsystole();
-
         } else {
-
           this.setVentricularTachycardia();
           this.$refs.functionModal.hide();
-
         }
-
       }
-
     }
-
   },
 
   methods: {
+    async fetchStudents() {
+      try {
+        const res = await axios.get('/users/students?limit=200');
+        this.students = res.data.data;
+      } catch (error) {
+        console.error("No se pudieron cargar los estudiantes", error);
+      }
+    },
+    getAverage(series) {
+      const data = series[0].data;
+      if (!data || data.length === 0) return 65;
+      const sum = data.reduce((acc, curr) => acc + (curr.y || 0), 0);
+      return Math.round(sum / data.length);
+    },
 
     initData() {
       this.client = {
@@ -968,42 +635,6 @@ export default {
         }
       }
     },
-
-    /*
-    Codigo de Juan para los parametros de la maniobra RCP
-    createConnection() {
-      try {
-        this.connecting = true;
-        const { protocol, host, port, endpoint, ...options } = this.connection;
-        const connectUrl = `${protocol}://${host}:${port}${endpoint}`;
-        this.client = mqtt.connect(connectUrl, options);
-        if (this.client.on) {
-          this.client.on("connect", () => {
-            this.connecting = false;
-            console.log("Connection succeeded!");
-          });
-          this.client.on("reconnect", this.handleOnReConnect);
-          this.client.on("error", (error) => {
-            console.log("Connection failed", error);
-          });
-          this.client.on("message", (topic, message) => {
-            this.receiveNews = this.receiveNews.concat(message);
-            //console.log(`Received message ${message} from topic ${topic}`);
-            try {
-              const parsedMessage = JSON.parse(message.toString());
-              this.temperature = parsedMessage.temperature.toFixed(1);
-              this.humidity = parsedMessage.humidity;
-              this.motionDetected = parsedMessage.motionDetected;
-            } catch (error) {
-              console.error('Failed to parse message', error);
-            }
-          });
-        }
-      } catch (error) {
-        this.connecting = false;
-        console.log("mqtt.connect error", error);
-      }
-    }, */
 
     createConnection() {
       try {
@@ -1044,7 +675,7 @@ export default {
 
           this.client.on("message", (topic, message) => {
             const payloadString = message.toString();
-            console.log(`Mensaje recibido en el topic "${topic}":`, payloadString); // ¡Agrega este log para depurar!
+            // console.log(`Mensaje recibido en el topic "${topic}":`, payloadString);
 
             try {
               const parsedMessage = JSON.parse(payloadString);
@@ -1060,6 +691,13 @@ export default {
               }
               if (parsedMessage.touch !== undefined) {
                 this.touch = parsedMessage.touch;
+              }
+              // mapeo para la compatibilidad con el resto del código
+              if (parsedMessage.humidity !== undefined) {
+                this.humidity = parsedMessage.humidity;
+              }
+              if (parsedMessage.motionDetected !== undefined) {
+                this.motionDetected = parsedMessage.motionDetected;
               }
             } catch (error) {
               console.warn('No se pudo parsear el mensaje como JSON:', error);
@@ -1084,31 +722,7 @@ export default {
       })
     },
 
-    intervals: function () {
-      var me = this;
-      window.setInterval(function () {
-        getNewSeries(lastDate, { min: 10, max: 90 });
-        me.$refs.realtimeChart1.updateSeries([{ data: data1 }]);
-        me.$refs.realtimeChart2.updateSeries([{ data: data2 }]);
-      }, 2000);
-
-      // every 60 seconds, we reset the data to prevent memory leaks
-      window.setInterval(function () {
-        resetData();
-        me.$refs.realtimeChart1.updateSeries([{ data: [] }], false, true);
-        me.$refs.realtimeChart2.updateSeries([{ data: [] }], false, true);
-      }, 60000);
-    },
-
-    // Funcion para randomizar los valores de los arreglos de los gráficos
-    randomizeData([...arr]) {
-      for (let i = 0; i < arr.length; i++) {
-        arr[i] = arr[i] - Math.random() * 0.4 - 0.2; // Genera un valor aleatorio entre -0.2 y 0.2
-      }
-      return arr;
-    },
-
-    //Pulso normal del corazón
+    // Pulso normal del corazón
     activateNormalPulseHeart(cycleSpace) {
       this.isVentricularTachycardia = false;
       this.graphicData = [0, 0, 0, 0.1, 0.45, 0.5, 0, 0, 0, -0.6, 4, -1.3, 0, 0, 0, 0, 0.65, 0.8, 0.65, 0.1, 0.1, 0.1, 0.1, 0.1];
@@ -1122,7 +736,7 @@ export default {
       this.$refs.functionModal.hide();
     },
 
-    //Pulso bajo del corazón (Bradicardia sinusal)
+    // Pulso bajo del corazón (Bradicardia sinusal)
     activateLowPulseHeart() {
       this.isVentricularTachycardia = false;
       this.graphicData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0.1, 0.45, 0.5, 0, 0, 0, -0.6, 0, 0, 0, 0, 0, 4, -1.3, 0, 0, 0, 0, 0.65, 0.8, 0.65, 0.1, 0.1, 0.1, 0.1, 0.1];
@@ -1145,7 +759,7 @@ export default {
       this.$refs.functionModal.hide();
     },
 
-    //Pulso alto del corazón (Taquicardia sinusal)
+    // Pulso alto del corazón (Taquicardia sinusal)
     activateFastPulseHeart() {
       this.isVentricularTachycardia = false;
       this.graphicData = [0.1, 0.45, 0.5, 0, 0, -0.6, 4, -1.3, 0, 0, 0.65, 0.8, 0.65, 0.1, 0.1];
@@ -1218,6 +832,25 @@ export default {
       this.$refs.functionModal.hide();
     },
 
+    // Elevación de ST (tus valores ajustados)
+    activateStElevation() {
+      this.isVentricularTachycardia = false;
+      this.graphicData = [0, 0, 0, 0.45, 0, -0.4, 4, 0.7, 1.8];
+      this.cycleSpace = 350;
+      this.iterator = 0;
+
+      this.activateSaturation();
+      this.activatePressure();
+
+      this.slider1 = 60;
+      this.slider2 = 90;
+      this.slider3 = 160;
+      this.slider4 = 80;
+      this.bloodPressure = '160/80';
+
+      this.$refs.functionModal.hide();
+    },
+
     // Asistolia
     activateAsystole() {
       this.isVentricularTachycardia = false;
@@ -1249,7 +882,7 @@ export default {
       this.slider2 = 100;
     },
 
-    // Tensiòn Arterial normal (120/80)
+    // Tensión Arterial normal (120/80)
     activatePressure() {
       this.graphicPressure = [4, 2, 2.8, 2.25, 2, 1.75, 1.5, 1.25, 1];
       this.cycleSpacePressure = 250;
@@ -1258,55 +891,46 @@ export default {
       this.slider4 = 80;
     },
 
-    // Elevación de ST
-    activateStElevation() {
-      this.isVentricularTachycardia = false;
-      this.graphicData = [0, 0, 0, 0.45, 0, -0.4, 4, 0.7, 1.8];
-      this.cycleSpace = 350;
-      this.iterator = 0;
-      this.slider1 = 60;
-      this.slider2 = 90;
-      this.slider3 = 160;
-      this.slider4 = 80;
-      this.bloodPressure = '160/80';
-
-      this.activateSaturation();
-      this.activatePressure();
-
-      this.$refs.functionModal.hide();
-    },
-
-    // Obtengo un valor aleatorio entre dos números seleccionados
-    /*  getRandomNegativeArbitrary(min, max) {
-       return Math.random() * (max - min) + min;
-     }  */
-
-    // Actualizo los datos del primer grafico del modal
-    /*  updateChartSeries(newData) {
-       this.series[0].data = newData;
-     }, */
-
     async startTimer() {
       if (!this.timepoInicialSesion) {
         this.timepoInicialSesion = Date.now();
+        this.recordedPressure = [];
+        this.recordedVentilation = [];
+        this.recordedPosition = [];
 
         try {
-          // Iniciar sesión en el backend
-          const response = await axios.post(API_CONFIG.ENDPOINTS.RCP_SESSION_START(this.studentId), {});
-          this.currentSessionId = response.data.sessionId || response.data.id || response.data.session?.id;
-          console.log("Sesión de RCP iniciada:", this.currentSessionId);
+          if (this.userRole === 'estudiante') {
+            const response = await axios.post(API_CONFIG.ENDPOINTS.RCP_SESSION_START(this.studentId), {});
+            this.currentSessionId = response.data.sessionId || response.data.id || response.data.session?.id;
+            console.log("Sesión de RCP iniciada:", this.currentSessionId);
+          }
         } catch (error) {
           console.error("Error al iniciar sesión de RCP:", error);
-          // Mock sessionId for development if backend fails
           this.currentSessionId = "mock-" + Date.now();
         }
       }
 
       this.timerInterval = setInterval(() => {
-        if (this.ramainingTime > 0) {
-          this.ramainingTime -= 1;
-        } else {
-          this.stopTimer();
+        if (!this.timerPaused) {
+          if (this.ramainingTime > 0) {
+            this.ramainingTime -= 1;
+
+            // Recolección de datos en tiempo real. Default a 65 si son nulos.
+            // Presión pulmonar = humidity en tu template
+            let p = this.humidity ? parseFloat(this.humidity) : 65;
+            // Ventilación = motionDetected en tu template
+            let v = this.motionDetected ? parseFloat(this.motionDetected) : 65;
+            // Posición/Compresiones = temperature en tu template
+            let pos = this.temperature ? parseFloat(this.temperature) : 65;
+
+            const now = Date.now();
+            this.recordedPressure.push({ x: now, y: p });
+            this.recordedVentilation.push({ x: now, y: v });
+            this.recordedPosition.push({ x: now, y: pos });
+
+          } else {
+            this.stopTimer();
+          }
         }
       }, 1000);
     },
@@ -1317,44 +941,71 @@ export default {
       this.timerActive = false;
       this.timerPaused = false;
 
+      // Volcamos los datos recolectados en las series de las gráficas del modal
+      if (this.recordedPressure.length > 0) {
+        this.series1 = [{ data: this.recordedPressure }];
+        this.series2 = [{ data: this.recordedVentilation }];
+        this.series3 = [{ data: this.recordedPosition }];
+      } else {
+        // En caso de que finalice apenas inicia
+        this.series1 = [{ data: [{ x: Date.now(), y: 65 }] }];
+        this.series2 = [{ data: [{ x: Date.now(), y: 65 }] }];
+        this.series3 = [{ data: [{ x: Date.now(), y: 65 }] }];
+      }
+
       // Abrimos el reporte de manera automática al finalizar la maniobra
       this.$bvModal.show('modalxl');
     },
 
     async saveSessionReport() {
-      const calculateAverage = (series) => {
-        const data = series[0].data;
-        if (!data || data.length === 0) return 65;
-        const sum = data.reduce((acc, curr) => acc + (curr.y || 0), 0);
-        return Math.round(sum / data.length);
-      };
+      // Si no es estudiante, validamos que haya elegido uno para asignar el reporte
+      if (this.userRole !== 'estudiante' && !this.selectedStudentId) {
+        this.$swal.fire("Atención", "Debe seleccionar un estudiante para asignarle el reporte.", "warning");
+        return;
+      }
+
+      const finalStudentId = this.userRole === 'estudiante' ? this.studentId : this.selectedStudentId;
+
+      // Cálculo del tiempo de la maniobra para enviarlo a BD y evitar el "-1"
+      const durationSeconds = 180 - this.ramainingTime;
 
       const report = {
-        avgPulmonaryPressure: calculateAverage(this.series1),
-        avgVentilation: calculateAverage(this.series2),
-        avgCorrectPosition: calculateAverage(this.series3),
-        observation: this.observation
+        avgPulmonaryPressure: this.getAverage(this.series1),
+        avgVentilation: this.getAverage(this.series2),
+        avgCorrectPosition: this.getAverage(this.series3),
+        observation: this.observation,
+        duration: durationSeconds > 0 ? durationSeconds : 1,
+        startedAt: new Date(this.timepoInicialSesion).toISOString(),
+        endedAt: new Date(this.timepoFinalSesion).toISOString()
       };
 
       try {
-        if (this.currentSessionId) {
-          await axios.post(
-            API_CONFIG.ENDPOINTS.RCP_SESSION_END(this.studentId, this.currentSessionId),
-            report
-          );
+        let sessionId = this.currentSessionId;
+
+        // Para profe/admin, como no arrancaron sesión en BD al principio, la arranco acá
+        if (this.userRole !== 'estudiante') {
+          const startRes = await axios.post(`/students/${finalStudentId}/rcp-sessions/start`, {
+            startedAt: new Date(this.timepoInicialSesion).toISOString()
+          });
+          sessionId = startRes.data.session.id;
+        }
+
+        if (sessionId && !sessionId.toString().startsWith("mock")) {
+          await axios.post(`/students/${finalStudentId}/rcp-sessions/${sessionId}/end`, report);
           this.$swal.fire("Éxito", "Reporte guardado correctamente", "success");
 
           // Ocultamos el modal y limpiamos todo el estado de la maniobra
           this.$bvModal.hide('modalxl');
           this.resetTimer();
         } else {
-          this.$swal.fire("Atención", "No se encontró una sesión activa", "warning");
+          this.$swal.fire("Atención", "No se encontró una sesión activa o válida", "warning");
         }
       } catch (error) {
         console.error("Error al finalizar:", error);
         this.$swal.fire("Error", "Hubo un error al procesar el reporte", "error");
       }
     },
+
     discardReport() {
       this.$swal.fire({
         title: '¿Estás seguro?',
@@ -1396,28 +1047,20 @@ export default {
       this.timepoInicialSesion = null;
       this.timepoFinalSesion = null;
       this.currentSessionId = null;
-      this.observation = ''; // Limpiamos observaciones previas
-    },
-
-    // El método createSesion anterior se reemplaza por saveSessionReport
-    createSesion() {
-      this.saveSessionReport();
+      this.observation = '';
+      this.selectedStudentId = null;
     },
   },
-
-
 };
 </script>
 
 <style scoped>
-/* código CSS */
 .warning {
   animation: blink 1s infinite;
 }
 
 .equal-btn {
   height: 55px;
-  /* Ajustar el alto a gusto */
   display: flex;
   align-items: center;
   justify-content: center;
