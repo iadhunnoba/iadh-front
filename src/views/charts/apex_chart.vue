@@ -89,7 +89,8 @@
             <div class="timer-widget mt-3 mb-2" :class="timerWrapperClass">
               <div class="tw-status">{{ timerStatusLabel }}</div>
               <div class="tw-time" :class="timerColorClass">{{ formattedTime }}</div>
-              <b-progress class="tw-bar" :value="ramainingTime" :max="180" :variant="timerVariant" height="6px"></b-progress>
+              <b-progress class="tw-bar" :value="ramainingTime" :max="180" :variant="timerVariant"
+                height="6px"></b-progress>
               <div class="tw-footer">
                 <span>{{ 180 - ramainingTime }}s transcurridos</span>
                 <span>3:00 total</span>
@@ -223,11 +224,8 @@
                               </b-badge>
                               <strong>{{ getEventLabel(evt.eventType) }}</strong>
                             </div>
-                            <b-form-textarea
-                              v-model="evt.observation"
-                              :placeholder="'Observación sobre: ' + getEventLabel(evt.eventType)"
-                              rows="2"
-                              size="sm"
+                            <b-form-textarea v-model="evt.observation"
+                              :placeholder="'Observación sobre: ' + getEventLabel(evt.eventType)" rows="2" size="sm"
                               class="mt-1">
                             </b-form-textarea>
                           </div>
@@ -241,8 +239,8 @@
               <div class="row mt-4">
                 <div class="col-12">
                   <h5>Observaciones Generales de la Sesión</h5>
-                  <b-form-textarea v-model="observation" placeholder="Ingrese observaciones generales de la sesión..." rows="3"
-                    max-rows="6"></b-form-textarea>
+                  <b-form-textarea v-model="observation" placeholder="Ingrese observaciones generales de la sesión..."
+                    rows="3" max-rows="6"></b-form-textarea>
                 </div>
               </div>
               <template #modal-footer>
@@ -391,17 +389,17 @@ import mqtt from 'mqtt';
 import smoothie from 'smoothie';
 
 const EVENT_META = {
-  TOGGLE_TIMER:           { label: 'Cronómetro iniciado',              variant: 'success' },
-  TIMER_PAUSE:            { label: 'Cronómetro pausado',               variant: 'secondary' },
-  TIMER_RESUME:           { label: 'Cronómetro reanudado',             variant: 'info' },
-  STOP_TIMER:             { label: 'Maniobra finalizada',              variant: 'danger' },
-  ACTIVATE_NORMAL:        { label: 'Ritmo sinusal normal activado',    variant: 'info' },
-  ACTIVATE_LOW_PULSE:     { label: 'Bradicardia sinusal activada',     variant: 'warning' },
-  ACTIVATE_FAST_PULSE:    { label: 'Taquicardia sinusal activada',     variant: 'warning' },
-  ACTIVATE_VFIB:          { label: 'Fibrilación ventricular activada', variant: 'danger' },
-  ACTIVATE_VTACH:         { label: 'Taquicardia ventricular activada', variant: 'danger' },
-  ACTIVATE_ST_ELEVATION:  { label: 'Supradesnivel del ST activado',    variant: 'warning' },
-  ACTIVATE_ASYSTOLE:      { label: 'Asistolia activada',              variant: 'danger' },
+  TOGGLE_TIMER: { label: 'Cronómetro iniciado', variant: 'success' },
+  TIMER_PAUSE: { label: 'Cronómetro pausado', variant: 'secondary' },
+  TIMER_RESUME: { label: 'Cronómetro reanudado', variant: 'info' },
+  STOP_TIMER: { label: 'Maniobra finalizada', variant: 'danger' },
+  ACTIVATE_NORMAL: { label: 'Ritmo sinusal normal activado', variant: 'info' },
+  ACTIVATE_LOW_PULSE: { label: 'Bradicardia sinusal activada', variant: 'warning' },
+  ACTIVATE_FAST_PULSE: { label: 'Taquicardia sinusal activada', variant: 'warning' },
+  ACTIVATE_VFIB: { label: 'Fibrilación ventricular activada', variant: 'danger' },
+  ACTIVATE_VTACH: { label: 'Taquicardia ventricular activada', variant: 'danger' },
+  ACTIVATE_ST_ELEVATION: { label: 'Supradesnivel del ST activado', variant: 'warning' },
+  ACTIVATE_ASYSTOLE: { label: 'Asistolia activada', variant: 'danger' },
 };
 
 export default {
@@ -462,7 +460,7 @@ export default {
       // EMQX CONNECTION VARS
       connection: {
         protocol: "ws",
-        host: "172.19.185.55",
+        host: "192.168.0.100",
         port: 8083,
         endpoint: "/mqtt",
         clean: true,
@@ -698,8 +696,10 @@ export default {
 
           this.client.on("message", (topic, message) => {
             const payloadString = message.toString();
+            console.log("Tópico recibido:", topic, "Mensaje:", payloadString);
             try {
               const parsedMessage = JSON.parse(payloadString);
+              console.log("Mensaje parseado:", parsedMessage);
 
               if (topic === this.subscriptionControl.topic && this.userRole === 'estudiante') {
                 this.executeCommand(parsedMessage);
@@ -713,6 +713,7 @@ export default {
               }
             } catch (error) {
               // Ignorar errores de parseo
+              console.warn("No se pudo parsear el mensaje MQTT:", error);
             }
           });
         }
@@ -969,10 +970,20 @@ export default {
 
 <style scoped>
 /* ── Blinking warning for vitals ── */
-.warning { animation: blink 1s infinite; }
+.warning {
+  animation: blink 1s infinite;
+}
+
 @keyframes blink {
-  0%, 100% { background-color: transparent; }
-  50%       { background-color: red; }
+
+  0%,
+  100% {
+    background-color: transparent;
+  }
+
+  50% {
+    background-color: red;
+  }
 }
 
 /* ── Buttons in function modal ── */
@@ -991,16 +1002,18 @@ export default {
   padding: 14px 16px 10px;
   text-align: center;
   border: 1px solid #e0e6ed;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   transition: border-color 0.4s, box-shadow 0.4s;
 }
+
 .timer-widget.tw-red-state {
   border-color: #e7515a;
-  box-shadow: 0 0 0 3px rgba(231,81,90,0.12);
+  box-shadow: 0 0 0 3px rgba(231, 81, 90, 0.12);
 }
+
 .timer-widget.tw-orange-state {
   border-color: #e2a03f;
-  box-shadow: 0 0 0 3px rgba(226,160,63,0.12);
+  box-shadow: 0 0 0 3px rgba(226, 160, 63, 0.12);
 }
 
 .tw-status {
@@ -1020,16 +1033,36 @@ export default {
   color: #3b3f5c;
   transition: color 0.4s;
 }
-.tw-time.tw-green  { color: #1abc9c; }
-.tw-time.tw-orange { color: #e2a03f; }
-.tw-time.tw-red    { color: #e7515a; animation: timer-pulse 0.8s infinite; }
 
-@keyframes timer-pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.5; }
+.tw-time.tw-green {
+  color: #1abc9c;
 }
 
-.tw-bar { margin-top: 10px; border-radius: 4px; }
+.tw-time.tw-orange {
+  color: #e2a03f;
+}
+
+.tw-time.tw-red {
+  color: #e7515a;
+  animation: timer-pulse 0.8s infinite;
+}
+
+@keyframes timer-pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.tw-bar {
+  margin-top: 10px;
+  border-radius: 4px;
+}
 
 .tw-footer {
   display: flex;
@@ -1071,11 +1104,30 @@ export default {
   position: relative;
 }
 
-.step-chip--success  { border-left-color: #1abc9c; background: #edfaf6; }
-.step-chip--info     { border-left-color: #2196f3; background: #e8f4fd; }
-.step-chip--warning  { border-left-color: #e2a03f; background: #fdf5e8; }
-.step-chip--danger   { border-left-color: #e7515a; background: #fdeaea; }
-.step-chip--secondary{ border-left-color: #888ea8; background: #f1f2f3; }
+.step-chip--success {
+  border-left-color: #1abc9c;
+  background: #edfaf6;
+}
+
+.step-chip--info {
+  border-left-color: #2196f3;
+  background: #e8f4fd;
+}
+
+.step-chip--warning {
+  border-left-color: #e2a03f;
+  background: #fdf5e8;
+}
+
+.step-chip--danger {
+  border-left-color: #e7515a;
+  background: #fdeaea;
+}
+
+.step-chip--secondary {
+  border-left-color: #888ea8;
+  background: #f1f2f3;
+}
 
 .step-chip__num {
   position: absolute;
@@ -1108,27 +1160,55 @@ export default {
   padding: 8px 0;
   position: relative;
 }
+
 .timeline-line::before {
   content: '';
   position: absolute;
-  left: 7px; top: 24px; bottom: -8px;
+  left: 7px;
+  top: 24px;
+  bottom: -8px;
   width: 2px;
   background: #e0e6ed;
 }
-.timeline-line:last-child::before { display: none; }
+
+.timeline-line:last-child::before {
+  display: none;
+}
 
 .tl-dot {
-  width: 16px; height: 16px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   margin-right: 12px;
   flex-shrink: 0;
   margin-top: 4px;
 }
-.tl-dot.b-success   { background: #1abc9c; }
-.tl-dot.b-info      { background: #2196f3; }
-.tl-dot.b-warning   { background: #e2a03f; }
-.tl-dot.b-danger    { background: #e7515a; }
-.tl-dot.b-secondary { background: #888ea8; }
-.tl-dot.b-primary   { background: #4361ee; }
-.tl-content { flex: 1; }
+
+.tl-dot.b-success {
+  background: #1abc9c;
+}
+
+.tl-dot.b-info {
+  background: #2196f3;
+}
+
+.tl-dot.b-warning {
+  background: #e2a03f;
+}
+
+.tl-dot.b-danger {
+  background: #e7515a;
+}
+
+.tl-dot.b-secondary {
+  background: #888ea8;
+}
+
+.tl-dot.b-primary {
+  background: #4361ee;
+}
+
+.tl-content {
+  flex: 1;
+}
 </style>
