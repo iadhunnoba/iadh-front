@@ -19,6 +19,8 @@ const API_CONFIG = {
         RCP_SESSION_START: (id) => `/students/${id}/rcp-sessions/start`,
         RCP_SESSION_END: (id, sessionId) => `/students/${id}/rcp-sessions/${sessionId}/end`,
         RCP_SESSION_HISTORY: (id) => `/students/${id}/rcp-sessions`,
+        RCP_SESSION_BY_ID: (id, sessionId) => `/students/${id}/rcp-sessions/${sessionId}`,
+        RCP_SESSION_UPDATE_OBS: (id, sessionId) => `/students/${id}/rcp-sessions/${sessionId}`,
     },
     
     // Headers

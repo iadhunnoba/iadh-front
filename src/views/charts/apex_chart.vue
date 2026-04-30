@@ -85,8 +85,18 @@
               </b-button>
             </div>
 
-            <p class="h5 mt-3 mb-3">Tiempo restante: {{ formattedTime }}</p>
+            <!-- Cronómetro moderno -->
+            <div class="timer-widget mt-3 mb-2" :class="timerWrapperClass">
+              <div class="tw-status">{{ timerStatusLabel }}</div>
+              <div class="tw-time" :class="timerColorClass">{{ formattedTime }}</div>
+              <b-progress class="tw-bar" :value="ramainingTime" :max="180" :variant="timerVariant" height="6px"></b-progress>
+              <div class="tw-footer">
+                <span>{{ 180 - ramainingTime }}s transcurridos</span>
+                <span>3:00 total</span>
+              </div>
+            </div>
 
+            <!-- Modal de Reporte -->
             <b-modal id="modalxl" title="Reporte de Sesión RCP" size="xl" no-close-on-backdrop>
               <div class="row widget-statistic justify-content-center">
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 layout-spacing">
@@ -180,10 +190,58 @@
                 </div>
               </div>
 
+              <!-- Timeline de eventos con observaciones por fase -->
+              <div v-if="sessionEvents.length > 0" class="row mt-3 mb-3">
+                <div class="col-12">
+                  <div class="widget widget-activity-four">
+                    <div class="widget-heading">
+                      <h5 class="text-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                          class="feather feather-list mr-1" style="vertical-align: middle;">
+                          <line x1="8" y1="6" x2="21" y2="6"></line>
+                          <line x1="8" y1="12" x2="21" y2="12"></line>
+                          <line x1="8" y1="18" x2="21" y2="18"></line>
+                          <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                          <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                          <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                        </svg>
+                        Flujo de la sesión — Observaciones por fase
+                      </h5>
+                      <p class="text-muted mb-0" style="font-size: 0.85em;">
+                        Agregue una observación específica para cada paso de la sesión.
+                      </p>
+                    </div>
+                    <div class="widget-content">
+                      <div class="mt-container mx-auto">
+                        <div v-for="(evt, idx) in sessionEvents" :key="'evt-' + idx" class="timeline-line pb-3">
+                          <div class="tl-dot" :class="'b-' + getEventVariant(evt.eventType)"></div>
+                          <div class="tl-content" style="width: 100%;">
+                            <div class="d-flex align-items-center mb-1">
+                              <b-badge :variant="getEventVariant(evt.eventType)" class="mr-2">
+                                {{ formatSeconds(evt.sessionTimeSeconds) }}
+                              </b-badge>
+                              <strong>{{ getEventLabel(evt.eventType) }}</strong>
+                            </div>
+                            <b-form-textarea
+                              v-model="evt.observation"
+                              :placeholder="'Observación sobre: ' + getEventLabel(evt.eventType)"
+                              rows="2"
+                              size="sm"
+                              class="mt-1">
+                            </b-form-textarea>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <div class="row mt-4">
                 <div class="col-12">
-                  <h5>Observaciones</h5>
-                  <b-form-textarea v-model="observation" placeholder="Ingrese observaciones de la sesión..." rows="3"
+                  <h5>Observaciones Generales de la Sesión</h5>
+                  <b-form-textarea v-model="observation" placeholder="Ingrese observaciones generales de la sesión..." rows="3"
                     max-rows="6"></b-form-textarea>
                 </div>
               </div>
@@ -294,6 +352,35 @@
         </div>
       </div>
     </div>
+
+    <!-- Pasos de la sesión: banda horizontal debajo de los gráficos -->
+    <div v-if="userRole !== 'estudiante' && timerActive && sessionEvents.length > 0" class="row mx-4 mb-4">
+      <div class="col-12">
+        <div class="widget steps-widget">
+          <div class="widget-heading d-flex align-items-center justify-content-between pb-0 mb-2">
+            <h6 class="text-primary mb-0 d-flex align-items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="feather feather-activity mr-1">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+              </svg>
+              Pasos de la sesión
+            </h6>
+            <b-badge variant="primary" pill>{{ sessionEvents.length }}</b-badge>
+          </div>
+          <div class="steps-scroll">
+            <div class="steps-track">
+              <div v-for="(evt, idx) in sessionEvents" :key="idx" class="step-chip"
+                :class="'step-chip--' + getEventVariant(evt.eventType)">
+                <span class="step-chip__time">{{ formatSeconds(evt.sessionTimeSeconds) }}</span>
+                <span class="step-chip__label">{{ getEventLabel(evt.eventType) }}</span>
+                <span class="step-chip__num">#{{ idx + 1 }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -302,6 +389,20 @@ import axios from '@/plugins/axios'
 import authService from '@/services/authService';
 import mqtt from 'mqtt';
 import smoothie from 'smoothie';
+
+const EVENT_META = {
+  TOGGLE_TIMER:           { label: 'Cronómetro iniciado',              variant: 'success' },
+  TIMER_PAUSE:            { label: 'Cronómetro pausado',               variant: 'secondary' },
+  TIMER_RESUME:           { label: 'Cronómetro reanudado',             variant: 'info' },
+  STOP_TIMER:             { label: 'Maniobra finalizada',              variant: 'danger' },
+  ACTIVATE_NORMAL:        { label: 'Ritmo sinusal normal activado',    variant: 'info' },
+  ACTIVATE_LOW_PULSE:     { label: 'Bradicardia sinusal activada',     variant: 'warning' },
+  ACTIVATE_FAST_PULSE:    { label: 'Taquicardia sinusal activada',     variant: 'warning' },
+  ACTIVATE_VFIB:          { label: 'Fibrilación ventricular activada', variant: 'danger' },
+  ACTIVATE_VTACH:         { label: 'Taquicardia ventricular activada', variant: 'danger' },
+  ACTIVATE_ST_ELEVATION:  { label: 'Supradesnivel del ST activado',    variant: 'warning' },
+  ACTIVATE_ASYSTOLE:      { label: 'Asistolia activada',              variant: 'danger' },
+};
 
 export default {
   name: 'home',
@@ -341,6 +442,9 @@ export default {
       series2: [{ data: [] }],
       series3: [{ data: [] }],
 
+      // Eventos de la sesión (línea de tiempo)
+      sessionEvents: [],
+
       // Variables necesarias para el cronómetro de la maniobra
       timerActive: false,
       timerPaused: false,
@@ -364,7 +468,6 @@ export default {
         clean: true,
         connectTimeout: 30 * 1000,
         reconnectPeriod: 4000,
-        // Mantener clientId dinámico es clave para que múltiples pantallas se conecten simultáneamente sin pisarse
         clientId: "emqx_vue_" + Math.random().toString(16).substring(2, 8),
         username: "vuesocket",
         password: "test1234",
@@ -373,7 +476,6 @@ export default {
         topic: "simulador/situacion",
         qos: 0,
       },
-      // Nuevo Topic para Sincronización Profesor-Alumno
       subscriptionControl: {
         topic: "simulador/control",
         qos: 0,
@@ -391,12 +493,10 @@ export default {
     this.initData();
     this.createConnection();
 
-    // Si es admin/profesor cargamos la lista de estudiantes
     if (this.userRole !== 'estudiante') {
       this.fetchStudents();
     }
 
-    // Configuración Gráficos Smoothie (Se mantiene intacta)
     this.graphicData = [];
     this.cycleSpace = 0;
     this.iterator = 0;
@@ -435,7 +535,6 @@ export default {
     const runIterationPressure = () => { seriesPressure.append(Date.now(), this.graphicPressure[this.iteratorPressure]); this.iteratorPressure++; if (this.iteratorPressure === this.graphicPressure.length) { this.iteratorPressure = 0; } setTimeout(runIterationPressure, this.cycleSpacePressure); };
     setTimeout(runIterationPressure, this.cycleSpacePressure);
 
-    // Watchers para advertencias
     this.$watch('slider1', (val) => { this.isWarningFC = val === '--' || parseFloat(val) < 60 || parseFloat(val) > 100; });
     this.$watch('slider2', (val) => { this.isWarningSpO2 = val === '--' || parseFloat(val) < 90; });
     this.$watch('slider3', (val) => { this.isWarningTAA = val === '--' || parseFloat(val) < 70 || parseFloat(val) > 130; });
@@ -447,6 +546,26 @@ export default {
       const minutes = Math.floor(this.ramainingTime / 60);
       const seconds = this.ramainingTime % 60;
       return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    },
+    timerColorClass() {
+      if (this.ramainingTime > 60) return 'tw-green';
+      if (this.ramainingTime > 30) return 'tw-orange';
+      return 'tw-red';
+    },
+    timerWrapperClass() {
+      if (this.ramainingTime <= 30) return 'tw-red-state';
+      if (this.ramainingTime <= 60) return 'tw-orange-state';
+      return '';
+    },
+    timerVariant() {
+      if (this.ramainingTime > 60) return 'success';
+      if (this.ramainingTime > 30) return 'warning';
+      return 'danger';
+    },
+    timerStatusLabel() {
+      if (!this.timerActive) return 'Tiempo restante';
+      if (this.timerPaused) return 'Cronómetro pausado';
+      return 'Tiempo restante';
     },
     filteredStudents() {
       if (!this.searchStudent) return this.students;
@@ -478,27 +597,66 @@ export default {
   },
 
   methods: {
-    // --- LÓGICA MAESTRO/ESCLAVO VÍA MQTT --- //
+    // --- HELPERS DE EVENTOS ---
 
-    // Método que el Profesor usa para emitir comandos a TODAS las pantallas
+    getEventLabel(eventType) {
+      return EVENT_META[eventType] ? EVENT_META[eventType].label : eventType;
+    },
+    getEventVariant(eventType) {
+      return EVENT_META[eventType] ? EVENT_META[eventType].variant : 'secondary';
+    },
+    formatSeconds(secs) {
+      const m = Math.floor(secs / 60);
+      const s = secs % 60;
+      return `${m}:${s < 10 ? '0' : ''}${s}`;
+    },
+
+    // Registra un evento en la línea de tiempo
+    trackEvent(eventType, eventData = null) {
+      // No registrar reset ni eventos sin sesión iniciada
+      if (eventType === 'RESET_TIMER') return;
+      const elapsed = this.timepoInicialSesion
+        ? Math.floor((Date.now() - this.timepoInicialSesion) / 1000)
+        : 0;
+      this.sessionEvents.push({
+        eventType,
+        eventData: eventData && Object.keys(eventData).length > 0 ? eventData : null,
+        observation: '',
+        sessionTimeSeconds: elapsed,
+      });
+    },
+
+    // --- LÓGICA MAESTRO/ESCLAVO VÍA MQTT ---
+
     sendCommand(action, payload = {}) {
-      if (this.userRole === 'estudiante') return; // El estudiante no puede enviar comandos
+      if (this.userRole === 'estudiante') return;
 
       const command = { action, ...payload };
 
-      // A) Ejecutamos la acción localmente DE INMEDIATO para que el profe no tenga lag
+      // Detectar si es pausa o reanudación antes de ejecutar (para trackear correctamente)
+      let trackAction = action;
+      if (action === 'TOGGLE_TIMER') {
+        if (this.timerActive && !this.timerPaused) {
+          trackAction = 'TIMER_PAUSE';
+        } else if (this.timerActive && this.timerPaused) {
+          trackAction = 'TIMER_RESUME';
+        }
+        // Si !timerActive es inicio → se trackea como TOGGLE_TIMER
+      }
+
       this.executeCommand(command);
 
-      // B) Enviamos la orden por MQTT para que la TV del alumno reaccione
       if (this.client && this.client.connected) {
         const message = JSON.stringify(command);
         this.client.publish(this.subscriptionControl.topic, message, { qos: 0 });
       } else {
         console.warn("MQTT no conectado. La función se activó solo en tu pantalla local.");
       }
+
+      // Registrar el evento en la línea de tiempo
+      this.trackEvent(trackAction, Object.keys(payload).length > 0 ? payload : null);
     },
 
-    // Método que recibe comandos MQTT y los ejecuta localmente en la vista
     executeCommand(cmd) {
       switch (cmd.action) {
         case 'TOGGLE_TIMER': this.localToggleTimer(); break;
@@ -514,9 +672,8 @@ export default {
       }
     },
 
-    // --- CONEXIÓN MQTT --- //
+    // --- CONEXIÓN MQTT ---
 
-    // 3. ACTUALIZAMOS LA CONEXIÓN PARA LEER LOS MENSAJES CORRECTAMENTE
     createConnection() {
       try {
         this.connecting = true;
@@ -529,7 +686,7 @@ export default {
           this.client.on("connect", () => {
             this.connecting = false;
             this.client.connected = true;
-            this.doSubscribe(); // Nos suscribimos según el rol
+            this.doSubscribe();
           });
 
           this.client.on("reconnect", this.handleOnReConnect);
@@ -541,16 +698,12 @@ export default {
 
           this.client.on("message", (topic, message) => {
             const payloadString = message.toString();
-
             try {
               const parsedMessage = JSON.parse(payloadString);
 
-              // A. Comando de control (Solo la TV del alumno lo procesará)
               if (topic === this.subscriptionControl.topic && this.userRole === 'estudiante') {
                 this.executeCommand(parsedMessage);
-              }
-              // B. Datos de sensores (Ambos los procesan para ver las gráficas)
-              else if (topic === this.subscriptionSensor.topic) {
+              } else if (topic === this.subscriptionSensor.topic) {
                 if (parsedMessage.temperature !== undefined) this.temperature = parseFloat(parsedMessage.temperature).toFixed(1);
                 if (parsedMessage.pressure !== undefined) this.pressure = parseFloat(parsedMessage.pressure).toFixed(3);
                 if (parsedMessage.flowrate !== undefined) this.flowrate = parsedMessage.flowrate;
@@ -559,7 +712,7 @@ export default {
                 if (parsedMessage.motionDetected !== undefined) this.motionDetected = parsedMessage.motionDetected;
               }
             } catch (error) {
-              // Ignorar errores silenciosos de parseo si el sensor manda basura
+              // Ignorar errores de parseo
             }
           });
         }
@@ -569,16 +722,11 @@ export default {
       }
     },
 
-    // 2. ACTUALIZAMOS LA SUSCRIPCIÓN MQTT (Para evitar que el profe ejecute la acción 2 veces)
     doSubscribe() {
-      // El profesor solo necesita escuchar a los sensores
       const topics = [this.subscriptionSensor.topic];
-
-      // Solo si es la TV del estudiante, escuchamos los comandos del profesor
       if (this.userRole === 'estudiante') {
         topics.push(this.subscriptionControl.topic);
       }
-
       this.client.subscribe(topics, { qos: 0 }, (error) => {
         if (error) {
           console.error('Error al suscribirse a MQTT:', error);
@@ -591,7 +739,7 @@ export default {
     initData() { this.client = { connected: false }; this.retryTimes = 0; this.connecting = false; this.subscribeSuccess = false; },
     handleOnReConnect() { this.retryTimes += 1; if (this.retryTimes > 5) { this.client.end(); this.initData(); } },
 
-    // --- FUNCIONES LOCALES MÉDICAS (Se ejecutan al recibir orden MQTT) --- //
+    // --- FUNCIONES LOCALES MÉDICAS ---
 
     localActivateNormalPulseHeart(cycleSpace) {
       this.isVentricularTachycardia = false;
@@ -675,7 +823,7 @@ export default {
     activateSaturation() { this.graphicSaturation = [4, 0.75, 1, -1.1]; this.cycleSpaceSaturation = 700; this.iteratorSaturation = 0; this.slider2 = 100; },
     activatePressure() { this.graphicPressure = [4, 2, 2.8, 2.25, 2, 1.75, 1.5, 1.25, 1]; this.cycleSpacePressure = 250; this.iteratorPressure = 0; this.slider3 = 120; this.slider4 = 80; },
 
-    // --- FUNCIONES LOCALES DEL CRONÓMETRO --- //
+    // --- FUNCIONES LOCALES DEL CRONÓMETRO ---
 
     localToggleTimer() {
       if (!this.timerActive) {
@@ -696,6 +844,7 @@ export default {
       if (!this.timepoInicialSesion) {
         this.timepoInicialSesion = Date.now();
         this.recordedPressure = []; this.recordedVentilation = []; this.recordedPosition = [];
+        this.sessionEvents = [];
       }
 
       this.timerInterval = setInterval(() => {
@@ -732,7 +881,6 @@ export default {
         this.series3 = [{ data: [{ x: Date.now(), y: 65 }] }];
       }
 
-      // IMPORTANTE: El modal SOLO se abre en la vista del profesor
       if (this.userRole !== 'estudiante') {
         this.$bvModal.show('modalxl');
       }
@@ -748,9 +896,10 @@ export default {
       this.currentSessionId = null;
       this.observation = '';
       this.selectedStudentId = null;
+      this.sessionEvents = [];
     },
 
-    // --- HELPERS (API y Gráficas) --- //
+    // --- HELPERS (API y Gráficas) ---
 
     async fetchStudents() {
       try { const res = await axios.get('/users/students?limit=200'); this.students = res.data.data; }
@@ -767,7 +916,7 @@ export default {
       return Math.round(data.reduce((acc, curr) => acc + (curr.y || 0), 0) / data.length);
     },
 
-    // --- LÓGICA DE REPORTE (Solo Profesor) --- //
+    // --- LÓGICA DE REPORTE ---
 
     async saveSessionReport() {
       if (this.userRole !== 'estudiante' && !this.selectedStudentId) {
@@ -775,10 +924,19 @@ export default {
       }
       const durationSeconds = 180 - this.ramainingTime;
       const report = {
-        avgPulmonaryPressure: this.getAverage(this.series1), avgVentilation: this.getAverage(this.series2),
-        avgCorrectPosition: this.getAverage(this.series3), observation: this.observation,
+        avgPulmonaryPressure: this.getAverage(this.series1),
+        avgVentilation: this.getAverage(this.series2),
+        avgCorrectPosition: this.getAverage(this.series3),
+        observation: this.observation,
         duration: durationSeconds > 0 ? durationSeconds : 1,
-        startedAt: new Date(this.timepoInicialSesion).toISOString(), endedAt: new Date(this.timepoFinalSesion).toISOString()
+        startedAt: new Date(this.timepoInicialSesion).toISOString(),
+        endedAt: new Date(this.timepoFinalSesion).toISOString(),
+        events: this.sessionEvents.map(evt => ({
+          eventType: evt.eventType,
+          eventData: evt.eventData || null,
+          observation: evt.observation || null,
+          sessionTimeSeconds: evt.sessionTimeSeconds,
+        })),
       };
 
       try {
@@ -788,7 +946,7 @@ export default {
         await axios.post(`/students/${this.selectedStudentId}/rcp-sessions/${sessionId}/end`, report);
         this.$swal.fire("Éxito", "Reporte guardado correctamente", "success");
         this.$bvModal.hide('modalxl');
-        this.sendCommand('RESET_TIMER'); // Avisamos a todos (incluida la TV) que reinicien todo
+        this.sendCommand('RESET_TIMER');
       } catch (error) {
         this.$swal.fire("Error", "Hubo un error al procesar el reporte", "error");
       }
@@ -801,7 +959,7 @@ export default {
       }).then((result) => {
         if (result.isConfirmed) {
           this.$bvModal.hide('modalxl');
-          this.sendCommand('RESET_TIMER'); // Ordenamos reiniciar todo
+          this.sendCommand('RESET_TIMER');
         } else { this.$bvModal.show('modalxl'); }
       });
     }
@@ -810,10 +968,14 @@ export default {
 </script>
 
 <style scoped>
-.warning {
-  animation: blink 1s infinite;
+/* ── Blinking warning for vitals ── */
+.warning { animation: blink 1s infinite; }
+@keyframes blink {
+  0%, 100% { background-color: transparent; }
+  50%       { background-color: red; }
 }
 
+/* ── Buttons in function modal ── */
 .equal-btn {
   height: 55px;
   display: flex;
@@ -822,17 +984,151 @@ export default {
   text-align: center;
 }
 
-@keyframes blink {
-  0% {
-    background-color: transparent;
-  }
-
-  50% {
-    background-color: red;
-  }
-
-  100% {
-    background-color: transparent;
-  }
+/* ── Modern timer widget ── */
+.timer-widget {
+  background: #fff;
+  border-radius: 12px;
+  padding: 14px 16px 10px;
+  text-align: center;
+  border: 1px solid #e0e6ed;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  transition: border-color 0.4s, box-shadow 0.4s;
 }
+.timer-widget.tw-red-state {
+  border-color: #e7515a;
+  box-shadow: 0 0 0 3px rgba(231,81,90,0.12);
+}
+.timer-widget.tw-orange-state {
+  border-color: #e2a03f;
+  box-shadow: 0 0 0 3px rgba(226,160,63,0.12);
+}
+
+.tw-status {
+  font-size: 0.68em;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #888ea8;
+  margin-bottom: 4px;
+}
+
+.tw-time {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 2.8em;
+  font-weight: 700;
+  letter-spacing: 5px;
+  line-height: 1.1;
+  color: #3b3f5c;
+  transition: color 0.4s;
+}
+.tw-time.tw-green  { color: #1abc9c; }
+.tw-time.tw-orange { color: #e2a03f; }
+.tw-time.tw-red    { color: #e7515a; animation: timer-pulse 0.8s infinite; }
+
+@keyframes timer-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+
+.tw-bar { margin-top: 10px; border-radius: 4px; }
+
+.tw-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  font-size: 0.72em;
+  color: #888ea8;
+}
+
+/* ── Session steps horizontal strip ── */
+.steps-widget {
+  padding: 12px 16px;
+  border-radius: 10px;
+}
+
+.steps-scroll {
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+.steps-track {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  width: max-content;
+  padding: 4px 2px;
+}
+
+.step-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 110px;
+  max-width: 130px;
+  border-radius: 10px;
+  padding: 8px 10px;
+  background: #f1f2f3;
+  border-left: 4px solid #888ea8;
+  position: relative;
+}
+
+.step-chip--success  { border-left-color: #1abc9c; background: #edfaf6; }
+.step-chip--info     { border-left-color: #2196f3; background: #e8f4fd; }
+.step-chip--warning  { border-left-color: #e2a03f; background: #fdf5e8; }
+.step-chip--danger   { border-left-color: #e7515a; background: #fdeaea; }
+.step-chip--secondary{ border-left-color: #888ea8; background: #f1f2f3; }
+
+.step-chip__num {
+  position: absolute;
+  top: 5px;
+  right: 7px;
+  font-size: 0.62em;
+  color: #aaa;
+  font-weight: 600;
+}
+
+.step-chip__time {
+  font-size: 0.78em;
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+  color: #3b3f5c;
+  margin-bottom: 3px;
+}
+
+.step-chip__label {
+  font-size: 0.72em;
+  color: #515365;
+  text-align: center;
+  line-height: 1.3;
+}
+
+/* ── Report modal timeline ── */
+.timeline-line {
+  display: flex;
+  align-items: flex-start;
+  padding: 8px 0;
+  position: relative;
+}
+.timeline-line::before {
+  content: '';
+  position: absolute;
+  left: 7px; top: 24px; bottom: -8px;
+  width: 2px;
+  background: #e0e6ed;
+}
+.timeline-line:last-child::before { display: none; }
+
+.tl-dot {
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  margin-right: 12px;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+.tl-dot.b-success   { background: #1abc9c; }
+.tl-dot.b-info      { background: #2196f3; }
+.tl-dot.b-warning   { background: #e2a03f; }
+.tl-dot.b-danger    { background: #e7515a; }
+.tl-dot.b-secondary { background: #888ea8; }
+.tl-dot.b-primary   { background: #4361ee; }
+.tl-content { flex: 1; }
 </style>

@@ -546,12 +546,20 @@ const routes = [
     {
         path: '/estudiantes',
         name: 'StudentList',
-        component: () => import('@/views/StudentList.vue')
+        component: () => import('@/views/StudentList.vue'),
+        meta: { requiresAuth: true, roles: ['admin', 'profesor'] }
     },
     {
         path: '/estudiantes/:id/sesiones',
         name: 'StudentSessions',
-        component: () => import('@/views/StudentSessions.vue')
+        component: () => import('@/views/StudentSessions.vue'),
+        meta: { requiresAuth: true, roles: ['admin', 'profesor'] }
+    },
+    {
+        path: '/mis-sesiones-rcp',
+        name: 'MyRcpSessions',
+        component: () => import('@/views/MyRcpSessions.vue'),
+        meta: { requiresAuth: true, roles: ['estudiante'] }
     }
 ];
 

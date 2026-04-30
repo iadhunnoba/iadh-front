@@ -1,38 +1,38 @@
 import authService from '@/services/authService';
 
-/**
- * Configurar guard de autenticación para el router
- * @param {VueRouter} router - Instancia del router de Vue
- */
+// Redirección según el rol del usuario autenticado
+function defaultRouteForRole(role) {
+    if (role === 'estudiante') return '/mis-sesiones-rcp';
+    return '/estudiantes';
+}
+
 export function setupAuthGuard(router) {
     router.beforeEach((to, from, next) => {
         const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
         const isAuthenticated = authService.isAuthenticated();
-        const requiredRole = to.meta.role;
+        const user = authService.getUser();
+        const userRole = user ? user.role : null;
 
-        // Rutas que requieren autenticación
+        // 1. Rutas que requieren autenticación
         if (requiresAuth && !isAuthenticated) {
-            next({
-                path: '/auth/login-boxed',
-                query: { redirect: to.fullPath } // Guardar la ruta original para redirigir después del login
-            });
+            next({ path: '/auth/login-boxed', query: { redirect: to.fullPath } });
             return;
         }
 
-        // Si está autenticado y trata de acceder al login, redirigir al dashboard
+        // 2. Si está autenticado y va al login, redirigir a su sección correspondiente
         if (to.path === '/auth/login-boxed' && isAuthenticated) {
-            next('/');
+            next(defaultRouteForRole(userRole));
             return;
         }
 
-        // Verificar roles si es necesario
-        if (requiredRole && !authService.hasRole(requiredRole)) {
-            // No tiene el rol necesario
-            next({
-                path: '/pages/error403',
-                replace: true
-            });
-            return;
+        // 3. Control de roles: si la ruta define roles permitidos, verificar
+        const allowedRoles = to.meta.roles;
+        if (allowedRoles && allowedRoles.length > 0) {
+            if (!userRole || !allowedRoles.includes(userRole)) {
+                // Redirigir a la sección correcta para su rol
+                next({ path: defaultRouteForRole(userRole), replace: true });
+                return;
+            }
         }
 
         next();
