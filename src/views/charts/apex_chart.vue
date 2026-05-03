@@ -33,20 +33,17 @@
               <div class="w-icon icon-fill-danger">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                  class="feather feather-radio">
-                  <circle cx="12" cy="12" r="2"></circle>
-                  <path
-                    d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14">
-                  </path>
+                  class="feather feather-activity">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
                 </svg>
               </div>
               <div class="w-browser-details">
                 <div class="w-browser-info">
                   <h6 v-bind:style="{ fontSize: 1.2 + 'em' }">Presión interna pulmones</h6>
-                  <p v-bind:style="{ fontSize: 1.2 + 'em' }" class="browser-count">{{ humidity }}%</p>
+                  <p v-bind:style="{ fontSize: 1.2 + 'em' }" class="browser-count">{{ pressure }}</p>
                 </div>
                 <div class="w-browser-stats">
-                  <b-progress variant="gradient-danger" :value="humidity" :min="0" :max="100"></b-progress>
+                  <b-progress variant="gradient-danger" :value="pressure" :min="0" :max="5"></b-progress>
                 </div>
               </div>
             </div>
@@ -55,20 +52,43 @@
               <div class="w-icon icon-fill-warning">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                  class="feather feather-radio">
-                  <circle cx="12" cy="12" r="2"></circle>
-                  <path
-                    d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14">
-                  </path>
+                  class="feather feather-wind">
+                  <path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"></path>
                 </svg>
               </div>
               <div class="w-browser-details">
                 <div class="w-browser-info">
                   <h6 v-bind:style="{ fontSize: 1.2 + 'em' }">Flujo de aire</h6>
-                  <p v-bind:style="{ fontSize: 1.2 + 'em' }" class="browser-count">{{ motionDetected }}%</p>
+                  <p v-bind:style="{ fontSize: 1.2 + 'em' }" class="browser-count">{{ flowrate }}</p>
                 </div>
                 <div class="w-browser-stats">
-                  <b-progress variant="gradient-warning" :value="motionDetected" :min="-30" :max="80"></b-progress>
+                  <b-progress variant="gradient-warning" :value="flowrate" :min="0" :max="100"></b-progress>
+                </div>
+              </div>
+            </div>
+
+            <div class="browser-list">
+              <div class="w-icon" :class="touch ? 'icon-fill-success' : 'icon-fill-secondary'">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="feather feather-hand">
+                  <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                  <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"></path>
+                  <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"></path>
+                  <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"></path>
+                </svg>
+              </div>
+              <div class="w-browser-details">
+                <div class="w-browser-info">
+                  <h6 v-bind:style="{ fontSize: 1.2 + 'em' }">Contacto</h6>
+                  <p v-bind:style="{ fontSize: 1.2 + 'em' }" class="browser-count">
+                    <b-badge :variant="touch ? 'success' : 'secondary'">
+                      {{ touch ? 'Detectado' : 'Sin contacto' }}
+                    </b-badge>
+                  </p>
+                </div>
+                <div class="w-browser-stats">
+                  <b-progress :variant="touch ? 'success' : 'secondary'" :value="touch ? 1 : 0" :min="0" :max="1"></b-progress>
                 </div>
               </div>
             </div>
@@ -852,8 +872,8 @@ export default {
         if (!this.timerPaused) {
           if (this.ramainingTime > 0) {
             this.ramainingTime -= 1;
-            let p = this.humidity ? parseFloat(this.humidity) : 65;
-            let v = this.motionDetected ? parseFloat(this.motionDetected) : 65;
+            let p = this.pressure ? parseFloat(this.pressure) : 65;
+            let v = this.flowrate ? parseFloat(this.flowrate) : 65;
             let pos = this.temperature ? parseFloat(this.temperature) : 65;
             const now = Date.now();
             this.recordedPressure.push({ x: now, y: p });
