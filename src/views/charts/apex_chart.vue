@@ -67,30 +67,82 @@
               </div>
             </div>
 
-            <div class="browser-list">
-              <div class="w-icon" :class="touch ? 'icon-fill-success' : 'icon-fill-secondary'">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                  class="feather feather-hand">
-                  <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
-                  <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"></path>
-                  <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"></path>
-                  <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"></path>
-                </svg>
-              </div>
-              <div class="w-browser-details">
-                <div class="w-browser-info">
-                  <h6 v-bind:style="{ fontSize: 1.2 + 'em' }">Contacto</h6>
-                  <p v-bind:style="{ fontSize: 1.2 + 'em' }" class="browser-count">
-                    <b-badge :variant="touch ? 'success' : 'secondary'">
-                      {{ touch ? 'Detectado' : 'Sin contacto' }}
-                    </b-badge>
-                  </p>
-                </div>
-                <div class="w-browser-stats">
-                  <b-progress :variant="touch ? 'success' : 'secondary'" :value="touch ? 1 : 0" :min="0" :max="1"></b-progress>
+            <!-- Visualización tórax con sensores de contacto -->
+            <div class="torso-panel mt-3">
+              <div class="torso-panel__header">
+                <span class="torso-panel__title">Contacto en tórax</span>
+                <div class="torso-panel__badges">
+                  <b-badge :variant="touch1 ? 'success' : 'secondary'" class="mr-1">
+                    T1 {{ touch1 ? '●' : '○' }}
+                  </b-badge>
+                  <b-badge :variant="touch2 ? 'success' : 'secondary'">
+                    T2 {{ touch2 ? '●' : '○' }}
+                  </b-badge>
                 </div>
               </div>
+
+              <!-- SVG Tórax -->
+              <svg viewBox="0 0 160 185" xmlns="http://www.w3.org/2000/svg" class="torso-svg">
+
+                <!-- Cuello -->
+                <rect x="62" y="4" width="36" height="28" rx="6"
+                  fill="#eef0f3" stroke="#c8cfd8" stroke-width="1.5"/>
+
+                <!-- Cuerpo / tórax -->
+                <path d="M 20 42
+                         C 18 45, 14 60, 14 85
+                         L 14 170
+                         Q 14 178, 24 178
+                         L 136 178
+                         Q 146 178, 146 170
+                         L 146 85
+                         C 146 60, 142 45, 140 42
+                         C 128 28, 108 22, 80 22
+                         C 52 22, 32 28, 20 42 Z"
+                  fill="#eef0f3" stroke="#c8cfd8" stroke-width="1.5"/>
+
+                <!-- Clavículas -->
+                <path d="M 22 50 Q 50 42, 80 44" stroke="#c8cfd8" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                <path d="M 138 50 Q 110 42, 80 44" stroke="#c8cfd8" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+
+                <!-- Línea de esternón (referencia) -->
+                <line x1="80" y1="48" x2="80" y2="165"
+                  stroke="#dde1e7" stroke-width="1" stroke-dasharray="5,5"/>
+
+                <!-- Costillas esquemáticas izquierda -->
+                <path d="M 78 72 Q 50 77, 30 90"  stroke="#dde1e7" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                <path d="M 78 95 Q 50 100, 28 113" stroke="#dde1e7" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                <path d="M 78 118 Q 50 123, 28 136" stroke="#dde1e7" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                <path d="M 78 141 Q 50 146, 30 157" stroke="#dde1e7" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+
+                <!-- Costillas esquemáticas derecha -->
+                <path d="M 82 72 Q 110 77, 130 90"  stroke="#dde1e7" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                <path d="M 82 95 Q 110 100, 132 113" stroke="#dde1e7" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                <path d="M 82 118 Q 110 123, 132 136" stroke="#dde1e7" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                <path d="M 82 141 Q 110 146, 130 157" stroke="#dde1e7" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+
+                <!-- ── SENSOR TOUCH 1 (superior / primera mano) ── -->
+                <!-- TODO: Conectar a variable MQTT touch1 cuando se confirme el nombre del campo en el payload del ESP32 -->
+                <circle cx="80" cy="92" r="15"
+                  :class="touch1 ? 'sensor sensor--active' : 'sensor sensor--inactive'"/>
+                <text x="80" y="89" text-anchor="middle" class="sensor-text" :class="touch1 ? 'sensor-text--active' : 'sensor-text--inactive'">T1</text>
+                <text x="80" y="100" text-anchor="middle" class="sensor-subtext" :class="touch1 ? 'sensor-text--active' : 'sensor-text--inactive'">{{ touch1 ? 'ON' : 'OFF' }}</text>
+
+                <!-- ── SENSOR TOUCH 2 (inferior / segunda mano) ── -->
+                <!-- TODO: Conectar a variable MQTT touch2 cuando se confirme el nombre del campo en el payload del ESP32 -->
+                <circle cx="80" cy="140" r="15"
+                  :class="touch2 ? 'sensor sensor--active' : 'sensor sensor--inactive'"/>
+                <text x="80" y="137" text-anchor="middle" class="sensor-text" :class="touch2 ? 'sensor-text--active' : 'sensor-text--inactive'">T2</text>
+                <text x="80" y="148" text-anchor="middle" class="sensor-subtext" :class="touch2 ? 'sensor-text--active' : 'sensor-text--inactive'">{{ touch2 ? 'ON' : 'OFF' }}</text>
+
+                <!-- Etiquetas laterales -->
+                <text x="8" y="94" class="torso-label">Mano</text>
+                <text x="8" y="103" class="torso-label">sup.</text>
+                <text x="8" y="142" class="torso-label">Mano</text>
+                <text x="8" y="151" class="torso-label">inf.</text>
+
+              </svg>
+              <!-- TODO: Remover secuencia de simulación y dejar solo la integración MQTT cuando el hardware esté listo -->
             </div>
 
             <div v-if="userRole !== 'estudiante'">
@@ -103,18 +155,6 @@
               <b-button @click="sendCommand('RESET_TIMER')" variant="secondary" class="w-75 mt-2" v-if="timerActive">
                 Restablecer Cronómetro
               </b-button>
-            </div>
-
-            <!-- Cronómetro moderno -->
-            <div class="timer-widget mt-3 mb-2" :class="timerWrapperClass">
-              <div class="tw-status">{{ timerStatusLabel }}</div>
-              <div class="tw-time" :class="timerColorClass">{{ formattedTime }}</div>
-              <b-progress class="tw-bar" :value="ramainingTime" :max="180" :variant="timerVariant"
-                height="6px"></b-progress>
-              <div class="tw-footer">
-                <span>{{ 180 - ramainingTime }}s transcurridos</span>
-                <span>3:00 total</span>
-              </div>
             </div>
 
             <!-- Modal de Reporte -->
@@ -368,6 +408,21 @@
             </div>
           </div>
         </div>
+
+        <!-- Cronómetro — pegado debajo del tercer gráfico, dentro de la columna derecha -->
+        <div class="mx-4 mb-3">
+          <div class="timer-widget" :class="timerWrapperClass">
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="tw-status mb-0">{{ timerStatusLabel }}</div>
+              <div class="tw-time" :class="timerColorClass">{{ formattedTime }}</div>
+              <div class="tw-footer-inline">
+                <span>{{ 180 - ramainingTime }}s transcurridos</span>
+                <span class="ml-3">3:00 total</span>
+              </div>
+            </div>
+            <b-progress class="tw-bar" :value="ramainingTime" :max="180" :variant="timerVariant" height="6px"></b-progress>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -470,12 +525,14 @@ export default {
       timerInterval: null,
 
       // Variables para obtener valores desde esp32
+      // TODO: Confirmar nombres exactos de campos en el payload MQTT del ESP32
       temperature: 0,
-      humidity: 0,
-      motionDetected: 0,
       pressure: null,
       flowrate: null,
-      touch: null,
+      // Sensores de contacto en tórax (dos puntos, centrados, uno arriba del otro)
+      touch1: false,   // TODO: mapear desde parsedMessage.touch1 (o el campo que envíe el ESP32)
+      touch2: false,   // TODO: mapear desde parsedMessage.touch2 (o el campo que envíe el ESP32)
+      touchSimTimeout: null, // TODO: Eliminar cuando se integre hardware real
 
       // EMQX CONNECTION VARS
       connection: {
@@ -557,6 +614,13 @@ export default {
     this.$watch('slider2', (val) => { this.isWarningSpO2 = val === '--' || parseFloat(val) < 90; });
     this.$watch('slider3', (val) => { this.isWarningTAA = val === '--' || parseFloat(val) < 70 || parseFloat(val) > 130; });
     this.$watch('slider4', (val) => { this.isWarningTAB = val === '--' || parseFloat(val) < 60 || parseFloat(val) > 90; });
+
+    // TODO: Eliminar esta llamada cuando el hardware esté integrado y los datos lleguen por MQTT
+    this.startTouchSimulation();
+  },
+
+  beforeDestroy() {
+    this.stopTouchSimulation();
   },
 
   computed: {
@@ -725,11 +789,18 @@ export default {
                 this.executeCommand(parsedMessage);
               } else if (topic === this.subscriptionSensor.topic) {
                 if (parsedMessage.temperature !== undefined) this.temperature = parseFloat(parsedMessage.temperature).toFixed(1);
-                if (parsedMessage.pressure !== undefined) this.pressure = parseFloat(parsedMessage.pressure).toFixed(3);
-                if (parsedMessage.flowrate !== undefined) this.flowrate = parsedMessage.flowrate;
-                if (parsedMessage.touch !== undefined) this.touch = parsedMessage.touch;
-                if (parsedMessage.humidity !== undefined) this.humidity = parsedMessage.humidity;
-                if (parsedMessage.motionDetected !== undefined) this.motionDetected = parsedMessage.motionDetected;
+                if (parsedMessage.pressure    !== undefined) this.pressure  = parseFloat(parsedMessage.pressure).toFixed(3);
+                if (parsedMessage.flowrate    !== undefined) this.flowrate  = parsedMessage.flowrate;
+
+                // TODO: Ajustar los nombres de campo (touch1 / touch2) según el payload real del ESP32
+                // TODO: Eliminar this.stopTouchSimulation() cuando el hardware esté integrado
+                if (parsedMessage.touch1 !== undefined) {
+                  this.touch1 = !!parsedMessage.touch1;
+                  this.stopTouchSimulation(); // detiene la simulación al recibir datos reales
+                }
+                if (parsedMessage.touch2 !== undefined) {
+                  this.touch2 = !!parsedMessage.touch2;
+                }
               }
             } catch (error) {
               // Ignorar errores de parseo
@@ -983,7 +1054,42 @@ export default {
           this.sendCommand('RESET_TIMER');
         } else { this.$bvModal.show('modalxl'); }
       });
-    }
+    },
+
+    // ─────────────────────────────────────────────────────────────
+    // TODO: Eliminar startTouchSimulation y stopTouchSimulation
+    //       cuando los sensores físicos estén integrados vía MQTT.
+    //       Solo se usan para demostración visual mientras no hay hardware.
+    // ─────────────────────────────────────────────────────────────
+    startTouchSimulation() {
+      // Secuencia que simula el ciclo de compresión RCP:
+      // Reposo → mano inferior se apoya → mano superior se apoya (compresión) → liberación
+      const steps = [
+        { touch1: false, touch2: false, ms: 1600 }, // sin contacto (reposo)
+        { touch1: false, touch2: true,  ms:  500 }, // mano inferior apoyada
+        { touch1: true,  touch2: true,  ms:  700 }, // compresión activa (ambas manos)
+        { touch1: false, touch2: true,  ms:  300 }, // inicio de liberación
+        { touch1: false, touch2: false, ms:  400 }, // liberación completa
+      ];
+
+      let idx = 0;
+      const run = () => {
+        const step = steps[idx];
+        this.touch1 = step.touch1;
+        this.touch2 = step.touch2;
+        idx = (idx + 1) % steps.length;
+        // TODO: Reemplazar este setTimeout con la suscripción MQTT real
+        this.touchSimTimeout = setTimeout(run, step.ms);
+      };
+      run();
+    },
+
+    stopTouchSimulation() {
+      if (this.touchSimTimeout) {
+        clearTimeout(this.touchSimTimeout);
+        this.touchSimTimeout = null;
+      }
+    },
   },
 };
 </script>
@@ -1019,8 +1125,7 @@ export default {
 .timer-widget {
   background: #fff;
   border-radius: 12px;
-  padding: 14px 16px 10px;
-  text-align: center;
+  padding: 10px 20px 8px;
   border: 1px solid #e0e6ed;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   transition: border-color 0.4s, box-shadow 0.4s;
@@ -1080,16 +1185,15 @@ export default {
 }
 
 .tw-bar {
-  margin-top: 10px;
+  margin-top: 8px;
   border-radius: 4px;
 }
 
-.tw-footer {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 6px;
-  font-size: 0.72em;
+.tw-footer-inline {
+  font-size: 0.75em;
   color: #888ea8;
+  text-align: right;
+  white-space: nowrap;
 }
 
 /* ── Session steps horizontal strip ── */
@@ -1171,6 +1275,79 @@ export default {
   color: #515365;
   text-align: center;
   line-height: 1.3;
+}
+
+/* ── Torso touch panel ── */
+.torso-panel {
+  border: 1px solid #e0e6ed;
+  border-radius: 10px;
+  padding: 10px 12px 8px;
+  background: #fff;
+}
+
+.torso-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.torso-panel__title {
+  font-size: 0.82em;
+  font-weight: 600;
+  color: #515365;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.torso-svg {
+  display: block;
+  width: 100%;
+  max-width: 200px;
+  margin: 0 auto;
+}
+
+/* Sensor inactivo */
+.sensor--inactive {
+  fill: #e9ecef;
+  stroke: #adb5bd;
+  stroke-width: 2;
+  transition: fill 0.25s, stroke 0.25s, filter 0.25s;
+}
+
+/* Sensor activo */
+.sensor--active {
+  fill: #1abc9c;
+  stroke: #0e9b7d;
+  stroke-width: 2;
+  filter: drop-shadow(0 0 6px rgba(26, 188, 156, 0.7));
+  animation: sensor-pulse 0.9s ease-in-out infinite;
+}
+
+@keyframes sensor-pulse {
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(26, 188, 156, 0.5)); }
+  50%       { filter: drop-shadow(0 0 10px rgba(26, 188, 156, 0.9)); }
+}
+
+.sensor-text {
+  font-size: 9px;
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+  pointer-events: none;
+}
+.sensor-subtext {
+  font-size: 7.5px;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+  pointer-events: none;
+}
+.sensor-text--active   { fill: #fff; }
+.sensor-text--inactive { fill: #adb5bd; }
+
+.torso-label {
+  font-size: 7px;
+  fill: #adb5bd;
+  font-family: sans-serif;
 }
 
 /* ── Report modal timeline ── */
